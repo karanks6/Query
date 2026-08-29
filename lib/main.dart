@@ -7,10 +7,23 @@ import 'features/onboarding/onboarding_screen.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/level_map/level_map_screen.dart';
 import 'features/gameplay/gameplay_screen.dart';
+import 'features/world_select/world_select_screen.dart';
+import 'features/achievements/achievements_screen.dart';
+import 'features/sandbox/sandbox_screen.dart';
+import 'features/reference/reference_screen.dart';
+import 'features/daily_challenge/daily_challenge_screen.dart';
 import 'data/content/models/level_model.dart';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  
   runApp(
     const ProviderScope(
       child: QueryApp(),
@@ -54,21 +67,21 @@ class QueryApp extends ConsumerWidget {
             final level = settings.arguments as LevelModel;
             return _slideRoute(GameplayScreen(level: level), settings);
           case '/world_select':
-            return _fadeRoute(const _PlaceholderScreen('World Select'), settings);
+            return _fadeRoute(const WorldSelectScreen(), settings);
           case '/sandbox':
-            return _fadeRoute(const _PlaceholderScreen('Sandbox'), settings);
+            return _fadeRoute(const SandboxScreen(), settings);
           case '/achievements':
-            return _fadeRoute(const _PlaceholderScreen('Achievements'), settings);
+            return _fadeRoute(const AchievementsScreen(), settings);
           case '/leaderboard':
             return _fadeRoute(const _PlaceholderScreen('Leaderboard'), settings);
           case '/reference':
-            return _fadeRoute(const _PlaceholderScreen('SQL Reference'), settings);
+            return _fadeRoute(const SqlReferenceScreen(), settings);
           case '/settings':
             return _fadeRoute(const _PlaceholderScreen('Settings'), settings);
           case '/profile':
             return _fadeRoute(const _PlaceholderScreen('Profile'), settings);
           case '/daily_challenge':
-            return _fadeRoute(const _PlaceholderScreen('Daily Challenge'), settings);
+            return _fadeRoute(const DailyChallengeScreen(), settings);
           default:
             return _fadeRoute(const SplashScreen(), settings);
         }

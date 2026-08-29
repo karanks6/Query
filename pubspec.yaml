@@ -40,6 +40,9 @@ dependencies:
   collection: ^1.18.0
   equatable: ^2.0.5
   json_annotation: ^4.9.0
+  firebase_core: ^4.14.0
+  firebase_auth: ^6.6.1
+  cloud_firestore: ^6.9.0
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +67,11 @@ flutter:
   assets:
     - assets/levels/world_01_archive_vaults/
     - assets/levels/world_02_filter_district/
+    - assets/levels/world_03_aggregation_district/
+    - assets/levels/world_04_join_nexus/
+    - assets/levels/world_05_nested_depths/
+    - assets/levels/world_06_data_forge/
+    - assets/levels/daily_challenges/
     - assets/concept_cards/
     - assets/audio/terminal_classic/
     - assets/images/

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "489911977867",
+    "project_id": "query-sql-game",
+    "storage_bucket": "query-sql-game.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:489911977867:android:1ee7ffba8fb0ace4ce518e",
+        "android_client_info": {
+          "package_name": "com.querybureau.query"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvdWbbHI0vWRKWzkIyQUy3awZoInhuRVI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

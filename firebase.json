@@ -1,0 +1,8 @@
+{
+  "auth": {
+    "authorizedDomains": ["localhost"],
+    "providers": {
+      "anonymous": true
+    }
+  }
+}
