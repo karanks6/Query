@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../theming/tokens/terminal_classic_tokens.dart';
 
 /// Blinking block cursor â€” the Terminal/Classic theme's signature element.
@@ -300,4 +300,61 @@ class StarRow extends StatelessWidget {
       ],
     );
   }
+}
+
+class TerminalAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+  final VoidCallback? onBack;
+  final List<Widget>? actions;
+
+  const TerminalAppBar({
+    super.key,
+    required this.title,
+    this.onBack,
+    this.actions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: TerminalClassicTokens.surface,
+        border: Border(
+          bottom: BorderSide(
+            color: TerminalClassicTokens.accentDim,
+            width: 1.0,
+          ),
+        ),
+      ),
+      child: SafeArea(
+        child: SizedBox(
+          height: 56,
+          child: Row(
+            children: [
+              if (onBack != null)
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new, color: TerminalClassicTokens.accent, size: 20),
+                  onPressed: onBack,
+                )
+              else
+                const SizedBox(width: TerminalClassicTokens.spaceMd),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TerminalClassicTokens.titleLarge.copyWith(
+                    color: TerminalClassicTokens.accent,
+                    letterSpacing: 2,
+                  ),
+                ),
+              ),
+              if (actions != null) ...actions!,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(56.0);
 }

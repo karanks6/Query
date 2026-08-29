@@ -151,6 +151,24 @@ class _GameplayHUD extends ConsumerWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (level.type == LevelType.debugging)
+                  Text(
+                    'DEBUGGING CHALLENGE',
+                    style: TerminalClassicTokens.bodySmall.copyWith(
+                      color: TerminalClassicTokens.error,
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                else if (level.type == LevelType.optimizationChallenge)
+                  Text(
+                    'OPTIMIZATION CHALLENGE',
+                    style: TerminalClassicTokens.bodySmall.copyWith(
+                      color: TerminalClassicTokens.warning,
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
               ],
             ),
           ),

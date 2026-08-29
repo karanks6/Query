@@ -5,6 +5,7 @@ import 'performance_validator.dart';
 import 'validation_result.dart';
 import '../sandbox_engine/level_schema.dart';
 import '../sandbox_engine/sandbox_engine.dart';
+import '../../data/content/models/level_model.dart';
 
 /// Orchestrates the 4-layer validation pipeline (Section 3.2).
 ///
@@ -47,6 +48,7 @@ class QueryValidator {
   /// [performanceActive] — true for World 3+
   /// [efficiencyThreshold] — 0.0–1.0 minimum for optimal star
   /// [isFirstAttempt] — for the first-attempt star
+  /// [levelType] — The type of the level being validated
   Future<QueryValidationReport> validate({
     required String sql,
     required LevelSchema schema,
@@ -57,7 +59,14 @@ class QueryValidator {
     bool performanceActive = false,
     double efficiencyThreshold = 0.8,
     bool isFirstAttempt = false,
+    LevelType levelType = LevelType.puzzle,
   }) async {
+    // Check for DML statements and wrap them to return a result set
+    String executionSql = sql;
+    final isDml = RegExp(r'^\s*(INSERT|UPDATE|DELETE)', caseSensitive: false).hasMatch(sql);
+    if (isDml && schema.tables.isNotEmpty) {
+      executionSql = '$sql; SELECT * FROM ${schema.tables.first.name};';
+    }
     // --- Layer 1: Syntax ---
     final syntaxResult = _syntaxValidator.validate(sql);
     if (!syntaxResult.passed) {
@@ -88,7 +97,7 @@ class QueryValidator {
 
     // --- Layers 3 & 4: Execute in sandbox ---
     return _sandboxEngine.executeInSandbox(
-      sql: sql,
+      sql: executionSql,
       schemaSql: schemaSql,
       seedSql: seedSql,
       onExecuted: (db, actualRows) {
@@ -104,17 +113,22 @@ class QueryValidator {
         if (performanceActive && resultResult.passed) {
           perfResult = _performanceValidator.validate(
             database: db,
-            sql: sql,
+            sql: sql, // use the original SQL for EXPLAIN QUERY PLAN
             efficiencyThreshold: efficiencyThreshold,
           );
         }
 
-        final resultPassed = resultResult.passed;
+        bool resultPassed = resultResult.passed;
         final perfPassed = perfResult?.passed ?? true;
+        
+        // For Optimization Challenges, performance is a hard requirement to pass the level
+        if (levelType == LevelType.optimizationChallenge && !perfPassed) {
+          resultPassed = false;
+        }
 
         // Star computation
         final completionStar = resultPassed;
-        final optimalStar = resultPassed && perfPassed;
+        final optimalStar = resultResult.passed && perfPassed;
         final firstAttemptStar = resultPassed && isFirstAttempt;
 
         return QueryValidationReport(

@@ -10,5 +10,6 @@ void main() {
       ),
     );
     expect(find.byType(ProviderScope), findsOneWidget);
+    await tester.pump(const Duration(seconds: 2)); // clear the Future.delayed in splash
   });
 }

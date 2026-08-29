@@ -2,6 +2,8 @@ import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/local/app_database.dart';
 import '../data/content/level_loader.dart';
+import 'sync/sync_service.dart';
+import 'sync/firebase_sync_service.dart';
 
 // ─── Database provider ────────────────────────────────────────────────────────
 
@@ -28,6 +30,17 @@ final attemptsDaoProvider = Provider((ref) {
 
 final achievementsDaoProvider = Provider((ref) {
   return ref.watch(appDatabaseProvider).achievementsDao;
+});
+
+// ─── Service providers ────────────────────────────────────────────────────────
+
+final syncServiceProvider = Provider<SyncService>((ref) {
+  final service = FirebaseSyncService(
+    progressDao: ref.watch(progressDaoProvider),
+    playerDao: ref.watch(playerDaoProvider),
+  );
+  service.initialize();
+  return service;
 });
 
 // ─── Content providers ────────────────────────────────────────────────────────
@@ -58,4 +71,11 @@ final worldProgressProvider =
   return (db.select(db.worldProgress)
         ..where((w) => w.worldId.equals(worldId)))
       .watchSingleOrNull();
+});
+
+// ─── Achievements stream ──────────────────────────────────────────────────────
+
+final allAchievementsProvider = StreamProvider((ref) {
+  final db = ref.watch(appDatabaseProvider);
+  return db.select(db.achievementsEarned).watch();
 });

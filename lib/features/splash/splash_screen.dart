@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,15 +44,24 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     _initializeApp();
   }
 
+  Timer? _tipTimer;
+
   void _startTipRotation() {
-    Future.doWhile(() async {
-      await Future.delayed(const Duration(seconds: 3));
-      if (!mounted) return false;
+    _tipTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
       setState(() {
         _tipIndex = (_tipIndex + 1) % _tips.length;
       });
-      return true;
     });
+  }
+
+  @override
+  void dispose() {
+    _tipTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _initializeApp() async {

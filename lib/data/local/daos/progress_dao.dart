@@ -25,6 +25,11 @@ class ProgressDao extends DatabaseAccessor<AppDatabase> with _$ProgressDaoMixin 
         .getSingleOrNull();
   }
 
+  /// Returns all level completions.
+  Future<List<LevelCompletion>> getAllLevelCompletions() {
+    return select(levelCompletions).get();
+  }
+
   /// Returns all completed level IDs for a world.
   Future<List<String>> getCompletedLevelIds(String worldId) async {
     final prefix = '${worldId}_';

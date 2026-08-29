@@ -96,8 +96,8 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
   void loadLevel(LevelModel level) {
     state = GameplayState(
       level: level,
-      // Tutorial levels start in Block Mode always
-      queryMode: level.type.isBlockModeOnly ? QueryMode.block : QueryMode.block,
+      queryMode: level.type.requiresCodeMode ? QueryMode.code : QueryMode.block,
+      currentQuery: level.brokenQuery ?? '',
       levelStartTime: DateTime.now(),
       schemaExpanded: true,
     );
