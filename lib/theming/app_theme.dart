@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'tokens/terminal_classic_tokens.dart';
+import 'tokens/cyberpunk_tokens.dart';
+import 'tokens/nature_tokens.dart';
+import 'tokens/space_tokens.dart';
+import 'tokens/medieval_tokens.dart';
 
 /// All available themes (Section 6.1).
 /// v1.0 ships Terminal/Classic. Others are unlocked in later phases.
@@ -42,9 +46,14 @@ final activeThemeDataProvider = Provider<ThemeData>((ref) {
   switch (theme) {
     case AppTheme.terminalClassic:
       return TerminalClassicTokens.themeData;
-    // Future themes return their own ThemeData
-    default:
-      return TerminalClassicTokens.themeData;
+    case AppTheme.cyberpunk:
+      return CyberpunkTokens.themeData;
+    case AppTheme.nature:
+      return NatureTokens.themeData;
+    case AppTheme.space:
+      return SpaceTokens.themeData;
+    case AppTheme.medieval:
+      return MedievalTokens.themeData;
   }
 });
 
@@ -52,8 +61,15 @@ final activeThemeDataProvider = Provider<ThemeData>((ref) {
 final activeTokensProvider = Provider<AppThemeTokens>((ref) {
   final theme = ref.watch(themeNotifierProvider);
   switch (theme) {
+    case AppTheme.cyberpunk:
+      return CyberpunkAppThemeTokens();
+    case AppTheme.nature:
+      return NatureAppThemeTokens();
+    case AppTheme.space:
+      return SpaceAppThemeTokens();
+    case AppTheme.medieval:
+      return MedievalAppThemeTokens();
     case AppTheme.terminalClassic:
-    default:
       return TerminalClassicAppThemeTokens();
   }
 });
@@ -88,4 +104,64 @@ class TerminalClassicAppThemeTokens implements AppThemeTokens {
   @override Color get accentGlow => TerminalClassicTokens.accentGlow;
   @override Duration get durationNormal => TerminalClassicTokens.durationNormal;
   @override Duration get durationFast => TerminalClassicTokens.durationFast;
+}
+
+class CyberpunkAppThemeTokens implements AppThemeTokens {
+  @override Color get background => CyberpunkTokens.background;
+  @override Color get surface => CyberpunkTokens.surface;
+  @override Color get surfaceVariant => CyberpunkTokens.surfaceVariant;
+  @override Color get primaryText => CyberpunkTokens.primaryText;
+  @override Color get secondaryText => CyberpunkTokens.secondaryText;
+  @override Color get accent => CyberpunkTokens.accent;
+  @override Color get success => CyberpunkTokens.success;
+  @override Color get error => CyberpunkTokens.error;
+  @override Color get warning => CyberpunkTokens.warning;
+  @override Color get accentGlow => CyberpunkTokens.accentGlow;
+  @override Duration get durationNormal => const Duration(milliseconds: 220);
+  @override Duration get durationFast => const Duration(milliseconds: 120);
+}
+
+class NatureAppThemeTokens implements AppThemeTokens {
+  @override Color get background => NatureTokens.background;
+  @override Color get surface => NatureTokens.surface;
+  @override Color get surfaceVariant => NatureTokens.surfaceVariant;
+  @override Color get primaryText => NatureTokens.primaryText;
+  @override Color get secondaryText => NatureTokens.secondaryText;
+  @override Color get accent => NatureTokens.accent;
+  @override Color get success => NatureTokens.success;
+  @override Color get error => NatureTokens.error;
+  @override Color get warning => NatureTokens.warning;
+  @override Color get accentGlow => NatureTokens.accentGlow;
+  @override Duration get durationNormal => const Duration(milliseconds: 220);
+  @override Duration get durationFast => const Duration(milliseconds: 120);
+}
+
+class SpaceAppThemeTokens implements AppThemeTokens {
+  @override Color get background => SpaceTokens.background;
+  @override Color get surface => SpaceTokens.surface;
+  @override Color get surfaceVariant => SpaceTokens.surfaceVariant;
+  @override Color get primaryText => SpaceTokens.primaryText;
+  @override Color get secondaryText => SpaceTokens.secondaryText;
+  @override Color get accent => SpaceTokens.accent;
+  @override Color get success => SpaceTokens.success;
+  @override Color get error => SpaceTokens.error;
+  @override Color get warning => SpaceTokens.warning;
+  @override Color get accentGlow => SpaceTokens.accentGlow;
+  @override Duration get durationNormal => const Duration(milliseconds: 220);
+  @override Duration get durationFast => const Duration(milliseconds: 120);
+}
+
+class MedievalAppThemeTokens implements AppThemeTokens {
+  @override Color get background => MedievalTokens.background;
+  @override Color get surface => MedievalTokens.surface;
+  @override Color get surfaceVariant => MedievalTokens.surfaceVariant;
+  @override Color get primaryText => MedievalTokens.primaryText;
+  @override Color get secondaryText => MedievalTokens.secondaryText;
+  @override Color get accent => MedievalTokens.accent;
+  @override Color get success => MedievalTokens.success;
+  @override Color get error => MedievalTokens.error;
+  @override Color get warning => MedievalTokens.warning;
+  @override Color get accentGlow => MedievalTokens.accentGlow;
+  @override Duration get durationNormal => const Duration(milliseconds: 220);
+  @override Duration get durationFast => const Duration(milliseconds: 120);
 }
