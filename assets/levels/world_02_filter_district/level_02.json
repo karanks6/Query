@@ -1,0 +1,165 @@
+﻿{
+    "id":  "world_02_level_02",
+    "world_id":  "world_02",
+    "level_number":  2,
+    "title":  "Unclaimed Items",
+    "narrative":  "List all items that have NOT been claimed yet. claimed = 0 means unclaimed.",
+    "type":  "puzzle",
+    "schema":  {
+                   "tables":  [
+                                  {
+                                      "name":  "items",
+                                      "columns":  [
+                                                      {
+                                                          "name":  "id",
+                                                          "type":  "INTEGER",
+                                                          "primary_key":  true
+                                                      },
+                                                      {
+                                                          "name":  "description",
+                                                          "type":  "TEXT",
+                                                          "not_null":  true
+                                                      },
+                                                      {
+                                                          "name":  "category",
+                                                          "type":  "TEXT"
+                                                      },
+                                                      {
+                                                          "name":  "found_date",
+                                                          "type":  "TEXT"
+                                                      },
+                                                      {
+                                                          "name":  "location",
+                                                          "type":  "TEXT"
+                                                      },
+                                                      {
+                                                          "name":  "claimed",
+                                                          "type":  "INTEGER"
+                                                      },
+                                                      {
+                                                          "name":  "claimant_name",
+                                                          "type":  "TEXT"
+                                                      }
+                                                  ]
+                                  }
+                              ]
+               },
+    "schema_sql":  "CREATE TABLE items (id INTEGER PRIMARY KEY, description TEXT NOT NULL, category TEXT, found_date TEXT, location TEXT, claimed INTEGER DEFAULT 0, claimant_name TEXT);",
+    "seed_sql":  "INSERT INTO items VALUES (1,\u0027Blue umbrella\u0027,\u0027Accessories\u0027,\u00272026-01-10\u0027,\u0027Central Station\u0027,1,\u0027Alice Wong\u0027),(2,\u0027Brown leather wallet\u0027,\u0027Accessories\u0027,\u00272026-01-12\u0027,\u0027Park East\u0027,0,NULL),(3,\u0027Red bicycle\u0027,\u0027Vehicles\u0027,\u00272026-01-15\u0027,\u0027Market Square\u0027,0,NULL),(4,\u0027Smartphone Samsung\u0027,\u0027Electronics\u0027,\u00272026-01-16\u0027,\u0027Library\u0027,1,\u0027Bob Mehta\u0027),(5,\u0027Keys (3 keys, keychain)\u0027,\u0027Keys\u0027,\u00272026-01-18\u0027,\u0027Coffee Alley\u0027,0,NULL),(6,\u0027Laptop bag\u0027,\u0027Bags\u0027,\u00272026-01-20\u0027,\u0027Bus Terminal\u0027,0,NULL),(7,\u0027Gold ring\u0027,\u0027Jewelry\u0027,\u00272026-01-21\u0027,\u0027River Walk\u0027,1,\u0027Carla Singh\u0027),(8,\u0027Child rain jacket\u0027,\u0027Clothing\u0027,\u00272026-01-22\u0027,\u0027School Street\u0027,0,NULL),(9,\u0027Glasses (reading)\u0027,\u0027Accessories\u0027,\u00272026-01-23\u0027,\u0027Hospital Lobby\u0027,0,NULL),(10,\u0027Tennis racket\u0027,\u0027Sports\u0027,\u00272026-01-25\u0027,\u0027Sports Center\u0027,1,\u0027Dave Lim\u0027),(11,\u0027iPad (cracked screen)\u0027,\u0027Electronics\u0027,\u00272026-01-26\u0027,\u0027Cafe Norte\u0027,0,NULL),(12,\u0027Purple scarf\u0027,\u0027Clothing\u0027,\u00272026-01-28\u0027,\u0027Museum\u0027,0,NULL),(13,\u0027House keys\u0027,\u0027Keys\u0027,\u00272026-02-01\u0027,\u0027Train Platform 3\u0027,0,NULL),(14,\u0027AirPods case\u0027,\u0027Electronics\u0027,\u00272026-02-02\u0027,\u0027Cinema Foyer\u0027,1,\u0027Eve Park\u0027),(15,\u0027Mountain bike\u0027,\u0027Vehicles\u0027,\u00272026-02-03\u0027,\u0027Riverside\u0027,0,NULL);",
+    "expected_result":  {
+                            "value":  [
+                                          {
+                                              "id":  2,
+                                              "description":  "Brown leather wallet",
+                                              "category":  "Accessories",
+                                              "found_date":  "2026-01-12",
+                                              "location":  "Park East",
+                                              "claimed":  0,
+                                              "claimant_name":  null
+                                          },
+                                          {
+                                              "id":  3,
+                                              "description":  "Red bicycle",
+                                              "category":  "Vehicles",
+                                              "found_date":  "2026-01-15",
+                                              "location":  "Market Square",
+                                              "claimed":  0,
+                                              "claimant_name":  null
+                                          },
+                                          {
+                                              "id":  5,
+                                              "description":  "Keys (3 keys, keychain)",
+                                              "category":  "Keys",
+                                              "found_date":  "2026-01-18",
+                                              "location":  "Coffee Alley",
+                                              "claimed":  0,
+                                              "claimant_name":  null
+                                          },
+                                          {
+                                              "id":  6,
+                                              "description":  "Laptop bag",
+                                              "category":  "Bags",
+                                              "found_date":  "2026-01-20",
+                                              "location":  "Bus Terminal",
+                                              "claimed":  0,
+                                              "claimant_name":  null
+                                          },
+                                          {
+                                              "id":  8,
+                                              "description":  "Child rain jacket",
+                                              "category":  "Clothing",
+                                              "found_date":  "2026-01-22",
+                                              "location":  "School Street",
+                                              "claimed":  0,
+                                              "claimant_name":  null
+                                          },
+                                          {
+                                              "id":  9,
+                                              "description":  "Glasses (reading)",
+                                              "category":  "Accessories",
+                                              "found_date":  "2026-01-23",
+                                              "location":  "Hospital Lobby",
+                                              "claimed":  0,
+                                              "claimant_name":  null
+                                          },
+                                          {
+                                              "id":  11,
+                                              "description":  "iPad (cracked screen)",
+                                              "category":  "Electronics",
+                                              "found_date":  "2026-01-26",
+                                              "location":  "Cafe Norte",
+                                              "claimed":  0,
+                                              "claimant_name":  null
+                                          },
+                                          {
+                                              "id":  12,
+                                              "description":  "Purple scarf",
+                                              "category":  "Clothing",
+                                              "found_date":  "2026-01-28",
+                                              "location":  "Museum",
+                                              "claimed":  0,
+                                              "claimant_name":  null
+                                          },
+                                          {
+                                              "id":  13,
+                                              "description":  "House keys",
+                                              "category":  "Keys",
+                                              "found_date":  "2026-02-01",
+                                              "location":  "Train Platform 3",
+                                              "claimed":  0,
+                                              "claimant_name":  null
+                                          },
+                                          {
+                                              "id":  15,
+                                              "description":  "Mountain bike",
+                                              "category":  "Vehicles",
+                                              "found_date":  "2026-02-03",
+                                              "location":  "Riverside",
+                                              "claimed":  0,
+                                              "claimant_name":  null
+                                          }
+                                      ],
+                            "Count":  10
+                        },
+    "order_sensitive":  false,
+    "performance_active":  false,
+    "efficiency_threshold":  0.5,
+    "xp_reward":  52,
+    "allowed_world_number":  2,
+    "hints":  [
+                  {
+                      "content":  "WHERE with a numeric comparison: WHERE claimed = 0",
+                      "tier":  "nudge"
+                  },
+                  {
+                      "content":  "Try: SELECT * FROM items WHERE claimed = 0",
+                      "code_snippet":  "SELECT * FROM items WHERE claimed = 0",
+                      "tier":  "partial_reveal"
+                  },
+                  {
+                      "content":  "The solution is:",
+                      "code_snippet":  "SELECT * FROM items WHERE claimed = 0",
+                      "tier":  "full_solution"
+                  }
+              ]
+}

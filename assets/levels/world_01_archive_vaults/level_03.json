@@ -1,0 +1,112 @@
+﻿{
+    "id":  "world_01_level_03",
+    "world_id":  "world_01",
+    "level_number":  3,
+    "title":  "Alias This",
+    "narrative":  "The printout needs readable headers. Rename title to Album and artist to Artist.",
+    "type":  "puzzle",
+    "schema":  {
+                   "tables":  [
+                                  {
+                                      "name":  "catalog",
+                                      "columns":  [
+                                                      {
+                                                          "name":  "id",
+                                                          "type":  "INTEGER",
+                                                          "primary_key":  true
+                                                      },
+                                                      {
+                                                          "name":  "title",
+                                                          "type":  "TEXT",
+                                                          "not_null":  true
+                                                      },
+                                                      {
+                                                          "name":  "artist",
+                                                          "type":  "TEXT",
+                                                          "not_null":  true
+                                                      },
+                                                      {
+                                                          "name":  "genre",
+                                                          "type":  "TEXT"
+                                                      },
+                                                      {
+                                                          "name":  "year",
+                                                          "type":  "INTEGER"
+                                                      },
+                                                      {
+                                                          "name":  "price",
+                                                          "type":  "REAL"
+                                                      }
+                                                  ]
+                                  }
+                              ]
+               },
+    "schema_sql":  "CREATE TABLE catalog (id INTEGER PRIMARY KEY, title TEXT NOT NULL, artist TEXT NOT NULL, genre TEXT, year INTEGER, price REAL);",
+    "seed_sql":  "INSERT INTO catalog VALUES (1,\u0027Kind of Blue\u0027,\u0027Miles Davis\u0027,\u0027Jazz\u0027,1959,24.99),(2,\u0027Thriller\u0027,\u0027Michael Jackson\u0027,\u0027Pop\u0027,1982,19.99),(3,\u0027Led Zeppelin IV\u0027,\u0027Led Zeppelin\u0027,\u0027Rock\u0027,1971,22.50),(4,\u0027Purple Rain\u0027,\u0027Prince\u0027,\u0027Funk\u0027,1984,18.99),(5,\u0027Nevermind\u0027,\u0027Nirvana\u0027,\u0027Rock\u0027,1991,21.00),(6,\u0027Dark Side of the Moon\u0027,\u0027Pink Floyd\u0027,\u0027Rock\u0027,1973,25.99),(7,\u0027Born to Run\u0027,\u0027Bruce Springsteen\u0027,\u0027Rock\u0027,1975,20.00),(8,\u0027Rumours\u0027,\u0027Fleetwood Mac\u0027,\u0027Pop\u0027,1977,21.99),(9,\u0027Blue\u0027,\u0027Joni Mitchell\u0027,\u0027Folk\u0027,1971,19.50),(10,\u0027Whats Going On\u0027,\u0027Marvin Gaye\u0027,\u0027Soul\u0027,1971,22.00);",
+    "expected_result":  {
+                            "value":  [
+                                          {
+                                              "Album":  "Kind of Blue",
+                                              "Artist":  "Miles Davis"
+                                          },
+                                          {
+                                              "Album":  "Thriller",
+                                              "Artist":  "Michael Jackson"
+                                          },
+                                          {
+                                              "Album":  "Led Zeppelin IV",
+                                              "Artist":  "Led Zeppelin"
+                                          },
+                                          {
+                                              "Album":  "Purple Rain",
+                                              "Artist":  "Prince"
+                                          },
+                                          {
+                                              "Album":  "Nevermind",
+                                              "Artist":  "Nirvana"
+                                          },
+                                          {
+                                              "Album":  "Dark Side of the Moon",
+                                              "Artist":  "Pink Floyd"
+                                          },
+                                          {
+                                              "Album":  "Born to Run",
+                                              "Artist":  "Bruce Springsteen"
+                                          },
+                                          {
+                                              "Album":  "Rumours",
+                                              "Artist":  "Fleetwood Mac"
+                                          },
+                                          {
+                                              "Album":  "Blue",
+                                              "Artist":  "Joni Mitchell"
+                                          },
+                                          {
+                                              "Album":  "Whats Going On",
+                                              "Artist":  "Marvin Gaye"
+                                          }
+                                      ],
+                            "Count":  10
+                        },
+    "order_sensitive":  false,
+    "performance_active":  false,
+    "efficiency_threshold":  0.5,
+    "xp_reward":  45,
+    "allowed_world_number":  1,
+    "hints":  [
+                  {
+                      "content":  "Use AS to rename a column: SELECT col AS new_name FROM table",
+                      "tier":  "nudge"
+                  },
+                  {
+                      "content":  "Try: SELECT title AS Album, artist AS Artist FROM catalog",
+                      "code_snippet":  "SELECT title AS Album, artist AS Artist FROM catalog",
+                      "tier":  "partial_reveal"
+                  },
+                  {
+                      "content":  "The solution is:",
+                      "code_snippet":  "SELECT title AS Album, artist AS Artist FROM catalog",
+                      "tier":  "full_solution"
+                  }
+              ]
+}

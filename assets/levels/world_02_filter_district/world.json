@@ -1,0 +1,11 @@
+﻿{
+  "id": "world_02",
+  "number": 2,
+  "title": "Filter District",
+  "case_file": "Case #002 -- The Missing Registry",
+  "client_name": "City Lost and Found Bureau",
+  "narrative_intro": "The city lost-and-found registry has hundreds of items. Claimants cannot find their belongings. Use WHERE, ORDER BY, and NULL-handling to cut through the noise.",
+  "core_sql_concept": "WHERE, comparison operators, logical operators, ORDER BY, NULL handling",
+  "total_levels": 16,
+  "unlock_theme_id": "terminal_classic"
+}

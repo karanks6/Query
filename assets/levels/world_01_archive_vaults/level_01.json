@@ -1,0 +1,44 @@
+{
+  "id": "world_01_level_01",
+  "world_id": "world_01",
+  "level_number": 1,
+  "title": "Your First Query",
+  "narrative": "The manager says the catalog table exists but he can't see anything in it. Let's start simple — retrieve ALL records from the catalog.",
+  "type": "tutorial",
+  "schema": {
+    "tables": [
+      {
+        "name": "catalog",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "primary_key": true },
+          { "name": "title", "type": "TEXT", "not_null": true },
+          { "name": "artist", "type": "TEXT", "not_null": true },
+          { "name": "genre", "type": "TEXT" },
+          { "name": "year", "type": "INTEGER" },
+          { "name": "price", "type": "REAL" }
+        ]
+      }
+    ]
+  },
+  "schema_sql": "CREATE TABLE catalog (id INTEGER PRIMARY KEY, title TEXT NOT NULL, artist TEXT NOT NULL, genre TEXT, year INTEGER, price REAL);",
+  "seed_sql": "INSERT INTO catalog VALUES (1, 'Kind of Blue', 'Miles Davis', 'Jazz', 1959, 24.99); INSERT INTO catalog VALUES (2, 'Thriller', 'Michael Jackson', 'Pop', 1982, 19.99); INSERT INTO catalog VALUES (3, 'Led Zeppelin IV', 'Led Zeppelin', 'Rock', 1971, 22.50); INSERT INTO catalog VALUES (4, 'Purple Rain', 'Prince', 'Funk', 1984, 18.99); INSERT INTO catalog VALUES (5, 'Nevermind', 'Nirvana', 'Rock', 1991, 21.00);",
+  "expected_result": [
+    { "id": 1, "title": "Kind of Blue", "artist": "Miles Davis", "genre": "Jazz", "year": 1959, "price": 24.99 },
+    { "id": 2, "title": "Thriller", "artist": "Michael Jackson", "genre": "Pop", "year": 1982, "price": 19.99 },
+    { "id": 3, "title": "Led Zeppelin IV", "artist": "Led Zeppelin", "genre": "Rock", "year": 1971, "price": 22.50 },
+    { "id": 4, "title": "Purple Rain", "artist": "Prince", "genre": "Funk", "year": 1984, "price": 18.99 },
+    { "id": 5, "title": "Nevermind", "artist": "Nirvana", "genre": "Rock", "year": 1991, "price": 21.00 }
+  ],
+  "order_sensitive": false,
+  "performance_active": false,
+  "efficiency_threshold": 0.5,
+  "concept_card_id": "select_from_basics",
+  "xp_reward": 30,
+  "allowed_world_number": 1,
+  "guided_answer": "SELECT * FROM catalog",
+  "hints": [
+    { "tier": "nudge", "content": "To get all columns from a table, use SELECT followed by * (which means 'all columns'), then FROM, then the table name." },
+    { "tier": "partial_reveal", "content": "Start with: SELECT * FROM ...", "code_snippet": "SELECT * FROM catalog" },
+    { "tier": "full_solution", "content": "The full query is:", "code_snippet": "SELECT * FROM catalog" }
+  ]
+}

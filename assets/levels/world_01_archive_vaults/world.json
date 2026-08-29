@@ -1,0 +1,11 @@
+{
+  "id": "world_01",
+  "number": 1,
+  "title": "The Archive Vaults",
+  "case_file": "Case #001 — The Scrambled Inventory",
+  "client_name": "Groove & Vinyl Records",
+  "narrative_intro": "A record store's inventory has been scrambled by The Corruptor. The manager can't find anything. Your job: interrogate the data and restore order to the catalog.",
+  "core_sql_concept": "SELECT, FROM, column aliasing, LIMIT, DISTINCT",
+  "total_levels": 15,
+  "unlock_theme_id": "terminal_classic"
+}

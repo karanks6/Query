@@ -1,0 +1,78 @@
+﻿{
+    "id":  "world_02_level_13",
+    "world_id":  "world_02",
+    "level_number":  13,
+    "title":  "Count Unclaimed",
+    "narrative":  "How many items are still unclaimed?",
+    "type":  "puzzle",
+    "schema":  {
+                   "tables":  [
+                                  {
+                                      "name":  "items",
+                                      "columns":  [
+                                                      {
+                                                          "name":  "id",
+                                                          "type":  "INTEGER",
+                                                          "primary_key":  true
+                                                      },
+                                                      {
+                                                          "name":  "description",
+                                                          "type":  "TEXT",
+                                                          "not_null":  true
+                                                      },
+                                                      {
+                                                          "name":  "category",
+                                                          "type":  "TEXT"
+                                                      },
+                                                      {
+                                                          "name":  "found_date",
+                                                          "type":  "TEXT"
+                                                      },
+                                                      {
+                                                          "name":  "location",
+                                                          "type":  "TEXT"
+                                                      },
+                                                      {
+                                                          "name":  "claimed",
+                                                          "type":  "INTEGER"
+                                                      },
+                                                      {
+                                                          "name":  "claimant_name",
+                                                          "type":  "TEXT"
+                                                      }
+                                                  ]
+                                  }
+                              ]
+               },
+    "schema_sql":  "CREATE TABLE items (id INTEGER PRIMARY KEY, description TEXT NOT NULL, category TEXT, found_date TEXT, location TEXT, claimed INTEGER DEFAULT 0, claimant_name TEXT);",
+    "seed_sql":  "INSERT INTO items VALUES (1,\u0027Blue umbrella\u0027,\u0027Accessories\u0027,\u00272026-01-10\u0027,\u0027Central Station\u0027,1,\u0027Alice Wong\u0027),(2,\u0027Brown leather wallet\u0027,\u0027Accessories\u0027,\u00272026-01-12\u0027,\u0027Park East\u0027,0,NULL),(3,\u0027Red bicycle\u0027,\u0027Vehicles\u0027,\u00272026-01-15\u0027,\u0027Market Square\u0027,0,NULL),(4,\u0027Smartphone Samsung\u0027,\u0027Electronics\u0027,\u00272026-01-16\u0027,\u0027Library\u0027,1,\u0027Bob Mehta\u0027),(5,\u0027Keys (3 keys, keychain)\u0027,\u0027Keys\u0027,\u00272026-01-18\u0027,\u0027Coffee Alley\u0027,0,NULL),(6,\u0027Laptop bag\u0027,\u0027Bags\u0027,\u00272026-01-20\u0027,\u0027Bus Terminal\u0027,0,NULL),(7,\u0027Gold ring\u0027,\u0027Jewelry\u0027,\u00272026-01-21\u0027,\u0027River Walk\u0027,1,\u0027Carla Singh\u0027),(8,\u0027Child rain jacket\u0027,\u0027Clothing\u0027,\u00272026-01-22\u0027,\u0027School Street\u0027,0,NULL),(9,\u0027Glasses (reading)\u0027,\u0027Accessories\u0027,\u00272026-01-23\u0027,\u0027Hospital Lobby\u0027,0,NULL),(10,\u0027Tennis racket\u0027,\u0027Sports\u0027,\u00272026-01-25\u0027,\u0027Sports Center\u0027,1,\u0027Dave Lim\u0027),(11,\u0027iPad (cracked screen)\u0027,\u0027Electronics\u0027,\u00272026-01-26\u0027,\u0027Cafe Norte\u0027,0,NULL),(12,\u0027Purple scarf\u0027,\u0027Clothing\u0027,\u00272026-01-28\u0027,\u0027Museum\u0027,0,NULL),(13,\u0027House keys\u0027,\u0027Keys\u0027,\u00272026-02-01\u0027,\u0027Train Platform 3\u0027,0,NULL),(14,\u0027AirPods case\u0027,\u0027Electronics\u0027,\u00272026-02-02\u0027,\u0027Cinema Foyer\u0027,1,\u0027Eve Park\u0027),(15,\u0027Mountain bike\u0027,\u0027Vehicles\u0027,\u00272026-02-03\u0027,\u0027Riverside\u0027,0,NULL);",
+    "expected_result":  {
+                            "value":  [
+                                          {
+                                              "unclaimed_count":  10
+                                          }
+                                      ],
+                            "Count":  1
+                        },
+    "order_sensitive":  false,
+    "performance_active":  false,
+    "efficiency_threshold":  0.5,
+    "xp_reward":  118,
+    "allowed_world_number":  2,
+    "hints":  [
+                  {
+                      "content":  "Combine WHERE with COUNT(*) to count filtered rows.",
+                      "tier":  "nudge"
+                  },
+                  {
+                      "content":  "Try: SELECT COUNT(*) AS unclaimed_count FROM items WHERE claimed = 0",
+                      "code_snippet":  "SELECT COUNT(*) AS unclaimed_count FROM items WHERE claimed = 0",
+                      "tier":  "partial_reveal"
+                  },
+                  {
+                      "content":  "The solution is:",
+                      "code_snippet":  "SELECT COUNT(*) AS unclaimed_count FROM items WHERE claimed = 0",
+                      "tier":  "full_solution"
+                  }
+              ]
+}

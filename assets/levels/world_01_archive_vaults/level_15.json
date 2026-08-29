@@ -1,0 +1,152 @@
+﻿{
+    "id":  "world_01_level_15",
+    "world_id":  "world_01",
+    "level_number":  15,
+    "title":  "Case Closed -- The Full Report",
+    "narrative":  "The manager needs a complete inventory: all columns, all rows. Write the final query and close the case.",
+    "type":  "boss",
+    "schema":  {
+                   "tables":  [
+                                  {
+                                      "name":  "catalog",
+                                      "columns":  [
+                                                      {
+                                                          "name":  "id",
+                                                          "type":  "INTEGER",
+                                                          "primary_key":  true
+                                                      },
+                                                      {
+                                                          "name":  "title",
+                                                          "type":  "TEXT",
+                                                          "not_null":  true
+                                                      },
+                                                      {
+                                                          "name":  "artist",
+                                                          "type":  "TEXT",
+                                                          "not_null":  true
+                                                      },
+                                                      {
+                                                          "name":  "genre",
+                                                          "type":  "TEXT"
+                                                      },
+                                                      {
+                                                          "name":  "year",
+                                                          "type":  "INTEGER"
+                                                      },
+                                                      {
+                                                          "name":  "price",
+                                                          "type":  "REAL"
+                                                      }
+                                                  ]
+                                  }
+                              ]
+               },
+    "schema_sql":  "CREATE TABLE catalog (id INTEGER PRIMARY KEY, title TEXT NOT NULL, artist TEXT NOT NULL, genre TEXT, year INTEGER, price REAL);",
+    "seed_sql":  "INSERT INTO catalog VALUES (1,\u0027Kind of Blue\u0027,\u0027Miles Davis\u0027,\u0027Jazz\u0027,1959,24.99),(2,\u0027Thriller\u0027,\u0027Michael Jackson\u0027,\u0027Pop\u0027,1982,19.99),(3,\u0027Led Zeppelin IV\u0027,\u0027Led Zeppelin\u0027,\u0027Rock\u0027,1971,22.50),(4,\u0027Purple Rain\u0027,\u0027Prince\u0027,\u0027Funk\u0027,1984,18.99),(5,\u0027Nevermind\u0027,\u0027Nirvana\u0027,\u0027Rock\u0027,1991,21.00),(6,\u0027Dark Side of the Moon\u0027,\u0027Pink Floyd\u0027,\u0027Rock\u0027,1973,25.99),(7,\u0027Born to Run\u0027,\u0027Bruce Springsteen\u0027,\u0027Rock\u0027,1975,20.00),(8,\u0027Rumours\u0027,\u0027Fleetwood Mac\u0027,\u0027Pop\u0027,1977,21.99),(9,\u0027Blue\u0027,\u0027Joni Mitchell\u0027,\u0027Folk\u0027,1971,19.50),(10,\u0027Whats Going On\u0027,\u0027Marvin Gaye\u0027,\u0027Soul\u0027,1971,22.00);",
+    "expected_result":  {
+                            "value":  [
+                                          {
+                                              "id":  1,
+                                              "title":  "Kind of Blue",
+                                              "artist":  "Miles Davis",
+                                              "genre":  "Jazz",
+                                              "year":  1959,
+                                              "price":  24.99
+                                          },
+                                          {
+                                              "id":  2,
+                                              "title":  "Thriller",
+                                              "artist":  "Michael Jackson",
+                                              "genre":  "Pop",
+                                              "year":  1982,
+                                              "price":  19.99
+                                          },
+                                          {
+                                              "id":  3,
+                                              "title":  "Led Zeppelin IV",
+                                              "artist":  "Led Zeppelin",
+                                              "genre":  "Rock",
+                                              "year":  1971,
+                                              "price":  22.50
+                                          },
+                                          {
+                                              "id":  4,
+                                              "title":  "Purple Rain",
+                                              "artist":  "Prince",
+                                              "genre":  "Funk",
+                                              "year":  1984,
+                                              "price":  18.99
+                                          },
+                                          {
+                                              "id":  5,
+                                              "title":  "Nevermind",
+                                              "artist":  "Nirvana",
+                                              "genre":  "Rock",
+                                              "year":  1991,
+                                              "price":  21.00
+                                          },
+                                          {
+                                              "id":  6,
+                                              "title":  "Dark Side of the Moon",
+                                              "artist":  "Pink Floyd",
+                                              "genre":  "Rock",
+                                              "year":  1973,
+                                              "price":  25.99
+                                          },
+                                          {
+                                              "id":  7,
+                                              "title":  "Born to Run",
+                                              "artist":  "Bruce Springsteen",
+                                              "genre":  "Rock",
+                                              "year":  1975,
+                                              "price":  20.00
+                                          },
+                                          {
+                                              "id":  8,
+                                              "title":  "Rumours",
+                                              "artist":  "Fleetwood Mac",
+                                              "genre":  "Pop",
+                                              "year":  1977,
+                                              "price":  21.99
+                                          },
+                                          {
+                                              "id":  9,
+                                              "title":  "Blue",
+                                              "artist":  "Joni Mitchell",
+                                              "genre":  "Folk",
+                                              "year":  1971,
+                                              "price":  19.50
+                                          },
+                                          {
+                                              "id":  10,
+                                              "title":  "Whats Going On",
+                                              "artist":  "Marvin Gaye",
+                                              "genre":  "Soul",
+                                              "year":  1971,
+                                              "price":  22.00
+                                          }
+                                      ],
+                            "Count":  10
+                        },
+    "order_sensitive":  false,
+    "performance_active":  false,
+    "efficiency_threshold":  0.5,
+    "xp_reward":  105,
+    "allowed_world_number":  1,
+    "hints":  [
+                  {
+                      "content":  "All columns, all rows. The simplest query of all.",
+                      "tier":  "nudge"
+                  },
+                  {
+                      "content":  "Try: SELECT * FROM catalog",
+                      "code_snippet":  "SELECT * FROM catalog",
+                      "tier":  "partial_reveal"
+                  },
+                  {
+                      "content":  "The solution is:",
+                      "code_snippet":  "SELECT * FROM catalog",
+                      "tier":  "full_solution"
+                  }
+              ]
+}
