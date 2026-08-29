@@ -1,0 +1,11 @@
+{
+  "id": "world_10",
+  "number": 10,
+  "title": "The Grand Archive",
+  "case_file": "The Bureau's own case archive",
+  "client_name": "The Query Bureau",
+  "narrative_intro": "The final confrontation with The Corruptor.",
+  "core_sql_concept": "Mixed mastery",
+  "total_levels": 2,
+  "unlock_theme_id": "medieval"
+}

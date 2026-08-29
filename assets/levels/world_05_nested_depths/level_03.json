@@ -1,0 +1,127 @@
+{
+  "id": "world_05_level_03",
+  "world_id": "world_05",
+  "level_number": 3,
+  "title": "Correlated Subqueries",
+  "narrative": "Find students with the highest GPA in their respective majors.",
+  "type": "puzzle",
+  "schema": {
+    "tables": [
+      {
+        "name": "students",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "major",
+            "type": "TEXT",
+            "nullable": true
+          },
+          {
+            "name": "gpa",
+            "type": "REAL",
+            "nullable": false
+          }
+        ]
+      },
+      {
+        "name": "courses",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "title",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "credits",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "department",
+            "type": "TEXT",
+            "nullable": false
+          }
+        ]
+      },
+      {
+        "name": "enrollments",
+        "columns": [
+          {
+            "name": "student_id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "course_id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "grade",
+            "type": "TEXT",
+            "nullable": true
+          }
+        ]
+      }
+    ]
+  },
+  "schema_sql": "CREATE TABLE students (id INTEGER PRIMARY KEY, name TEXT NOT NULL, major TEXT, gpa REAL NOT NULL); CREATE TABLE courses (id INTEGER PRIMARY KEY, title TEXT NOT NULL, credits INTEGER NOT NULL, department TEXT NOT NULL); CREATE TABLE enrollments (student_id INTEGER NOT NULL, course_id INTEGER NOT NULL, grade TEXT);",
+  "seed_sql": "INSERT INTO students VALUES (1,'Alice','CS',3.9),(2,'Bob','Math',3.2),(3,'Charlie','CS',2.8),(4,'Diana','Physics',3.7),(5,'Eve',NULL,3.5); INSERT INTO courses VALUES (101,'Intro to CS',4,'CS'),(102,'Calculus I',4,'Math'),(103,'Physics I',4,'Physics'),(104,'Advanced CS',3,'CS'); INSERT INTO enrollments VALUES (1,101,'A'),(1,102,'A'),(2,102,'B'),(3,101,'C'),(4,103,'A'),(4,102,'A'),(1,104,NULL);",
+  "expected_result": [
+    {
+      "name": "Alice",
+      "major": "CS",
+      "gpa": 3.9
+    },
+    {
+      "name": "Bob",
+      "major": "Math",
+      "gpa": 3.2
+    },
+    {
+      "name": "Diana",
+      "major": "Physics",
+      "gpa": 3.7
+    },
+    {
+      "name": "Eve",
+      "major": null,
+      "gpa": 3.5
+    }
+  ],
+  "order_sensitive": false,
+  "performance_active": true,
+  "efficiency_threshold": 0.8,
+  "hints": [
+    {
+      "tier": "nudge",
+      "content": "A correlated subquery references columns from the outer query."
+    },
+    {
+      "tier": "partial_reveal",
+      "content": "Think about the condition.",
+      "code_snippet": "WHERE ..."
+    },
+    {
+      "tier": "full_solution",
+      "content": "Here is the answer:",
+      "code_snippet": "SELECT name, major, gpa FROM students s1 WHERE gpa = (SELECT MAX(gpa) FROM students s2 WHERE s1.major = s2.major OR (s1.major IS NULL AND s2.major IS NULL));"
+    }
+  ],
+  "xp_reward": 50,
+  "allowed_world_number": 5
+}

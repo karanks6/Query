@@ -1,0 +1,39 @@
+{
+  "id": "world_03_level_11",
+  "worldNumber": 3,
+  "allowedWorldNumber": 3,
+  "levelNumber": 11,
+  "title": "WHERE Before GROUP BY",
+  "flavorText": "WHERE runs before GROUP BY — it narrows down which rows participate in each group. HAVING runs after.",
+  "narrative": "Count products per category, but only consider products priced above 20. This filters rows first, then groups.",
+  "schema": {
+    "tables": [
+      {
+        "name": "products",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "nullable": false },
+          { "name": "name", "type": "TEXT", "nullable": false },
+          { "name": "category", "type": "TEXT", "nullable": false },
+          { "name": "price", "type": "REAL", "nullable": false },
+          { "name": "stock", "type": "INTEGER", "nullable": false }
+        ]
+      }
+    ]
+  },
+  "schemaSql": "CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT NOT NULL, category TEXT NOT NULL, price REAL NOT NULL, stock INTEGER NOT NULL);",
+  "seedSql": "INSERT INTO products VALUES (1,'Datapad','Electronics',299.99,45),(2,'Power Cell','Electronics',19.99,200),(3,'Steel Cable','Hardware',8.50,500),(4,'Logic Board','Electronics',89.99,30),(5,'Ceramic Fuse','Hardware',2.25,1000),(6,'Optic Lens','Optics',149.99,15),(7,'Servo Motor','Robotics',55.00,80),(8,'Pressure Valve','Hardware',12.75,300);",
+  "task": "Count products per category where price > 20. Order by category alphabetically.",
+  "expectedResult": [
+    { "category": "Electronics", "product_count": 2 },
+    { "category": "Optics", "product_count": 1 },
+    { "category": "Robotics", "product_count": 1 }
+  ],
+  "orderSensitive": true,
+  "performanceActive": false,
+  "efficiencyThreshold": 0.8,
+  "hints": [
+    { "tier": 1, "text": "Add WHERE price > 20 before GROUP BY to filter rows before grouping." },
+    { "tier": 2, "text": "SELECT category, COUNT(*) AS product_count FROM products WHERE price > 20 GROUP BY category ORDER BY category;" },
+    { "tier": 3, "text": "SELECT category, COUNT(*) AS product_count FROM products WHERE price > 20 GROUP BY category ORDER BY category;" }
+  ]
+}

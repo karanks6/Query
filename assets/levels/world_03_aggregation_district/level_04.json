@@ -1,0 +1,35 @@
+{
+  "id": "world_03_level_04",
+  "worldNumber": 3,
+  "allowedWorldNumber": 3,
+  "levelNumber": 4,
+  "title": "Most Expensive Item",
+  "flavorText": "MAX() finds the largest value. MIN() finds the smallest. Both ignore NULL values automatically.",
+  "narrative": "Find the highest-priced single product in the warehouse.",
+  "schema": {
+    "tables": [
+      {
+        "name": "products",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "nullable": false },
+          { "name": "name", "type": "TEXT", "nullable": false },
+          { "name": "category", "type": "TEXT", "nullable": false },
+          { "name": "price", "type": "REAL", "nullable": false },
+          { "name": "stock", "type": "INTEGER", "nullable": false }
+        ]
+      }
+    ]
+  },
+  "schemaSql": "CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT NOT NULL, category TEXT NOT NULL, price REAL NOT NULL, stock INTEGER NOT NULL);",
+  "seedSql": "INSERT INTO products VALUES (1,'Datapad','Electronics',299.99,45),(2,'Power Cell','Electronics',19.99,200),(3,'Steel Cable','Hardware',8.50,500),(4,'Logic Board','Electronics',89.99,30),(5,'Ceramic Fuse','Hardware',2.25,1000),(6,'Optic Lens','Optics',149.99,15),(7,'Servo Motor','Robotics',55.00,80),(8,'Pressure Valve','Hardware',12.75,300);",
+  "task": "Find the maximum (highest) price among all products.",
+  "expectedResult": [{ "max_price": 299.99 }],
+  "orderSensitive": false,
+  "performanceActive": false,
+  "efficiencyThreshold": 0.8,
+  "hints": [
+    { "tier": 1, "text": "MAX(column) returns the largest value in a column." },
+    { "tier": 2, "text": "SELECT MAX(price) FROM products; — alias it as max_price." },
+    { "tier": 3, "text": "SELECT MAX(price) AS max_price FROM products;" }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "world_05",
+  "number": 5,
+  "title": "The Nested Depths",
+  "case_file": "University Enrollment Subqueries",
+  "client_name": "A university's enrollment records",
+  "narrative_intro": "Subqueries allow you to answer questions in multiple steps.",
+  "core_sql_concept": "Subqueries, EXISTS, IN, ANY/ALL",
+  "total_levels": 6,
+  "unlock_theme_id": "terminal_classic"
+}

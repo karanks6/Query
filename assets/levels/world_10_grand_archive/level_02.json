@@ -1,0 +1,100 @@
+{
+  "id": "world_10_level_02",
+  "world_id": "world_10",
+  "level_number": 2,
+  "title": "Case Closed",
+  "narrative": "You found him! Now close the open case.",
+  "type": "boss",
+  "schema": {
+    "tables": [
+      {
+        "name": "case_files",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "title",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "status",
+            "type": "TEXT",
+            "nullable": false
+          }
+        ]
+      },
+      {
+        "name": "detectives",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "rank",
+            "type": "TEXT",
+            "nullable": false
+          }
+        ]
+      },
+      {
+        "name": "assignments",
+        "columns": [
+          {
+            "name": "case_id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "detective_id",
+            "type": "INTEGER",
+            "nullable": false
+          }
+        ]
+      }
+    ]
+  },
+  "schema_sql": "CREATE TABLE case_files (id INTEGER PRIMARY KEY, title TEXT NOT NULL, status TEXT NOT NULL); CREATE TABLE detectives (id INTEGER PRIMARY KEY, name TEXT NOT NULL, rank TEXT NOT NULL); CREATE TABLE assignments (case_id INTEGER NOT NULL, detective_id INTEGER NOT NULL);",
+  "seed_sql": "INSERT INTO case_files VALUES (1, 'The Missing Row', 'Closed'), (2, 'The Infinite Loop', 'Open'); INSERT INTO detectives VALUES (1, 'Ada', 'Chief'), (2, 'Player', 'Field Det'); INSERT INTO assignments VALUES (1, 1), (2, 2);",
+  "expected_result": [
+    {
+      "id": 1,
+      "title": "The Missing Row",
+      "status": "Closed"
+    },
+    {
+      "id": 2,
+      "title": "The Infinite Loop",
+      "status": "Closed"
+    }
+  ],
+  "order_sensitive": false,
+  "performance_active": true,
+  "hints": [
+    {
+      "tier": "nudge",
+      "content": "Update the database to close the case."
+    },
+    {
+      "tier": "partial_reveal",
+      "content": "You are on your own for the final boss!"
+    },
+    {
+      "tier": "full_solution",
+      "content": "Here is the answer:",
+      "code_snippet": "UPDATE case_files SET status = 'Closed' WHERE title = 'The Infinite Loop';"
+    }
+  ],
+  "xp_reward": 500,
+  "allowed_world_number": 10
+}

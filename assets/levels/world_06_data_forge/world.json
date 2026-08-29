@@ -1,0 +1,11 @@
+{
+  "id": "world_06",
+  "number": 6,
+  "title": "Data Forge",
+  "case_file": "Warehouse Inventory",
+  "client_name": "A warehouse inventory system",
+  "narrative_intro": "DML allows you to alter the database state. Be careful!",
+  "core_sql_concept": "INSERT, UPDATE, DELETE",
+  "total_levels": 5,
+  "unlock_theme_id": "terminal_classic"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "world_08",
+  "number": 8,
+  "title": "The Function Foundry",
+  "case_file": "A sports league's season stats",
+  "client_name": "Pro Sports League",
+  "narrative_intro": "Time to level up with Window Functions and CTEs.",
+  "core_sql_concept": "Window functions, CTEs",
+  "total_levels": 3,
+  "unlock_theme_id": "space"
+}

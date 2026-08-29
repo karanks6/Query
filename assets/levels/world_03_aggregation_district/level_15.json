@@ -1,0 +1,44 @@
+{
+  "id": "world_03_level_15",
+  "worldNumber": 3,
+  "allowedWorldNumber": 3,
+  "levelNumber": 15,
+  "title": "GROUP BY Two Columns",
+  "flavorText": "GROUP BY can group on multiple columns simultaneously — creating a combination key for each unique pair.",
+  "narrative": "Break down sales by both month AND category to get a two-dimensional view of the ledger.",
+  "schema": {
+    "tables": [
+      {
+        "name": "sales",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "nullable": false },
+          { "name": "month", "type": "TEXT", "nullable": false },
+          { "name": "product", "type": "TEXT", "nullable": false },
+          { "name": "category", "type": "TEXT", "nullable": false },
+          { "name": "quantity", "type": "INTEGER", "nullable": false },
+          { "name": "amount", "type": "REAL", "nullable": false }
+        ]
+      }
+    ]
+  },
+  "schemaSql": "CREATE TABLE sales (id INTEGER PRIMARY KEY, month TEXT NOT NULL, product TEXT NOT NULL, category TEXT NOT NULL, quantity INTEGER NOT NULL, amount REAL NOT NULL);",
+  "seedSql": "INSERT INTO sales VALUES (1,'Jan','Datapad','Electronics',3,899.97),(2,'Jan','Power Cell','Electronics',10,199.90),(3,'Feb','Datapad','Electronics',5,1499.95),(4,'Feb','Logic Board','Electronics',2,179.98),(5,'Mar','Optic Lens','Optics',1,149.99),(6,'Mar','Servo Motor','Robotics',4,220.00),(7,'Mar','Datapad','Electronics',2,599.98),(8,'Apr','Power Cell','Electronics',20,399.80),(9,'Apr','Logic Board','Electronics',5,449.95),(10,'Apr','Steel Cable','Hardware',50,425.00);",
+  "task": "Show total sales per month and category combination. Order by month, then category alphabetically.",
+  "expectedResult": [
+    { "month": "Apr", "category": "Electronics", "total": 849.75 },
+    { "month": "Apr", "category": "Hardware", "total": 425.0 },
+    { "month": "Feb", "category": "Electronics", "total": 1679.93 },
+    { "month": "Jan", "category": "Electronics", "total": 1099.87 },
+    { "month": "Mar", "category": "Electronics", "total": 599.98 },
+    { "month": "Mar", "category": "Optics", "total": 149.99 },
+    { "month": "Mar", "category": "Robotics", "total": 220.0 }
+  ],
+  "orderSensitive": true,
+  "performanceActive": false,
+  "efficiencyThreshold": 0.8,
+  "hints": [
+    { "tier": 1, "text": "GROUP BY month, category creates one group per unique month+category pair." },
+    { "tier": 2, "text": "SELECT month, category, SUM(amount) AS total FROM sales GROUP BY month, category ORDER BY month, category;" },
+    { "tier": 3, "text": "SELECT month, category, SUM(amount) AS total FROM sales GROUP BY month, category ORDER BY month, category;" }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "world_03_level_16",
+  "worldNumber": 3,
+  "allowedWorldNumber": 3,
+  "levelNumber": 16,
+  "title": "HAVING AVG",
+  "flavorText": "HAVING works with any aggregate — not just COUNT. HAVING AVG(price) > threshold filters groups by their mean.",
+  "narrative": "Find categories where the average product price is above 50 credits — the premium segments.",
+  "schema": {
+    "tables": [
+      {
+        "name": "products",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "nullable": false },
+          { "name": "name", "type": "TEXT", "nullable": false },
+          { "name": "category", "type": "TEXT", "nullable": false },
+          { "name": "price", "type": "REAL", "nullable": false },
+          { "name": "stock", "type": "INTEGER", "nullable": false }
+        ]
+      }
+    ]
+  },
+  "schemaSql": "CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT NOT NULL, category TEXT NOT NULL, price REAL NOT NULL, stock INTEGER NOT NULL);",
+  "seedSql": "INSERT INTO products VALUES (1,'Datapad','Electronics',299.99,45),(2,'Power Cell','Electronics',19.99,200),(3,'Steel Cable','Hardware',8.50,500),(4,'Logic Board','Electronics',89.99,30),(5,'Ceramic Fuse','Hardware',2.25,1000),(6,'Optic Lens','Optics',149.99,15),(7,'Servo Motor','Robotics',55.00,80),(8,'Pressure Valve','Hardware',12.75,300);",
+  "task": "Find categories where the average price exceeds 50. Show category and avg_price, ordered by avg_price descending.",
+  "expectedResult": [
+    { "category": "Optics", "avg_price": 149.99 },
+    { "category": "Electronics", "avg_price": 136.65666666666667 },
+    { "category": "Robotics", "avg_price": 55.0 }
+  ],
+  "orderSensitive": true,
+  "performanceActive": false,
+  "efficiencyThreshold": 0.8,
+  "hints": [
+    { "tier": 1, "text": "Use GROUP BY category HAVING AVG(price) > 50." },
+    { "tier": 2, "text": "SELECT category, AVG(price) AS avg_price FROM products GROUP BY category HAVING AVG(price) > 50 ORDER BY avg_price DESC;" },
+    { "tier": 3, "text": "SELECT category, AVG(price) AS avg_price FROM products GROUP BY category HAVING AVG(price) > 50 ORDER BY avg_price DESC;" }
+  ]
+}

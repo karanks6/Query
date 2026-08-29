@@ -1,0 +1,40 @@
+{
+  "id": "world_03_level_12",
+  "worldNumber": 3,
+  "allowedWorldNumber": 3,
+  "levelNumber": 12,
+  "title": "WHERE and HAVING Together",
+  "flavorText": "Use WHERE to exclude individual rows, then HAVING to exclude whole groups. Both in the same query — powerful.",
+  "narrative": "Filter transactions to Electronics products only (WHERE), then show only months where total Electronics revenue exceeds 500 (HAVING).",
+  "schema": {
+    "tables": [
+      {
+        "name": "sales",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "nullable": false },
+          { "name": "month", "type": "TEXT", "nullable": false },
+          { "name": "product", "type": "TEXT", "nullable": false },
+          { "name": "quantity", "type": "INTEGER", "nullable": false },
+          { "name": "amount", "type": "REAL", "nullable": false },
+          { "name": "category", "type": "TEXT", "nullable": false }
+        ]
+      }
+    ]
+  },
+  "schemaSql": "CREATE TABLE sales (id INTEGER PRIMARY KEY, month TEXT NOT NULL, product TEXT NOT NULL, quantity INTEGER NOT NULL, amount REAL NOT NULL, category TEXT NOT NULL);",
+  "seedSql": "INSERT INTO sales VALUES (1,'Jan','Datapad',3,899.97,'Electronics'),(2,'Jan','Power Cell',10,199.90,'Electronics'),(3,'Feb','Datapad',5,1499.95,'Electronics'),(4,'Feb','Logic Board',2,179.98,'Electronics'),(5,'Mar','Optic Lens',1,149.99,'Optics'),(6,'Mar','Servo Motor',4,220.00,'Robotics'),(7,'Mar','Datapad',2,599.98,'Electronics'),(8,'Apr','Power Cell',20,399.80,'Electronics'),(9,'Apr','Logic Board',5,449.95,'Electronics'),(10,'Apr','Steel Cable',50,425.00,'Hardware');",
+  "task": "Show months where total Electronics sales (amount) exceeded 500. Order by month alphabetically.",
+  "expectedResult": [
+    { "month": "Feb", "elec_sales": 1679.93 },
+    { "month": "Jan", "elec_sales": 1099.87 },
+    { "month": "Mar", "elec_sales": 599.98 }
+  ],
+  "orderSensitive": true,
+  "performanceActive": false,
+  "efficiencyThreshold": 0.8,
+  "hints": [
+    { "tier": 1, "text": "WHERE category = 'Electronics' filters rows first. Then GROUP BY month with HAVING SUM(amount) > 500 filters groups." },
+    { "tier": 2, "text": "SELECT month, SUM(amount) AS elec_sales FROM sales WHERE category = 'Electronics' GROUP BY month HAVING SUM(amount) > 500 ORDER BY month;" },
+    { "tier": 3, "text": "SELECT month, SUM(amount) AS elec_sales FROM sales WHERE category = 'Electronics' GROUP BY month HAVING SUM(amount) > 500 ORDER BY month;" }
+  ]
+}

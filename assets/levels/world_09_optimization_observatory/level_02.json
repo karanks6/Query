@@ -1,0 +1,75 @@
+{
+  "id": "world_09_level_02",
+  "world_id": "world_09",
+  "level_number": 2,
+  "title": "Filtering Efficiently",
+  "narrative": "We only want popular posts (>10 likes), but someone is pulling everything first.",
+  "type": "optimization_challenge",
+  "schema": {
+    "tables": [
+      {
+        "name": "posts",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "user_id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "content",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "likes",
+            "type": "INTEGER",
+            "nullable": false
+          }
+        ]
+      }
+    ]
+  },
+  "schema_sql": "CREATE TABLE posts (id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL, content TEXT NOT NULL, likes INTEGER NOT NULL);",
+  "seed_sql": "INSERT INTO posts VALUES (1, 101, 'Hello World', 5), (2, 102, 'Dart is cool', 20), (3, 101, 'Flutter rocks', 50), (4, 103, 'SQL is fun', 100);",
+  "expected_result": [
+    {
+      "id": 2,
+      "likes": 20
+    },
+    {
+      "id": 3,
+      "likes": 50
+    },
+    {
+      "id": 4,
+      "likes": 100
+    }
+  ],
+  "order_sensitive": false,
+  "performance_active": true,
+  "efficiency_threshold": 0.9,
+  "hints": [
+    {
+      "tier": "nudge",
+      "content": "Use WHERE to filter early."
+    },
+    {
+      "tier": "partial_reveal",
+      "content": "Check your syntax.",
+      "code_snippet": ""
+    },
+    {
+      "tier": "full_solution",
+      "content": "Here is the answer:",
+      "code_snippet": "SELECT id, likes FROM posts WHERE likes > 10;"
+    }
+  ],
+  "xp_reward": 50,
+  "allowed_world_number": 9,
+  "broken_query": "SELECT id, likes FROM posts;"
+}

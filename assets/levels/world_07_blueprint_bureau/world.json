@@ -1,0 +1,11 @@
+{
+  "id": "world_07",
+  "number": 7,
+  "title": "Blueprint Bureau",
+  "case_file": "Designing a schema from scratch for a new client",
+  "client_name": "A schema-design firm",
+  "narrative_intro": "Let's build databases from the ground up.",
+  "core_sql_concept": "CREATE TABLE, keys, ALTER TABLE",
+  "total_levels": 3,
+  "unlock_theme_id": "terminal_classic"
+}

@@ -1,0 +1,100 @@
+{
+  "id": "world_06_level_03",
+  "world_id": "world_06",
+  "level_number": 3,
+  "title": "Clear the Clutter",
+  "narrative": "We no longer stock Nails. Remove them from the system.",
+  "type": "puzzle",
+  "schema": {
+    "tables": [
+      {
+        "name": "inventory",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "item_name",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "quantity",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "location",
+            "type": "TEXT",
+            "nullable": false
+          }
+        ]
+      },
+      {
+        "name": "shipments",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "item_id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "status",
+            "type": "TEXT",
+            "nullable": false
+          }
+        ]
+      }
+    ]
+  },
+  "schema_sql": "CREATE TABLE inventory (id INTEGER PRIMARY KEY, item_name TEXT NOT NULL, quantity INTEGER NOT NULL, location TEXT NOT NULL); CREATE TABLE shipments (id INTEGER PRIMARY KEY, item_id INTEGER NOT NULL, status TEXT NOT NULL);",
+  "seed_sql": "INSERT INTO inventory VALUES (1,'Steel Beam',50,'A1'),(2,'Copper Wire',200,'B2'),(3,'Screws',1000,'C3'),(4,'Nails',500,'C3'); INSERT INTO shipments VALUES (101,1,'Pending'),(102,3,'Shipped');",
+  "expected_result": [
+    {
+      "id": 1,
+      "item_name": "Steel Beam",
+      "quantity": 50,
+      "location": "A1"
+    },
+    {
+      "id": 2,
+      "item_name": "Copper Wire",
+      "quantity": 200,
+      "location": "B2"
+    },
+    {
+      "id": 3,
+      "item_name": "Screws",
+      "quantity": 1000,
+      "location": "C3"
+    }
+  ],
+  "order_sensitive": false,
+  "performance_active": false,
+  "efficiency_threshold": 0.8,
+  "hints": [
+    {
+      "tier": "nudge",
+      "content": "Use DELETE to remove rows."
+    },
+    {
+      "tier": "partial_reveal",
+      "content": "Check your syntax.",
+      "code_snippet": "INSERT INTO ..."
+    },
+    {
+      "tier": "full_solution",
+      "content": "Here is the answer:",
+      "code_snippet": "DELETE FROM inventory WHERE item_name = 'Nails';"
+    }
+  ],
+  "xp_reward": 50,
+  "allowed_world_number": 6
+}

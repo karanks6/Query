@@ -1,0 +1,35 @@
+{
+  "id": "world_03_level_01",
+  "worldNumber": 3,
+  "allowedWorldNumber": 3,
+  "levelNumber": 1,
+  "title": "Total Inventory",
+  "flavorText": "The Bureau needs a single number: how many items are in the warehouse? COUNT(*) counts every row, no conditions.",
+  "narrative": "Your first aggregation task — a simple total row count.",
+  "schema": {
+    "tables": [
+      {
+        "name": "products",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "nullable": false },
+          { "name": "name", "type": "TEXT", "nullable": false },
+          { "name": "category", "type": "TEXT", "nullable": false },
+          { "name": "price", "type": "REAL", "nullable": false },
+          { "name": "stock", "type": "INTEGER", "nullable": false }
+        ]
+      }
+    ]
+  },
+  "schemaSql": "CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT NOT NULL, category TEXT NOT NULL, price REAL NOT NULL, stock INTEGER NOT NULL);",
+  "seedSql": "INSERT INTO products VALUES (1,'Datapad','Electronics',299.99,45),(2,'Power Cell','Electronics',19.99,200),(3,'Steel Cable','Hardware',8.50,500),(4,'Logic Board','Electronics',89.99,30),(5,'Ceramic Fuse','Hardware',2.25,1000),(6,'Optic Lens','Optics',149.99,15),(7,'Servo Motor','Robotics',55.00,80),(8,'Pressure Valve','Hardware',12.75,300);",
+  "task": "Count the total number of products in the warehouse.",
+  "expectedResult": [{ "total_products": 8 }],
+  "orderSensitive": false,
+  "performanceActive": false,
+  "efficiencyThreshold": 0.8,
+  "hints": [
+    { "tier": 1, "text": "COUNT(*) counts all rows in a table, regardless of NULL values." },
+    { "tier": 2, "text": "Use SELECT COUNT(*) FROM products; and give it an alias." },
+    { "tier": 3, "text": "SELECT COUNT(*) AS total_products FROM products;" }
+  ]
+}

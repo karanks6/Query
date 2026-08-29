@@ -1,0 +1,11 @@
+{
+  "id": "world_09",
+  "number": 9,
+  "title": "Optimization Observatory",
+  "case_file": "A social platform's activity feed at scale",
+  "client_name": "SocialNet",
+  "narrative_intro": "Getting the right answer isn't enough anymore. You need to get it fast.",
+  "core_sql_concept": "Query plans, indexing strategy",
+  "total_levels": 2,
+  "unlock_theme_id": "cyberpunk"
+}

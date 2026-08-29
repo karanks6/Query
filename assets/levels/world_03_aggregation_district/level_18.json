@@ -1,0 +1,39 @@
+{
+  "id": "world_03_level_18",
+  "worldNumber": 3,
+  "allowedWorldNumber": 3,
+  "levelNumber": 18,
+  "title": "The Full Ledger Query",
+  "flavorText": "Master challenge: combine WHERE, GROUP BY, HAVING, ORDER BY and LIMIT in a single query — the full aggregation toolkit.",
+  "narrative": "Final case: identify the top 2 months for Electronics sales, from months with more than one transaction, ordered by revenue.",
+  "schema": {
+    "tables": [
+      {
+        "name": "sales",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "nullable": false },
+          { "name": "month", "type": "TEXT", "nullable": false },
+          { "name": "product", "type": "TEXT", "nullable": false },
+          { "name": "category", "type": "TEXT", "nullable": false },
+          { "name": "quantity", "type": "INTEGER", "nullable": false },
+          { "name": "amount", "type": "REAL", "nullable": false }
+        ]
+      }
+    ]
+  },
+  "schemaSql": "CREATE TABLE sales (id INTEGER PRIMARY KEY, month TEXT NOT NULL, product TEXT NOT NULL, category TEXT NOT NULL, quantity INTEGER NOT NULL, amount REAL NOT NULL);",
+  "seedSql": "INSERT INTO sales VALUES (1,'Jan','Datapad','Electronics',3,899.97),(2,'Jan','Power Cell','Electronics',10,199.90),(3,'Feb','Datapad','Electronics',5,1499.95),(4,'Feb','Logic Board','Electronics',2,179.98),(5,'Mar','Optic Lens','Optics',1,149.99),(6,'Mar','Servo Motor','Robotics',4,220.00),(7,'Mar','Datapad','Electronics',2,599.98),(8,'Apr','Power Cell','Electronics',20,399.80),(9,'Apr','Logic Board','Electronics',5,449.95),(10,'Apr','Steel Cable','Hardware',50,425.00);",
+  "task": "Find the top 2 months for Electronics revenue, only including months with more than 1 Electronics transaction.",
+  "expectedResult": [
+    { "month": "Feb", "elec_revenue": 1679.93 },
+    { "month": "Jan", "elec_revenue": 1099.87 }
+  ],
+  "orderSensitive": true,
+  "performanceActive": true,
+  "efficiencyThreshold": 0.75,
+  "hints": [
+    { "tier": 1, "text": "WHERE category = 'Electronics' → GROUP BY month → HAVING COUNT(*) > 1 → ORDER BY elec_revenue DESC → LIMIT 2" },
+    { "tier": 2, "text": "SELECT month, SUM(amount) AS elec_revenue FROM sales WHERE category = 'Electronics' GROUP BY month HAVING COUNT(*) > 1 ORDER BY elec_revenue DESC LIMIT 2;" },
+    { "tier": 3, "text": "SELECT month, SUM(amount) AS elec_revenue FROM sales WHERE category = 'Electronics' GROUP BY month HAVING COUNT(*) > 1 ORDER BY elec_revenue DESC LIMIT 2;" }
+  ]
+}

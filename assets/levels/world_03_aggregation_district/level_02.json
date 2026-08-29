@@ -1,0 +1,35 @@
+{
+  "id": "world_03_level_02",
+  "worldNumber": 3,
+  "allowedWorldNumber": 3,
+  "levelNumber": 2,
+  "title": "Total Stock Value",
+  "flavorText": "SUM() adds up a column of numbers. Multiply price by stock for each row, then sum the result — total inventory value.",
+  "narrative": "The Bureau needs to know the total monetary value of all stock.",
+  "schema": {
+    "tables": [
+      {
+        "name": "products",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "nullable": false },
+          { "name": "name", "type": "TEXT", "nullable": false },
+          { "name": "category", "type": "TEXT", "nullable": false },
+          { "name": "price", "type": "REAL", "nullable": false },
+          { "name": "stock", "type": "INTEGER", "nullable": false }
+        ]
+      }
+    ]
+  },
+  "schemaSql": "CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT NOT NULL, category TEXT NOT NULL, price REAL NOT NULL, stock INTEGER NOT NULL);",
+  "seedSql": "INSERT INTO products VALUES (1,'Datapad','Electronics',299.99,45),(2,'Power Cell','Electronics',19.99,200),(3,'Steel Cable','Hardware',8.50,500),(4,'Logic Board','Electronics',89.99,30),(5,'Ceramic Fuse','Hardware',2.25,1000),(6,'Optic Lens','Optics',149.99,15),(7,'Servo Motor','Robotics',55.00,80),(8,'Pressure Valve','Hardware',12.75,300);",
+  "task": "Calculate the total inventory value (sum of price × stock for all products).",
+  "expectedResult": [{ "total_value": 23346.25 }],
+  "orderSensitive": false,
+  "performanceActive": false,
+  "efficiencyThreshold": 0.8,
+  "hints": [
+    { "tier": 1, "text": "SUM() adds up numeric values. You can sum an expression, not just a column: SUM(price * stock)." },
+    { "tier": 2, "text": "SELECT SUM(price * stock) FROM products; — give it an alias." },
+    { "tier": 3, "text": "SELECT SUM(price * stock) AS total_value FROM products;" }
+  ]
+}

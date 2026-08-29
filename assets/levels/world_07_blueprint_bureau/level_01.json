@@ -1,0 +1,45 @@
+{
+  "id": "world_07_level_01",
+  "world_id": "world_07",
+  "level_number": 1,
+  "title": "Creating a Blueprint",
+  "narrative": "A new client needs a table to track their employees.",
+  "type": "puzzle",
+  "schema": {
+    "tables": [
+      {
+        "name": "projects",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "nullable": false
+          }
+        ]
+      }
+    ]
+  },
+  "schema_sql": "CREATE TABLE projects (id INTEGER PRIMARY KEY);",
+  "seed_sql": "INSERT INTO projects VALUES (1), (2);",
+  "expected_result": [],
+  "order_sensitive": false,
+  "performance_active": false,
+  "hints": [
+    {
+      "tier": "nudge",
+      "content": "Use CREATE TABLE to define a new table."
+    },
+    {
+      "tier": "partial_reveal",
+      "content": "Check your syntax.",
+      "code_snippet": ""
+    },
+    {
+      "tier": "full_solution",
+      "content": "Here is the answer:",
+      "code_snippet": "CREATE TABLE employees (id INTEGER);"
+    }
+  ],
+  "xp_reward": 50,
+  "allowed_world_number": 7
+}

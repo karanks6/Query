@@ -1,0 +1,40 @@
+{
+  "id": "world_03_level_14",
+  "worldNumber": 3,
+  "allowedWorldNumber": 3,
+  "levelNumber": 14,
+  "title": "COUNT DISTINCT",
+  "flavorText": "COUNT(DISTINCT col) counts unique values only. COUNT(*) counts all rows — two very different results.",
+  "narrative": "How many distinct products were sold in each month? One product sold 5 times still counts as 1 distinct product.",
+  "schema": {
+    "tables": [
+      {
+        "name": "sales",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "nullable": false },
+          { "name": "month", "type": "TEXT", "nullable": false },
+          { "name": "product", "type": "TEXT", "nullable": false },
+          { "name": "quantity", "type": "INTEGER", "nullable": false },
+          { "name": "amount", "type": "REAL", "nullable": false }
+        ]
+      }
+    ]
+  },
+  "schemaSql": "CREATE TABLE sales (id INTEGER PRIMARY KEY, month TEXT NOT NULL, product TEXT NOT NULL, quantity INTEGER NOT NULL, amount REAL NOT NULL);",
+  "seedSql": "INSERT INTO sales VALUES (1,'Jan','Datapad',3,899.97),(2,'Jan','Power Cell',10,199.90),(3,'Feb','Datapad',5,1499.95),(4,'Feb','Logic Board',2,179.98),(5,'Mar','Optic Lens',1,149.99),(6,'Mar','Servo Motor',4,220.00),(7,'Mar','Datapad',2,599.98),(8,'Apr','Power Cell',20,399.80),(9,'Apr','Logic Board',5,449.95),(10,'Apr','Steel Cable',50,425.00);",
+  "task": "Count the number of distinct products sold each month. Order by month alphabetically.",
+  "expectedResult": [
+    { "month": "Apr", "distinct_products": 3 },
+    { "month": "Feb", "distinct_products": 2 },
+    { "month": "Jan", "distinct_products": 2 },
+    { "month": "Mar", "distinct_products": 3 }
+  ],
+  "orderSensitive": true,
+  "performanceActive": false,
+  "efficiencyThreshold": 0.8,
+  "hints": [
+    { "tier": 1, "text": "COUNT(DISTINCT product) counts unique product names per group, not total rows." },
+    { "tier": 2, "text": "SELECT month, COUNT(DISTINCT product) AS distinct_products FROM sales GROUP BY month ORDER BY month;" },
+    { "tier": 3, "text": "SELECT month, COUNT(DISTINCT product) AS distinct_products FROM sales GROUP BY month ORDER BY month;" }
+  ]
+}

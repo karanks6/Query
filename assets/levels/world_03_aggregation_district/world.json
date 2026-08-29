@@ -1,0 +1,11 @@
+{
+  "id": "world_03",
+  "number": 3,
+  "title": "Aggregation District",
+  "caseFile": "CASE FILE: The Collapsed Ledger",
+  "clientName": "The Bureau of Commerce",
+  "narrativeIntro": "The Bureau's ancient ledgers have been shattered into thousands of raw transaction rows. To reconstruct the financial picture, you must learn to collapse data — counting, summing, averaging — and filter those groups with precision.",
+  "coreSqlConcept": "GROUP BY, HAVING, and aggregate functions",
+  "totalLevels": 18,
+  "unlockThemeId": "neon_district"
+}

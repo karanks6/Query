@@ -1,0 +1,94 @@
+{
+  "id": "world_10_level_01",
+  "world_id": "world_10",
+  "level_number": 1,
+  "title": "The Corruptor's Last Stand",
+  "narrative": "The Corruptor has hidden himself in the open cases assigned to Field Detectives.",
+  "type": "boss",
+  "schema": {
+    "tables": [
+      {
+        "name": "case_files",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "title",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "status",
+            "type": "TEXT",
+            "nullable": false
+          }
+        ]
+      },
+      {
+        "name": "detectives",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "rank",
+            "type": "TEXT",
+            "nullable": false
+          }
+        ]
+      },
+      {
+        "name": "assignments",
+        "columns": [
+          {
+            "name": "case_id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "detective_id",
+            "type": "INTEGER",
+            "nullable": false
+          }
+        ]
+      }
+    ]
+  },
+  "schema_sql": "CREATE TABLE case_files (id INTEGER PRIMARY KEY, title TEXT NOT NULL, status TEXT NOT NULL); CREATE TABLE detectives (id INTEGER PRIMARY KEY, name TEXT NOT NULL, rank TEXT NOT NULL); CREATE TABLE assignments (case_id INTEGER NOT NULL, detective_id INTEGER NOT NULL);",
+  "seed_sql": "INSERT INTO case_files VALUES (1, 'The Missing Row', 'Closed'), (2, 'The Infinite Loop', 'Open'); INSERT INTO detectives VALUES (1, 'Ada', 'Chief'), (2, 'Player', 'Field Det'); INSERT INTO assignments VALUES (1, 1), (2, 2);",
+  "expected_result": [
+    {
+      "title": "The Infinite Loop",
+      "name": "Player"
+    }
+  ],
+  "order_sensitive": false,
+  "performance_active": true,
+  "hints": [
+    {
+      "tier": "nudge",
+      "content": "Combine everything you've learned: JOIN, WHERE, and aggregates."
+    },
+    {
+      "tier": "partial_reveal",
+      "content": "You are on your own for the final boss!"
+    },
+    {
+      "tier": "full_solution",
+      "content": "Here is the answer:",
+      "code_snippet": "SELECT c.title, d.name FROM case_files c JOIN assignments a ON c.id = a.case_id JOIN detectives d ON a.detective_id = d.id WHERE c.status = 'Open' AND d.rank = 'Field Det';"
+    }
+  ],
+  "xp_reward": 500,
+  "allowed_world_number": 10
+}

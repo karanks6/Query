@@ -1,0 +1,11 @@
+{
+  "id": "world_04",
+  "number": 4,
+  "title": "The JOIN Nexus",
+  "caseFile": "CASE FILE: The Fragmented Supply Chain",
+  "clientName": "Galactic Logistics Corp",
+  "narrativeIntro": "The logistics network is in chaos. Orders are disconnected from customers, and shipments are lost in the void. You must weave these fractured tables back together using the power of JOINs.",
+  "coreSqlConcept": "INNER JOIN, LEFT JOIN, and relational data",
+  "totalLevels": 22,
+  "unlockThemeId": "cyber_nexus"
+}

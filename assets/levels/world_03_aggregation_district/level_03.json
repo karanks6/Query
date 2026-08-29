@@ -1,0 +1,35 @@
+{
+  "id": "world_03_level_03",
+  "worldNumber": 3,
+  "allowedWorldNumber": 3,
+  "levelNumber": 3,
+  "title": "Average Price",
+  "flavorText": "AVG() computes the arithmetic mean. A single number that describes the centre of your data.",
+  "narrative": "The Bureau wants to know the average price across all products.",
+  "schema": {
+    "tables": [
+      {
+        "name": "products",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "nullable": false },
+          { "name": "name", "type": "TEXT", "nullable": false },
+          { "name": "category", "type": "TEXT", "nullable": false },
+          { "name": "price", "type": "REAL", "nullable": false },
+          { "name": "stock", "type": "INTEGER", "nullable": false }
+        ]
+      }
+    ]
+  },
+  "schemaSql": "CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT NOT NULL, category TEXT NOT NULL, price REAL NOT NULL, stock INTEGER NOT NULL);",
+  "seedSql": "INSERT INTO products VALUES (1,'Datapad','Electronics',299.99,45),(2,'Power Cell','Electronics',19.99,200),(3,'Steel Cable','Hardware',8.50,500),(4,'Logic Board','Electronics',89.99,30),(5,'Ceramic Fuse','Hardware',2.25,1000),(6,'Optic Lens','Optics',149.99,15),(7,'Servo Motor','Robotics',55.00,80),(8,'Pressure Valve','Hardware',12.75,300);",
+  "task": "Find the average price of all products.",
+  "expectedResult": [{ "avg_price": 80.5575 }],
+  "orderSensitive": false,
+  "performanceActive": false,
+  "efficiencyThreshold": 0.8,
+  "hints": [
+    { "tier": 1, "text": "AVG(column) computes the mean value of all non-NULL values in a column." },
+    { "tier": 2, "text": "SELECT AVG(price) FROM products; — give it an alias." },
+    { "tier": 3, "text": "SELECT AVG(price) AS avg_price FROM products;" }
+  ]
+}

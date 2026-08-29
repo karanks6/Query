@@ -1,0 +1,45 @@
+{
+  "id": "world_07_level_03",
+  "world_id": "world_07",
+  "level_number": 3,
+  "title": "Adding an Index",
+  "narrative": "Searches are getting slow. Add an index to the 'projects' table.",
+  "type": "puzzle",
+  "schema": {
+    "tables": [
+      {
+        "name": "projects",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "nullable": false
+          }
+        ]
+      }
+    ]
+  },
+  "schema_sql": "CREATE TABLE projects (id INTEGER PRIMARY KEY);",
+  "seed_sql": "INSERT INTO projects VALUES (1), (2);",
+  "expected_result": [],
+  "order_sensitive": false,
+  "performance_active": false,
+  "hints": [
+    {
+      "tier": "nudge",
+      "content": "Use CREATE INDEX to speed up searches."
+    },
+    {
+      "tier": "partial_reveal",
+      "content": "Check your syntax.",
+      "code_snippet": ""
+    },
+    {
+      "tier": "full_solution",
+      "content": "Here is the answer:",
+      "code_snippet": "CREATE INDEX idx_projects_id ON projects (id);"
+    }
+  ],
+  "xp_reward": 50,
+  "allowed_world_number": 7
+}

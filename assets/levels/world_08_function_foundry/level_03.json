@@ -1,0 +1,89 @@
+{
+  "id": "world_08_level_03",
+  "world_id": "world_08",
+  "level_number": 3,
+  "title": "Common Table Expressions",
+  "narrative": "Let's find players whose total score exceeds 200. Use a CTE to sum the scores first.",
+  "type": "puzzle",
+  "schema": {
+    "tables": [
+      {
+        "name": "players",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "team",
+            "type": "TEXT",
+            "nullable": false
+          }
+        ]
+      },
+      {
+        "name": "matches",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "player_id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "score",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "match_date",
+            "type": "TEXT",
+            "nullable": false
+          }
+        ]
+      }
+    ]
+  },
+  "schema_sql": "CREATE TABLE players (id INTEGER PRIMARY KEY, name TEXT NOT NULL, team TEXT NOT NULL); CREATE TABLE matches (id INTEGER PRIMARY KEY, player_id INTEGER NOT NULL, score INTEGER NOT NULL, match_date TEXT NOT NULL);",
+  "seed_sql": "INSERT INTO players VALUES (1, 'Alice', 'Red'), (2, 'Bob', 'Blue'), (3, 'Charlie', 'Red'); INSERT INTO matches VALUES (1, 1, 100, '2023-01-01'), (2, 2, 150, '2023-01-02'), (3, 1, 120, '2023-01-03'), (4, 3, 90, '2023-01-04'), (5, 2, 200, '2023-01-05');",
+  "expected_result": [
+    {
+      "player_id": 1,
+      "total_score": 220
+    },
+    {
+      "player_id": 2,
+      "total_score": 350
+    }
+  ],
+  "order_sensitive": true,
+  "performance_active": false,
+  "hints": [
+    {
+      "tier": "nudge",
+      "content": "Use WITH cte_name AS (...) to create a temporary result set."
+    },
+    {
+      "tier": "partial_reveal",
+      "content": "Check your syntax.",
+      "code_snippet": ""
+    },
+    {
+      "tier": "full_solution",
+      "content": "Here is the answer:",
+      "code_snippet": "WITH PlayerTotals AS (SELECT player_id, SUM(score) AS total_score FROM matches GROUP BY player_id) SELECT player_id, total_score FROM PlayerTotals WHERE total_score > 200;"
+    }
+  ],
+  "xp_reward": 50,
+  "allowed_world_number": 8
+}

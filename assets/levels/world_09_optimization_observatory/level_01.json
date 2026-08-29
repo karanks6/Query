@@ -1,0 +1,75 @@
+{
+  "id": "world_09_level_01",
+  "world_id": "world_09",
+  "level_number": 1,
+  "title": "Unnecessary Scans",
+  "narrative": "A junior developer wrote a query that is pulling too much data.",
+  "type": "optimization_challenge",
+  "schema": {
+    "tables": [
+      {
+        "name": "posts",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "user_id",
+            "type": "INTEGER",
+            "nullable": false
+          },
+          {
+            "name": "content",
+            "type": "TEXT",
+            "nullable": false
+          },
+          {
+            "name": "likes",
+            "type": "INTEGER",
+            "nullable": false
+          }
+        ]
+      }
+    ]
+  },
+  "schema_sql": "CREATE TABLE posts (id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL, content TEXT NOT NULL, likes INTEGER NOT NULL);",
+  "seed_sql": "INSERT INTO posts VALUES (1, 101, 'Hello World', 5), (2, 102, 'Dart is cool', 20), (3, 101, 'Flutter rocks', 50), (4, 103, 'SQL is fun', 100);",
+  "expected_result": [
+    {
+      "content": "Hello World"
+    },
+    {
+      "content": "Dart is cool"
+    },
+    {
+      "content": "Flutter rocks"
+    },
+    {
+      "content": "SQL is fun"
+    }
+  ],
+  "order_sensitive": false,
+  "performance_active": true,
+  "efficiency_threshold": 0.9,
+  "hints": [
+    {
+      "tier": "nudge",
+      "content": "Avoid SELECT * when you only need one column."
+    },
+    {
+      "tier": "partial_reveal",
+      "content": "Check your syntax.",
+      "code_snippet": ""
+    },
+    {
+      "tier": "full_solution",
+      "content": "Here is the answer:",
+      "code_snippet": "SELECT content FROM posts;"
+    }
+  ],
+  "xp_reward": 50,
+  "allowed_world_number": 9,
+  "broken_query": "SELECT * FROM posts;"
+}

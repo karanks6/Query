@@ -1,0 +1,40 @@
+{
+  "id": "world_03_level_05",
+  "worldNumber": 3,
+  "allowedWorldNumber": 3,
+  "levelNumber": 5,
+  "title": "Count Per Category",
+  "flavorText": "GROUP BY splits rows into groups before the aggregate runs. Instead of one total, you get one result per group.",
+  "narrative": "The Bureau wants a breakdown: how many products exist in each category?",
+  "schema": {
+    "tables": [
+      {
+        "name": "products",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "nullable": false },
+          { "name": "name", "type": "TEXT", "nullable": false },
+          { "name": "category", "type": "TEXT", "nullable": false },
+          { "name": "price", "type": "REAL", "nullable": false },
+          { "name": "stock", "type": "INTEGER", "nullable": false }
+        ]
+      }
+    ]
+  },
+  "schemaSql": "CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT NOT NULL, category TEXT NOT NULL, price REAL NOT NULL, stock INTEGER NOT NULL);",
+  "seedSql": "INSERT INTO products VALUES (1,'Datapad','Electronics',299.99,45),(2,'Power Cell','Electronics',19.99,200),(3,'Steel Cable','Hardware',8.50,500),(4,'Logic Board','Electronics',89.99,30),(5,'Ceramic Fuse','Hardware',2.25,1000),(6,'Optic Lens','Optics',149.99,15),(7,'Servo Motor','Robotics',55.00,80),(8,'Pressure Valve','Hardware',12.75,300);",
+  "task": "Count the number of products in each category. Order by category name alphabetically.",
+  "expectedResult": [
+    { "category": "Electronics", "product_count": 3 },
+    { "category": "Hardware", "product_count": 3 },
+    { "category": "Optics", "product_count": 1 },
+    { "category": "Robotics", "product_count": 1 }
+  ],
+  "orderSensitive": true,
+  "performanceActive": false,
+  "efficiencyThreshold": 0.8,
+  "hints": [
+    { "tier": 1, "text": "GROUP BY category splits rows into one group per unique category value. Then COUNT(*) runs per group." },
+    { "tier": 2, "text": "SELECT category, COUNT(*) AS product_count FROM products GROUP BY category ORDER BY category;" },
+    { "tier": 3, "text": "SELECT category, COUNT(*) AS product_count FROM products GROUP BY category ORDER BY category;" }
+  ]
+}
