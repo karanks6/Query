@@ -1,3 +1,4 @@
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 
 /// Nature / Organic Data theme design tokens (Section 6.4).
@@ -19,66 +20,66 @@ class NatureTokens {
   static const error = Color(0xFFD46A54);
   static const warning = Color(0xFFD9A441);
 
-  static const headerFontFamily = 'Poppins';
-  static const codeFontFamily = 'JetBrainsMono';
+  static String? get headerFontFamily => GoogleFonts.poppins().fontFamily;
+  static String? get codeFontFamily => GoogleFonts.jetBrainsMono().fontFamily;
 
-  static const TextStyle displayLarge = TextStyle(
+  static TextStyle get displayLarge => TextStyle(
     fontFamily: headerFontFamily,
     fontSize: 32,
     fontWeight: FontWeight.bold,
     color: accent,
   );
   
-  static const TextStyle displayMedium = TextStyle(
+  static TextStyle get displayMedium => TextStyle(
     fontFamily: headerFontFamily,
     fontSize: 24,
     fontWeight: FontWeight.bold,
     color: primaryText,
   );
   
-  static const TextStyle headlineLarge = TextStyle(
+  static TextStyle get headlineLarge => TextStyle(
     fontFamily: headerFontFamily,
     fontSize: 20,
     fontWeight: FontWeight.bold,
     color: primaryText,
   );
   
-  static const TextStyle headlineMedium = TextStyle(
+  static TextStyle get headlineMedium => TextStyle(
     fontFamily: headerFontFamily,
     fontSize: 18,
     fontWeight: FontWeight.w700,
     color: primaryText,
   );
   
-  static const TextStyle titleLarge = TextStyle(
+  static TextStyle get titleLarge => TextStyle(
     fontFamily: headerFontFamily,
     fontSize: 16,
     fontWeight: FontWeight.bold,
     color: accent,
   );
   
-  static const TextStyle bodyLarge = TextStyle(
+  static TextStyle get bodyLarge => TextStyle(
     fontFamily: codeFontFamily,
     fontSize: 14,
     color: primaryText,
     height: 1.6,
   );
   
-  static const TextStyle bodyMedium = TextStyle(
+  static TextStyle get bodyMedium => TextStyle(
     fontFamily: codeFontFamily,
     fontSize: 13,
     color: primaryText,
     height: 1.5,
   );
   
-  static const TextStyle bodySmall = TextStyle(
+  static TextStyle get bodySmall => TextStyle(
     fontFamily: codeFontFamily,
     fontSize: 11,
     color: secondaryText,
     height: 1.4,
   );
   
-  static const TextStyle labelLarge = TextStyle(
+  static TextStyle get labelLarge => TextStyle(
     fontFamily: headerFontFamily,
     fontSize: 14,
     fontWeight: FontWeight.bold,
@@ -103,7 +104,7 @@ class NatureTokens {
         onError: background,
       ),
       fontFamily: codeFontFamily,
-      textTheme: const TextTheme(
+      textTheme: TextTheme(
         displayLarge: displayLarge,
         displayMedium: displayMedium,
         headlineLarge: headlineLarge,
@@ -150,3 +151,6 @@ class NatureTokens {
     );
   }
 }
+
+
+

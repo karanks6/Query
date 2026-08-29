@@ -191,6 +191,18 @@ class _GameplayHUD extends ConsumerWidget {
               fontSize: 10,
             ),
           ),
+          
+          // Speed Timer (Mock)
+          const SizedBox(width: TerminalClassicTokens.spaceSm),
+          Icon(Icons.timer_outlined, color: TerminalClassicTokens.accent, size: 12),
+          const SizedBox(width: 2),
+          Text(
+            '00:00',
+            style: TerminalClassicTokens.codeSmall.copyWith(
+              color: TerminalClassicTokens.accent,
+              fontSize: 10,
+            ),
+          ),
         ],
       ),
     );

@@ -21,7 +21,7 @@ class WorldSelectScreen extends ConsumerWidget {
       body: worldsAsync.when(
         data: (worlds) {
           if (worlds.isEmpty) {
-            return const Center(child: Text('NO DATA', style: TerminalClassicTokens.bodyMedium));
+            return Center(child: Text('NO DATA', style: TerminalClassicTokens.bodyMedium));
           }
 
           return ListView.separated(
@@ -86,6 +86,10 @@ class WorldSelectScreen extends ConsumerWidget {
                             style: TerminalClassicTokens.headlineMedium.copyWith(
                               color: isUnlocked ? TerminalClassicTokens.primaryText : TerminalClassicTokens.accentDim,
                             ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.settings, color: TerminalClassicTokens.secondaryText),
+                            onPressed: () => Navigator.pushNamed(context, '/settings'),
                           ),
                           const SizedBox(height: TerminalClassicTokens.spaceXs),
                           if (isUnlocked)

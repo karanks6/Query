@@ -1,5 +1,6 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../theming/tokens/terminal_classic_tokens.dart';
 import '../../shared/widgets/terminal_widgets.dart';
 import '../../core/validation/validation_result.dart';
@@ -386,6 +387,13 @@ class _FeedbackActions extends StatelessWidget {
           OutlinedButton(
             onPressed: onDismiss,
             child: Text('REVIEW', style: TerminalClassicTokens.labelLarge),
+          ),
+          const SizedBox(width: TerminalClassicTokens.spaceSm),
+          IconButton(
+            icon: Icon(Icons.share, color: TerminalClassicTokens.accent),
+            onPressed: () {
+              Share.share('I just cracked a SQL case in Query!\nLevel passed with flying colors. #QueryGame #SQL');
+            },
           ),
         ],
       ],

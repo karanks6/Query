@@ -1,7 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'models/level_model.dart';
-
 /// Loads world and level content from bundled JSON assets.
 ///
 /// Content structure (Section 7.3):
@@ -95,6 +96,17 @@ class LevelLoader {
   }
 
   Future<Map<String, dynamic>> _loadJson(String assetPath) async {
+    try {
+      final docDir = await getApplicationDocumentsDirectory();
+      final localFile = File('${docDir.path}/$assetPath');
+      if (await localFile.exists()) {
+        final raw = await localFile.readAsString();
+        return json.decode(raw) as Map<String, dynamic>;
+      }
+    } catch (e) {
+      // Fallback to bundled asset
+    }
+
     final raw = await rootBundle.loadString(assetPath);
     return json.decode(raw) as Map<String, dynamic>;
   }

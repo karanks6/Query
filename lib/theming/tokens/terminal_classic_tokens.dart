@@ -1,3 +1,4 @@
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 
 /// Terminal/Classic theme design tokens (Section 6.2).
@@ -41,9 +42,9 @@ class TerminalClassicTokens {
 
   // ─── Typography ──────────────────────────────────────────────────────────────
   // JetBrains Mono throughout (terminal conceit)
-  static const fontFamily = 'JetBrainsMono';
+  static String? get fontFamily => GoogleFonts.jetBrainsMono().fontFamily;
 
-  static const TextStyle displayLarge = TextStyle(
+  static TextStyle get displayLarge => TextStyle(
     fontFamily: fontFamily,
     fontSize: 32,
     fontWeight: FontWeight.bold,
@@ -52,7 +53,7 @@ class TerminalClassicTokens {
     height: 1.2,
   );
 
-  static const TextStyle displayMedium = TextStyle(
+  static TextStyle get displayMedium => TextStyle(
     fontFamily: fontFamily,
     fontSize: 24,
     fontWeight: FontWeight.bold,
@@ -61,7 +62,7 @@ class TerminalClassicTokens {
     height: 1.3,
   );
 
-  static const TextStyle headlineLarge = TextStyle(
+  static TextStyle get headlineLarge => TextStyle(
     fontFamily: fontFamily,
     fontSize: 20,
     fontWeight: FontWeight.bold,
@@ -69,7 +70,7 @@ class TerminalClassicTokens {
     letterSpacing: 1.0,
   );
 
-  static const TextStyle headlineMedium = TextStyle(
+  static TextStyle get headlineMedium => TextStyle(
     fontFamily: fontFamily,
     fontSize: 18,
     fontWeight: FontWeight.w700,
@@ -77,7 +78,7 @@ class TerminalClassicTokens {
     letterSpacing: 0.8,
   );
 
-  static const TextStyle titleLarge = TextStyle(
+  static TextStyle get titleLarge => TextStyle(
     fontFamily: fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.bold,
@@ -85,28 +86,28 @@ class TerminalClassicTokens {
     letterSpacing: 0.5,
   );
 
-  static const TextStyle bodyLarge = TextStyle(
+  static TextStyle get bodyLarge => TextStyle(
     fontFamily: fontFamily,
     fontSize: 14,
     color: primaryText,
     height: 1.6,
   );
 
-  static const TextStyle bodyMedium = TextStyle(
+  static TextStyle get bodyMedium => TextStyle(
     fontFamily: fontFamily,
     fontSize: 13,
     color: primaryText,
     height: 1.5,
   );
 
-  static const TextStyle bodySmall = TextStyle(
+  static TextStyle get bodySmall => TextStyle(
     fontFamily: fontFamily,
     fontSize: 11,
     color: secondaryText,
     height: 1.4,
   );
 
-  static const TextStyle labelLarge = TextStyle(
+  static TextStyle get labelLarge => TextStyle(
     fontFamily: fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.bold,
@@ -114,7 +115,7 @@ class TerminalClassicTokens {
     letterSpacing: 1.5,
   );
 
-  static const TextStyle code = TextStyle(
+  static TextStyle get code => TextStyle(
     fontFamily: fontFamily,
     fontSize: 14,
     color: primaryText,
@@ -122,7 +123,7 @@ class TerminalClassicTokens {
     letterSpacing: 0.3,
   );
 
-  static const TextStyle codeSmall = TextStyle(
+  static TextStyle get codeSmall => TextStyle(
     fontFamily: fontFamily,
     fontSize: 12,
     color: primaryText,
@@ -195,7 +196,7 @@ class TerminalClassicTokens {
         onError: background,
       ),
       fontFamily: fontFamily,
-      textTheme: const TextTheme(
+      textTheme: TextTheme(
         displayLarge: displayLarge,
         displayMedium: displayMedium,
         headlineLarge: headlineLarge,
@@ -308,3 +309,6 @@ class TerminalClassicTokens {
     );
   }
 }
+
+
+

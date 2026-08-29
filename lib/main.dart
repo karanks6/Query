@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'theming/app_theme.dart';
 import 'features/splash/splash_screen.dart';
@@ -13,16 +15,26 @@ import 'features/sandbox/sandbox_screen.dart';
 import 'features/reference/reference_screen.dart';
 import 'features/daily_challenge/daily_challenge_screen.dart';
 import 'data/content/models/level_model.dart';
-
-import 'package:firebase_core/firebase_core.dart';
+import 'package:query/features/settings/settings_screen.dart';
+import 'package:query/features/profile/profile_screen.dart';
+import 'package:query/features/leaderboard/leaderboard_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    
+    await FirebaseAppCheck.instance.activate(
+      androidProvider: AndroidProvider.playIntegrity,
+      appleProvider: AppleProvider.deviceCheck,
+    );
+  } catch (e) {
+    debugPrint('Firebase initialization failed: $e');
+  }
   
   runApp(
     const ProviderScope(
@@ -73,13 +85,13 @@ class QueryApp extends ConsumerWidget {
           case '/achievements':
             return _fadeRoute(const AchievementsScreen(), settings);
           case '/leaderboard':
-            return _fadeRoute(const _PlaceholderScreen('Leaderboard'), settings);
+            return _fadeRoute(const LeaderboardScreen(), settings);
           case '/reference':
             return _fadeRoute(const SqlReferenceScreen(), settings);
           case '/settings':
-            return _fadeRoute(const _PlaceholderScreen('Settings'), settings);
+            return _fadeRoute(const SettingsScreen(), settings);
           case '/profile':
-            return _fadeRoute(const _PlaceholderScreen('Profile'), settings);
+            return _fadeRoute(const ProfileScreen(), settings);
           case '/daily_challenge':
             return _fadeRoute(const DailyChallengeScreen(), settings);
           default:

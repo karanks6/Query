@@ -83,6 +83,17 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
         a.type.sortOrder.compareTo(b.type.sortOrder));
   }
 
+  void _triggerAssistMode() {
+    // Simple heuristic: suggest the next logical block that isn't present
+    if (!_blocks.any((b) => b.type == ClauseType.where)) {
+      _addBlock(ClauseType.where);
+    } else if (!_blocks.any((b) => b.type == ClauseType.groupBy)) {
+      _addBlock(ClauseType.groupBy);
+    } else if (!_blocks.any((b) => b.type == ClauseType.orderBy)) {
+      _addBlock(ClauseType.orderBy);
+    }
+  }
+
   void _rebuildQuery() {
     final parts = <String>[];
     for (final block in _blocks) {
@@ -107,12 +118,22 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '// QUERY BUILDER',
-                  style: TerminalClassicTokens.bodySmall.copyWith(
-                    color: TerminalClassicTokens.secondaryText,
-                    letterSpacing: 1.5,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '// QUERY BUILDER',
+                      style: TerminalClassicTokens.bodySmall.copyWith(
+                        color: TerminalClassicTokens.secondaryText,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: _triggerAssistMode,
+                      icon: Icon(Icons.lightbulb_outline, size: 14, color: TerminalClassicTokens.accent),
+                      label: Text('Assist', style: TerminalClassicTokens.bodySmall.copyWith(color: TerminalClassicTokens.accent)),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: TerminalClassicTokens.spaceSm),
 
