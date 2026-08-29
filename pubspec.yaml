@@ -1,0 +1,78 @@
+name: query
+description: Query — Learn SQL through a detective investigation game.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Local persistence - meta-database
+  drift: ^2.20.0
+  drift_flutter: ^0.2.0
+  sqlite3_flutter_libs: ^0.5.25
+
+  # Local persistence - sandbox execution engine
+  sqlite3: ^2.4.6
+
+  # UI & animations
+  flutter_animate: ^4.5.0
+  google_fonts: ^6.2.1
+  lottie: ^3.1.2
+
+  # Audio
+  just_audio: ^0.9.41
+
+  # Utilities
+  path_provider: ^2.1.4
+  path: ^1.9.0
+  intl: ^0.20.2
+  uuid: ^4.5.1
+  collection: ^1.18.0
+  equatable: ^2.0.5
+  json_annotation: ^4.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+  # Code generation
+  build_runner: ^2.4.12
+  riverpod_generator: ^2.6.1
+  drift_dev: ^2.20.0
+  json_serializable: ^6.8.0
+
+  # Testing
+  mocktail: ^1.0.4
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/levels/world_01_archive_vaults/
+    - assets/levels/world_02_filter_district/
+    - assets/concept_cards/
+    - assets/audio/terminal_classic/
+    - assets/images/
+
+  fonts:
+    - family: JetBrainsMono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Regular.ttf
+        - asset: assets/fonts/JetBrainsMono-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/JetBrainsMono-Italic.ttf
+          style: italic
