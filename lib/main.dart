@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'theming/app_theme.dart';
 import 'features/splash/splash_screen.dart';
@@ -29,8 +30,8 @@ void main() async {
     );
     
     await FirebaseAppCheck.instance.activate(
-      androidProvider: AndroidProvider.playIntegrity,
-      appleProvider: AppleProvider.deviceCheck,
+      providerAndroid: kDebugMode ? AndroidAppCheckProvider.debug : AndroidAppCheckProvider.playIntegrity,
+      providerApple: AppleAppCheckProvider.deviceCheck,
     );
   } catch (e) {
     debugPrint('Firebase initialization failed: $e');

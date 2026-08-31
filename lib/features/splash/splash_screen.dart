@@ -6,6 +6,7 @@ import '../../theming/tokens/terminal_classic_tokens.dart';
 import '../../shared/widgets/terminal_widgets.dart';
 import '../../core/providers.dart';
 import '../../data/content/level_loader.dart';
+import '../../data/content/content_updater_service.dart';
 
 /// Splash screen and loading state (Section 5.1).
 ///
@@ -68,6 +69,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     try {
       // Preload bundled world content
       await LevelLoader.instance.preloadBundledWorlds();
+
+      // Check for remote content updates (Section 7.3)
+      await ContentUpdaterService.checkForUpdates();
 
       // Minimum 1.5s splash for branding impact
       await Future.delayed(const Duration(milliseconds: 1500));

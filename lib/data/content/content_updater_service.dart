@@ -1,48 +1,98 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:archive/archive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
+/// Service responsible for fetching content updates from a remote server.
+/// This fulfills Section 7.3 Content Delivery.
 class ContentUpdaterService {
-  static const String manifestUrl = 'https://example.com/query_content/manifest.json';
-  static const String contentBaseUrl = 'https://example.com/query_content/';
+  static const String manifestFileName = 'content_cache_manifest.json';
+  static const String manifestPrefsKey = 'content_manifest_version';
 
-  /// Checks for remote content updates and downloads them if a newer version exists.
-  Future<void> checkForUpdates() async {
+  /// Check for content updates. Called during Splash Screen.
+  static Future<void> checkForUpdates() async {
     try {
-      final docDir = await getApplicationDocumentsDirectory();
-      final localManifestFile = File('${docDir.path}/manifest.json');
+      debugPrint('Checking for content updates...');
       
-      int localVersion = 0;
-      if (await localManifestFile.exists()) {
-        final content = await localManifestFile.readAsString();
-        final json = jsonDecode(content);
-        localVersion = json['version'] ?? 0;
+      // For demonstration, we'll try to fetch a manifest from Firebase Storage.
+      // If the bucket is not configured, it will throw, which is handled gracefully.
+      final storageRef = FirebaseStorage.instance.ref().child(manifestFileName);
+      
+      String manifestJsonString;
+      try {
+        final data = await storageRef.getData();
+        if (data == null) return;
+        manifestJsonString = utf8.decode(data);
+      } catch (e) {
+        debugPrint('Firebase Storage not configured or manifest missing: $e');
+        return;
       }
 
-      final response = await http.get(Uri.parse(manifestUrl));
-      if (response.statusCode == 200) {
-        final remoteJson = jsonDecode(response.body);
-        final remoteVersion = remoteJson['version'] ?? 0;
+      final manifest = json.decode(manifestJsonString) as Map<String, dynamic>;
+      final remoteVersion = manifest['version'] as int? ?? 0;
 
-        if (remoteVersion > localVersion) {
-          // Download updated levels
-          final levelsToUpdate = remoteJson['updated_levels'] as List<dynamic>;
-          for (final levelPath in levelsToUpdate) {
-            final levelResponse = await http.get(Uri.parse('$contentBaseUrl$levelPath'));
-            if (levelResponse.statusCode == 200) {
-              final levelFile = File('${docDir.path}/$levelPath');
-              await levelFile.create(recursive: true);
-              await levelFile.writeAsBytes(levelResponse.bodyBytes);
-            }
+      final prefs = await SharedPreferences.getInstance();
+      final localVersion = prefs.getInt(manifestPrefsKey) ?? 0;
+
+      if (remoteVersion > localVersion) {
+        debugPrint('New content version $remoteVersion available. Downloading...');
+        
+        final packs = manifest['packs'] as List<dynamic>? ?? [];
+        final docDir = await getApplicationDocumentsDirectory();
+
+        for (final pack in packs) {
+          final packMap = pack as Map<String, dynamic>;
+          final url = packMap['url'] as String?;
+          final id = packMap['id'] as String?;
+          
+          if (url != null && id != null) {
+            await _downloadAndExtractPack(url, docDir, id);
           }
-          // Save new manifest
-          await localManifestFile.writeAsString(response.body);
         }
+
+        // Update local version after successful download
+        await prefs.setInt(manifestPrefsKey, remoteVersion);
+        debugPrint('Content update complete.');
+      } else {
+        debugPrint('Content is up to date.');
       }
     } catch (e) {
-      // Fail silently if no network or server is down. We fall back to bundled assets.
-      print('Content update failed: $e');
+      debugPrint('Failed to check for content updates: $e');
+    }
+  }
+
+  static Future<void> _downloadAndExtractPack(String url, Directory targetDir, String id) async {
+    debugPrint('Downloading content pack: $id...');
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final bytes = response.bodyBytes;
+      
+      // TODO: verify checksum here if needed
+
+      final archive = ZipDecoder().decodeBytes(bytes);
+
+      for (final file in archive) {
+        final filename = file.name;
+        if (file.isFile) {
+          final data = file.content as List<int>;
+          // Content pack structure assumes it zips the levels directory
+          // e.g. world_04_join_nexus/world.json
+          final f = File('${targetDir.path}/assets/levels/$filename');
+          await f.create(recursive: true);
+          await f.writeAsBytes(data);
+        } else {
+          final d = Directory('${targetDir.path}/assets/levels/$filename');
+          await d.create(recursive: true);
+        }
+      }
+      debugPrint('Extracted pack: $id successfully.');
+    } else {
+      debugPrint('Failed to download pack $id. Status: ${response.statusCode}');
     }
   }
 }

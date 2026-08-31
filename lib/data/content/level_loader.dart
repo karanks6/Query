@@ -25,6 +25,10 @@ class LevelLoader {
     'world_04': 'assets/levels/world_04_join_nexus',
     'world_05': 'assets/levels/world_05_nested_depths',
     'world_06': 'assets/levels/world_06_data_forge',
+    'world_07': 'assets/levels/world_07_blueprint_bureau',
+    'world_08': 'assets/levels/world_08_function_foundry',
+    'world_09': 'assets/levels/world_09_optimization_observatory',
+    'world_10': 'assets/levels/world_10_grand_archive',
   };
 
   /// Loads and caches a world and all its levels.
