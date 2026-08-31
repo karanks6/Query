@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theming/tokens/terminal_classic_tokens.dart';
@@ -46,7 +46,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       badge: '// CASE #001',
       title: 'Your first assignment awaits.',
       body:
-          'The Archive Vaults. A record store\'s entire catalog has gone cold â€” '
+          'The Archive Vaults. A record store\'s entire catalog has gone cold - '
           'someone scrambled the inventory. It\'s a rookie case, but everyone starts '
           'somewhere. Time to write your first query.',
       icon: Icons.badge_outlined,
