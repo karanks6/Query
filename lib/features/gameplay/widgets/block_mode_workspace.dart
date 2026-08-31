@@ -47,7 +47,9 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
     // Start with SELECT and FROM pre-placed (tutorial default)
     _blocks.add(ClauseBlock(type: ClauseType.select, value: ''));
     _blocks.add(ClauseBlock(type: ClauseType.from, value: ''));
-    _rebuildQuery();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _rebuildQuery();
+    });
   }
 
   void _addBlock(ClauseType type) {
