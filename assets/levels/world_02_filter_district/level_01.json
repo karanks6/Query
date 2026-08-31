@@ -1,102 +1,104 @@
-﻿{
-    "id":  "world_02_level_01",
-    "world_id":  "world_02",
-    "level_number":  1,
-    "title":  "First Filter",
-    "narrative":  "A claimant says they lost an item in the Electronics category. Find all electronics.",
-    "type":  "tutorial",
-    "schema":  {
-                   "tables":  [
-                                  {
-                                      "name":  "items",
-                                      "columns":  [
-                                                      {
-                                                          "name":  "id",
-                                                          "type":  "INTEGER",
-                                                          "primary_key":  true
-                                                      },
-                                                      {
-                                                          "name":  "description",
-                                                          "type":  "TEXT",
-                                                          "not_null":  true
-                                                      },
-                                                      {
-                                                          "name":  "category",
-                                                          "type":  "TEXT"
-                                                      },
-                                                      {
-                                                          "name":  "found_date",
-                                                          "type":  "TEXT"
-                                                      },
-                                                      {
-                                                          "name":  "location",
-                                                          "type":  "TEXT"
-                                                      },
-                                                      {
-                                                          "name":  "claimed",
-                                                          "type":  "INTEGER"
-                                                      },
-                                                      {
-                                                          "name":  "claimant_name",
-                                                          "type":  "TEXT"
-                                                      }
-                                                  ]
-                                  }
-                              ]
-               },
-    "schema_sql":  "CREATE TABLE items (id INTEGER PRIMARY KEY, description TEXT NOT NULL, category TEXT, found_date TEXT, location TEXT, claimed INTEGER DEFAULT 0, claimant_name TEXT);",
-    "seed_sql":  "INSERT INTO items VALUES (1,\u0027Blue umbrella\u0027,\u0027Accessories\u0027,\u00272026-01-10\u0027,\u0027Central Station\u0027,1,\u0027Alice Wong\u0027),(2,\u0027Brown leather wallet\u0027,\u0027Accessories\u0027,\u00272026-01-12\u0027,\u0027Park East\u0027,0,NULL),(3,\u0027Red bicycle\u0027,\u0027Vehicles\u0027,\u00272026-01-15\u0027,\u0027Market Square\u0027,0,NULL),(4,\u0027Smartphone Samsung\u0027,\u0027Electronics\u0027,\u00272026-01-16\u0027,\u0027Library\u0027,1,\u0027Bob Mehta\u0027),(5,\u0027Keys (3 keys, keychain)\u0027,\u0027Keys\u0027,\u00272026-01-18\u0027,\u0027Coffee Alley\u0027,0,NULL),(6,\u0027Laptop bag\u0027,\u0027Bags\u0027,\u00272026-01-20\u0027,\u0027Bus Terminal\u0027,0,NULL),(7,\u0027Gold ring\u0027,\u0027Jewelry\u0027,\u00272026-01-21\u0027,\u0027River Walk\u0027,1,\u0027Carla Singh\u0027),(8,\u0027Child rain jacket\u0027,\u0027Clothing\u0027,\u00272026-01-22\u0027,\u0027School Street\u0027,0,NULL),(9,\u0027Glasses (reading)\u0027,\u0027Accessories\u0027,\u00272026-01-23\u0027,\u0027Hospital Lobby\u0027,0,NULL),(10,\u0027Tennis racket\u0027,\u0027Sports\u0027,\u00272026-01-25\u0027,\u0027Sports Center\u0027,1,\u0027Dave Lim\u0027),(11,\u0027iPad (cracked screen)\u0027,\u0027Electronics\u0027,\u00272026-01-26\u0027,\u0027Cafe Norte\u0027,0,NULL),(12,\u0027Purple scarf\u0027,\u0027Clothing\u0027,\u00272026-01-28\u0027,\u0027Museum\u0027,0,NULL),(13,\u0027House keys\u0027,\u0027Keys\u0027,\u00272026-02-01\u0027,\u0027Train Platform 3\u0027,0,NULL),(14,\u0027AirPods case\u0027,\u0027Electronics\u0027,\u00272026-02-02\u0027,\u0027Cinema Foyer\u0027,1,\u0027Eve Park\u0027),(15,\u0027Mountain bike\u0027,\u0027Vehicles\u0027,\u00272026-02-03\u0027,\u0027Riverside\u0027,0,NULL);",
-    "expected_result":  {
-                            "value":  [
-                                          {
-                                              "id":  4,
-                                              "description":  "Smartphone Samsung",
-                                              "category":  "Electronics",
-                                              "found_date":  "2026-01-16",
-                                              "location":  "Library",
-                                              "claimed":  1,
-                                              "claimant_name":  "Bob Mehta"
-                                          },
-                                          {
-                                              "id":  11,
-                                              "description":  "iPad (cracked screen)",
-                                              "category":  "Electronics",
-                                              "found_date":  "2026-01-26",
-                                              "location":  "Cafe Norte",
-                                              "claimed":  0,
-                                              "claimant_name":  null
-                                          },
-                                          {
-                                              "id":  14,
-                                              "description":  "AirPods case",
-                                              "category":  "Electronics",
-                                              "found_date":  "2026-02-02",
-                                              "location":  "Cinema Foyer",
-                                              "claimed":  1,
-                                              "claimant_name":  "Eve Park"
-                                          }
-                                      ],
-                            "Count":  3
-                        },
-    "order_sensitive":  false,
-    "performance_active":  false,
-    "efficiency_threshold":  0.5,
-    "xp_reward":  50,
-    "allowed_world_number":  2,
-    "hints":  [
-                  {
-                      "content":  "WHERE filters rows. Use = to match an exact text value: WHERE column = \u0027value\u0027",
-                      "tier":  "nudge"
-                  },
-                  {
-                      "content":  "Try: SELECT * FROM items WHERE category = \u0027Electronics\u0027",
-                      "code_snippet":  "SELECT * FROM items WHERE category = \u0027Electronics\u0027",
-                      "tier":  "partial_reveal"
-                  },
-                  {
-                      "content":  "The solution is:",
-                      "code_snippet":  "SELECT * FROM items WHERE category = \u0027Electronics\u0027",
-                      "tier":  "full_solution"
-                  }
-              ]
+{
+  "id": "world_02_level_01",
+  "world_id": "world_02",
+  "level_number": 1,
+  "title": "First Filter",
+  "narrative": "A claimant says they lost an item in the Electronics category. Find all electronics.",
+  "type": "tutorial",
+  "schema": {
+    "tables": [
+      {
+        "name": "items",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "primary_key": true
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": true
+          },
+          {
+            "name": "category",
+            "type": "TEXT"
+          },
+          {
+            "name": "found_date",
+            "type": "TEXT"
+          },
+          {
+            "name": "location",
+            "type": "TEXT"
+          },
+          {
+            "name": "claimed",
+            "type": "INTEGER"
+          },
+          {
+            "name": "claimant_name",
+            "type": "TEXT"
+          }
+        ]
+      }
+    ]
+  },
+  "schema_sql": "CREATE TABLE items (id INTEGER PRIMARY KEY, description TEXT NOT NULL, category TEXT, found_date TEXT, location TEXT, claimed INTEGER DEFAULT 0, claimant_name TEXT);",
+  "seed_sql": "INSERT INTO items VALUES (1,'Blue umbrella','Accessories','2026-01-10','Central Station',1,'Alice Wong'),(2,'Brown leather wallet','Accessories','2026-01-12','Park East',0,NULL),(3,'Red bicycle','Vehicles','2026-01-15','Market Square',0,NULL),(4,'Smartphone Samsung','Electronics','2026-01-16','Library',1,'Bob Mehta'),(5,'Keys (3 keys, keychain)','Keys','2026-01-18','Coffee Alley',0,NULL),(6,'Laptop bag','Bags','2026-01-20','Bus Terminal',0,NULL),(7,'Gold ring','Jewelry','2026-01-21','River Walk',1,'Carla Singh'),(8,'Child rain jacket','Clothing','2026-01-22','School Street',0,NULL),(9,'Glasses (reading)','Accessories','2026-01-23','Hospital Lobby',0,NULL),(10,'Tennis racket','Sports','2026-01-25','Sports Center',1,'Dave Lim'),(11,'iPad (cracked screen)','Electronics','2026-01-26','Cafe Norte',0,NULL),(12,'Purple scarf','Clothing','2026-01-28','Museum',0,NULL),(13,'House keys','Keys','2026-02-01','Train Platform 3',0,NULL),(14,'AirPods case','Electronics','2026-02-02','Cinema Foyer',1,'Eve Park'),(15,'Mountain bike','Vehicles','2026-02-03','Riverside',0,NULL);",
+  "expected_result": [
+    {
+      "value": [
+        {
+          "id": 4,
+          "description": "Smartphone Samsung",
+          "category": "Electronics",
+          "found_date": "2026-01-16",
+          "location": "Library",
+          "claimed": 1,
+          "claimant_name": "Bob Mehta"
+        },
+        {
+          "id": 11,
+          "description": "iPad (cracked screen)",
+          "category": "Electronics",
+          "found_date": "2026-01-26",
+          "location": "Cafe Norte",
+          "claimed": 0,
+          "claimant_name": null
+        },
+        {
+          "id": 14,
+          "description": "AirPods case",
+          "category": "Electronics",
+          "found_date": "2026-02-02",
+          "location": "Cinema Foyer",
+          "claimed": 1,
+          "claimant_name": "Eve Park"
+        }
+      ],
+      "Count": 3
+    }
+  ],
+  "order_sensitive": false,
+  "performance_active": false,
+  "efficiency_threshold": 0.5,
+  "xp_reward": 50,
+  "allowed_world_number": 2,
+  "hints": [
+    {
+      "content": "WHERE filters rows. Use = to match an exact text value: WHERE column = 'value'",
+      "tier": "nudge"
+    },
+    {
+      "content": "Try: SELECT * FROM items WHERE category = 'Electronics'",
+      "code_snippet": "SELECT * FROM items WHERE category = 'Electronics'",
+      "tier": "partial_reveal"
+    },
+    {
+      "content": "The solution is:",
+      "code_snippet": "SELECT * FROM items WHERE category = 'Electronics'",
+      "tier": "full_solution"
+    }
+  ]
 }

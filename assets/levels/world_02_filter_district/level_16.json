@@ -1,115 +1,117 @@
-﻿{
-    "id":  "world_02_level_16",
-    "world_id":  "world_02",
-    "level_number":  16,
-    "title":  "Case Closed -- The Missing Registry",
-    "narrative":  "The director wants: all unclaimed items, ordered by found_date oldest first, showing only description and location. Close this case.",
-    "type":  "boss",
-    "schema":  {
-                   "tables":  [
-                                  {
-                                      "name":  "items",
-                                      "columns":  [
-                                                      {
-                                                          "name":  "id",
-                                                          "type":  "INTEGER",
-                                                          "primary_key":  true
-                                                      },
-                                                      {
-                                                          "name":  "description",
-                                                          "type":  "TEXT",
-                                                          "not_null":  true
-                                                      },
-                                                      {
-                                                          "name":  "category",
-                                                          "type":  "TEXT"
-                                                      },
-                                                      {
-                                                          "name":  "found_date",
-                                                          "type":  "TEXT"
-                                                      },
-                                                      {
-                                                          "name":  "location",
-                                                          "type":  "TEXT"
-                                                      },
-                                                      {
-                                                          "name":  "claimed",
-                                                          "type":  "INTEGER"
-                                                      },
-                                                      {
-                                                          "name":  "claimant_name",
-                                                          "type":  "TEXT"
-                                                      }
-                                                  ]
-                                  }
-                              ]
-               },
-    "schema_sql":  "CREATE TABLE items (id INTEGER PRIMARY KEY, description TEXT NOT NULL, category TEXT, found_date TEXT, location TEXT, claimed INTEGER DEFAULT 0, claimant_name TEXT);",
-    "seed_sql":  "INSERT INTO items VALUES (1,\u0027Blue umbrella\u0027,\u0027Accessories\u0027,\u00272026-01-10\u0027,\u0027Central Station\u0027,1,\u0027Alice Wong\u0027),(2,\u0027Brown leather wallet\u0027,\u0027Accessories\u0027,\u00272026-01-12\u0027,\u0027Park East\u0027,0,NULL),(3,\u0027Red bicycle\u0027,\u0027Vehicles\u0027,\u00272026-01-15\u0027,\u0027Market Square\u0027,0,NULL),(4,\u0027Smartphone Samsung\u0027,\u0027Electronics\u0027,\u00272026-01-16\u0027,\u0027Library\u0027,1,\u0027Bob Mehta\u0027),(5,\u0027Keys (3 keys, keychain)\u0027,\u0027Keys\u0027,\u00272026-01-18\u0027,\u0027Coffee Alley\u0027,0,NULL),(6,\u0027Laptop bag\u0027,\u0027Bags\u0027,\u00272026-01-20\u0027,\u0027Bus Terminal\u0027,0,NULL),(7,\u0027Gold ring\u0027,\u0027Jewelry\u0027,\u00272026-01-21\u0027,\u0027River Walk\u0027,1,\u0027Carla Singh\u0027),(8,\u0027Child rain jacket\u0027,\u0027Clothing\u0027,\u00272026-01-22\u0027,\u0027School Street\u0027,0,NULL),(9,\u0027Glasses (reading)\u0027,\u0027Accessories\u0027,\u00272026-01-23\u0027,\u0027Hospital Lobby\u0027,0,NULL),(10,\u0027Tennis racket\u0027,\u0027Sports\u0027,\u00272026-01-25\u0027,\u0027Sports Center\u0027,1,\u0027Dave Lim\u0027),(11,\u0027iPad (cracked screen)\u0027,\u0027Electronics\u0027,\u00272026-01-26\u0027,\u0027Cafe Norte\u0027,0,NULL),(12,\u0027Purple scarf\u0027,\u0027Clothing\u0027,\u00272026-01-28\u0027,\u0027Museum\u0027,0,NULL),(13,\u0027House keys\u0027,\u0027Keys\u0027,\u00272026-02-01\u0027,\u0027Train Platform 3\u0027,0,NULL),(14,\u0027AirPods case\u0027,\u0027Electronics\u0027,\u00272026-02-02\u0027,\u0027Cinema Foyer\u0027,1,\u0027Eve Park\u0027),(15,\u0027Mountain bike\u0027,\u0027Vehicles\u0027,\u00272026-02-03\u0027,\u0027Riverside\u0027,0,NULL);",
-    "expected_result":  {
-                            "value":  [
-                                          {
-                                              "description":  "Brown leather wallet",
-                                              "location":  "Park East"
-                                          },
-                                          {
-                                              "description":  "Red bicycle",
-                                              "location":  "Market Square"
-                                          },
-                                          {
-                                              "description":  "Keys (3 keys, keychain)",
-                                              "location":  "Coffee Alley"
-                                          },
-                                          {
-                                              "description":  "Laptop bag",
-                                              "location":  "Bus Terminal"
-                                          },
-                                          {
-                                              "description":  "Child rain jacket",
-                                              "location":  "School Street"
-                                          },
-                                          {
-                                              "description":  "Glasses (reading)",
-                                              "location":  "Hospital Lobby"
-                                          },
-                                          {
-                                              "description":  "iPad (cracked screen)",
-                                              "location":  "Cafe Norte"
-                                          },
-                                          {
-                                              "description":  "Purple scarf",
-                                              "location":  "Museum"
-                                          },
-                                          {
-                                              "description":  "House keys",
-                                              "location":  "Train Platform 3"
-                                          },
-                                          {
-                                              "description":  "Mountain bike",
-                                              "location":  "Riverside"
-                                          }
-                                      ],
-                            "Count":  10
-                        },
-    "order_sensitive":  true,
-    "performance_active":  false,
-    "efficiency_threshold":  0.5,
-    "xp_reward":  136,
-    "allowed_world_number":  2,
-    "hints":  [
-                  {
-                      "content":  "Filter with WHERE, sort with ORDER BY, and select only two columns.",
-                      "tier":  "nudge"
-                  },
-                  {
-                      "content":  "Try: SELECT description, location FROM items WHERE claimed = 0 ORDER BY found_date ASC",
-                      "code_snippet":  "SELECT description, location FROM items WHERE claimed = 0 ORDER BY found_date ASC",
-                      "tier":  "partial_reveal"
-                  },
-                  {
-                      "content":  "The solution is:",
-                      "code_snippet":  "SELECT description, location FROM items WHERE claimed = 0 ORDER BY found_date ASC",
-                      "tier":  "full_solution"
-                  }
-              ]
+{
+  "id": "world_02_level_16",
+  "world_id": "world_02",
+  "level_number": 16,
+  "title": "Case Closed -- The Missing Registry",
+  "narrative": "The director wants: all unclaimed items, ordered by found_date oldest first, showing only description and location. Close this case.",
+  "type": "boss",
+  "schema": {
+    "tables": [
+      {
+        "name": "items",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "primary_key": true
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": true
+          },
+          {
+            "name": "category",
+            "type": "TEXT"
+          },
+          {
+            "name": "found_date",
+            "type": "TEXT"
+          },
+          {
+            "name": "location",
+            "type": "TEXT"
+          },
+          {
+            "name": "claimed",
+            "type": "INTEGER"
+          },
+          {
+            "name": "claimant_name",
+            "type": "TEXT"
+          }
+        ]
+      }
+    ]
+  },
+  "schema_sql": "CREATE TABLE items (id INTEGER PRIMARY KEY, description TEXT NOT NULL, category TEXT, found_date TEXT, location TEXT, claimed INTEGER DEFAULT 0, claimant_name TEXT);",
+  "seed_sql": "INSERT INTO items VALUES (1,'Blue umbrella','Accessories','2026-01-10','Central Station',1,'Alice Wong'),(2,'Brown leather wallet','Accessories','2026-01-12','Park East',0,NULL),(3,'Red bicycle','Vehicles','2026-01-15','Market Square',0,NULL),(4,'Smartphone Samsung','Electronics','2026-01-16','Library',1,'Bob Mehta'),(5,'Keys (3 keys, keychain)','Keys','2026-01-18','Coffee Alley',0,NULL),(6,'Laptop bag','Bags','2026-01-20','Bus Terminal',0,NULL),(7,'Gold ring','Jewelry','2026-01-21','River Walk',1,'Carla Singh'),(8,'Child rain jacket','Clothing','2026-01-22','School Street',0,NULL),(9,'Glasses (reading)','Accessories','2026-01-23','Hospital Lobby',0,NULL),(10,'Tennis racket','Sports','2026-01-25','Sports Center',1,'Dave Lim'),(11,'iPad (cracked screen)','Electronics','2026-01-26','Cafe Norte',0,NULL),(12,'Purple scarf','Clothing','2026-01-28','Museum',0,NULL),(13,'House keys','Keys','2026-02-01','Train Platform 3',0,NULL),(14,'AirPods case','Electronics','2026-02-02','Cinema Foyer',1,'Eve Park'),(15,'Mountain bike','Vehicles','2026-02-03','Riverside',0,NULL);",
+  "expected_result": [
+    {
+      "value": [
+        {
+          "description": "Brown leather wallet",
+          "location": "Park East"
+        },
+        {
+          "description": "Red bicycle",
+          "location": "Market Square"
+        },
+        {
+          "description": "Keys (3 keys, keychain)",
+          "location": "Coffee Alley"
+        },
+        {
+          "description": "Laptop bag",
+          "location": "Bus Terminal"
+        },
+        {
+          "description": "Child rain jacket",
+          "location": "School Street"
+        },
+        {
+          "description": "Glasses (reading)",
+          "location": "Hospital Lobby"
+        },
+        {
+          "description": "iPad (cracked screen)",
+          "location": "Cafe Norte"
+        },
+        {
+          "description": "Purple scarf",
+          "location": "Museum"
+        },
+        {
+          "description": "House keys",
+          "location": "Train Platform 3"
+        },
+        {
+          "description": "Mountain bike",
+          "location": "Riverside"
+        }
+      ],
+      "Count": 10
+    }
+  ],
+  "order_sensitive": true,
+  "performance_active": false,
+  "efficiency_threshold": 0.5,
+  "xp_reward": 136,
+  "allowed_world_number": 2,
+  "hints": [
+    {
+      "content": "Filter with WHERE, sort with ORDER BY, and select only two columns.",
+      "tier": "nudge"
+    },
+    {
+      "content": "Try: SELECT description, location FROM items WHERE claimed = 0 ORDER BY found_date ASC",
+      "code_snippet": "SELECT description, location FROM items WHERE claimed = 0 ORDER BY found_date ASC",
+      "tier": "partial_reveal"
+    },
+    {
+      "content": "The solution is:",
+      "code_snippet": "SELECT description, location FROM items WHERE claimed = 0 ORDER BY found_date ASC",
+      "tier": "full_solution"
+    }
+  ]
 }

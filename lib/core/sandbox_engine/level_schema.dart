@@ -60,8 +60,8 @@ class ColumnSchema {
     return ColumnSchema(
       name: json['name'] as String,
       type: json['type'] as String? ?? 'TEXT',
-      primaryKey: json['primary_key'] as bool? ?? false,
-      notNull: json['not_null'] as bool? ?? false,
+      primaryKey: (json['primary_key'] ?? json['primaryKey']) as bool? ?? false,
+      notNull: (json['not_null'] ?? json['notNull'] ?? json['nullable'] == false) as bool? ?? false,
     );
   }
 }

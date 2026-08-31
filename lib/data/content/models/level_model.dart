@@ -34,15 +34,15 @@ class WorldModel extends Equatable {
       id: json['id'] as String,
       number: json['number'] as int,
       title: json['title'] as String,
-      caseFile: json['case_file'] as String,
-      clientName: json['client_name'] as String,
-      narrativeIntro: json['narrative_intro'] as String,
-      coreSqlConcept: json['core_sql_concept'] as String,
-      totalLevels: json['total_levels'] as int,
+      caseFile: (json['case_file'] ?? json['caseFile']) as String? ?? '',
+      clientName: (json['client_name'] ?? json['clientName']) as String? ?? '',
+      narrativeIntro: (json['narrative_intro'] ?? json['narrativeIntro']) as String? ?? '',
+      coreSqlConcept: (json['core_sql_concept'] ?? json['coreSqlConcept']) as String? ?? '',
+      totalLevels: (json['total_levels'] ?? json['totalLevels']) as int? ?? 0,
       levels: levelsJson
           .map((l) => LevelModel.fromJson(l as Map<String, dynamic>))
           .toList(),
-      unlockThemeId: json['unlock_theme_id'] as String? ?? 'terminal_classic',
+      unlockThemeId: (json['unlock_theme_id'] ?? json['unlockThemeId']) as String? ?? 'terminal_classic',
     );
   }
 
@@ -103,40 +103,40 @@ class LevelModel extends Equatable {
   });
 
   factory LevelModel.fromJson(Map<String, dynamic> json) {
-    final hintsJson = json['hints'] as List<dynamic>? ?? [];
-    final expectedJson = json['expected_result'] as List<dynamic>? ?? [];
-    final timingJson = json['timing_thresholds'] as Map<String, dynamic>?;
+    final hintsJson = (json['hints'] as List<dynamic>?) ?? [];
+    final expectedJson = ((json['expected_result'] ?? json['expectedResult']) as List<dynamic>?) ?? [];
+    final timingJson = (json['timing_thresholds'] ?? json['timingThresholds']) as Map<String, dynamic>?;
 
     return LevelModel(
       id: json['id'] as String,
-      worldId: json['world_id'] as String,
-      levelNumber: json['level_number'] as int,
-      title: json['title'] as String,
-      narrative: json['narrative'] as String,
-      type: LevelType.fromString(json['type'] as String),
+      worldId: (json['world_id'] ?? json['worldId']) as String? ?? '',
+      levelNumber: (json['level_number'] ?? json['levelNumber']) as int? ?? 1,
+      title: json['title'] as String? ?? 'Unknown Title',
+      narrative: json['narrative'] as String? ?? '',
+      type: LevelType.fromString(json['type'] as String? ?? 'puzzle'),
       schema: LevelSchema.fromJson(json['schema'] as Map<String, dynamic>),
-      schemaSql: json['schema_sql'] as String,
-      seedSql: json['seed_sql'] as String,
+      schemaSql: (json['schema_sql'] ?? json['schemaSql']) as String? ?? '',
+      seedSql: (json['seed_sql'] ?? json['seedSql']) as String? ?? '',
       expectedResult: expectedJson
           .map((r) => Map<String, dynamic>.from(r as Map))
           .toList(),
-      orderSensitive: json['order_sensitive'] as bool? ?? false,
-      performanceActive: json['performance_active'] as bool? ?? false,
-      efficiencyThreshold: (json['efficiency_threshold'] as num?)?.toDouble() ?? 0.8,
+      orderSensitive: (json['order_sensitive'] ?? json['orderSensitive']) as bool? ?? false,
+      performanceActive: (json['performance_active'] ?? json['performanceActive']) as bool? ?? false,
+      efficiencyThreshold: ((json['efficiency_threshold'] ?? json['efficiencyThreshold']) as num?)?.toDouble() ?? 0.8,
       hints: hintsJson
           .map((h) => HintModel.fromJson(h as Map<String, dynamic>))
           .toList(),
-      conceptCardId: json['concept_card_id'] as String?,
-      xpReward: json['xp_reward'] as int? ?? 50,
-      allowedWorldNumber: json['allowed_world_number'] as int? ?? 1,
+      conceptCardId: (json['concept_card_id'] ?? json['conceptCardId']) as String?,
+      xpReward: (json['xp_reward'] ?? json['xpReward']) as int? ?? 50,
+      allowedWorldNumber: (json['allowed_world_number'] ?? json['allowedWorldNumber']) as int? ?? 1,
       timingThresholds: timingJson != null
           ? LevelTimingThresholds.fromJson(timingJson)
           : null,
-      allowedStatements: (json['allowed_statements'] as List<dynamic>?)
+      allowedStatements: ((json['allowed_statements'] ?? json['allowedStatements']) as List<dynamic>?)
               ?.cast<String>() ??
           const [],
-      guidedAnswer: json['guided_answer'] as String?,
-      brokenQuery: json['broken_query'] as String?,
+      guidedAnswer: (json['guided_answer'] ?? json['guidedAnswer']) as String?,
+      brokenQuery: (json['broken_query'] ?? json['brokenQuery']) as String?,
     );
   }
 
@@ -190,10 +190,20 @@ class HintModel {
   });
 
   factory HintModel.fromJson(Map<String, dynamic> json) {
+    HintTierType parsedTier = HintTierType.nudge;
+    if (json['tier'] is int) {
+      final tierInt = json['tier'] as int;
+      if (tierInt == 1) parsedTier = HintTierType.nudge;
+      if (tierInt == 2) parsedTier = HintTierType.partialReveal;
+      if (tierInt == 3) parsedTier = HintTierType.fullSolution;
+    } else if (json['tier'] is String) {
+      parsedTier = HintTierType.fromString(json['tier'] as String);
+    }
+
     return HintModel(
-      tier: HintTierType.fromString(json['tier'] as String),
-      content: json['content'] as String,
-      codeSnippet: json['code_snippet'] as String?,
+      tier: parsedTier,
+      content: (json['content'] ?? json['text']) as String? ?? '',
+      codeSnippet: (json['code_snippet'] ?? json['codeSnippet']) as String?,
     );
   }
 }
