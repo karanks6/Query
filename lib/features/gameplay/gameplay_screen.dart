@@ -305,6 +305,9 @@ class _PhoneLayout extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
+        // Level objective
+        _LevelNarrative(level: level),
+
         // Workspace (fills available space)
         Expanded(
           child: _WorkspaceArea(level: level, state: state),
@@ -363,6 +366,9 @@ class _TabletLayout extends ConsumerWidget {
                       ref.read(gameplayProvider.notifier).toggleSchemaPanel(),
                 ),
               ),
+
+              // Level objective
+              _LevelNarrative(level: level),
 
               // Workspace
               Expanded(child: _WorkspaceArea(level: level, state: state)),
@@ -518,6 +524,57 @@ class _ActionBar extends ConsumerWidget {
           schema: level.schema,
           scrollController: controller,
         ),
+      ),
+    );
+  }
+}
+
+// ─── Level Narrative (Question) ────────────────────────────────────────────────
+
+class _LevelNarrative extends StatelessWidget {
+  final LevelModel level;
+
+  const _LevelNarrative({required this.level});
+
+  @override
+  Widget build(BuildContext context) {
+    if (level.narrative.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(TerminalClassicTokens.spaceMd),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: TerminalClassicTokens.surface,
+        border: Border(
+          bottom: BorderSide(color: TerminalClassicTokens.accentDim, width: 1),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.assignment_outlined, color: TerminalClassicTokens.accent, size: 14),
+              const SizedBox(width: 8),
+              Text(
+                '// OBJECTIVE',
+                style: TerminalClassicTokens.bodySmall.copyWith(
+                  color: TerminalClassicTokens.accent,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            level.narrative,
+            style: TerminalClassicTokens.bodyMedium.copyWith(
+              color: TerminalClassicTokens.secondaryText,
+              height: 1.4,
+            ),
+          ),
+        ],
       ),
     );
   }
