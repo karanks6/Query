@@ -30,8 +30,8 @@ void main() async {
     );
     
     await FirebaseAppCheck.instance.activate(
-      providerAndroid: kDebugMode ? AndroidAppCheckProvider.debug : AndroidAppCheckProvider.playIntegrity,
-      providerApple: AppleAppCheckProvider.deviceCheck,
+      androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+      appleProvider: AppleProvider.deviceCheck,
     );
   } catch (e) {
     debugPrint('Firebase initialization failed: $e');
