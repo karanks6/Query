@@ -457,8 +457,10 @@ class _ActionBar extends ConsumerWidget {
               children: [
                 const Icon(Icons.lightbulb_outline,
                     color: GameTokens.warning, size: 16),
-                const SizedBox(width: 4),
-                Text('HINT', style: GameTokens.labelLarge.copyWith(color: GameTokens.warning)),
+                if (MediaQuery.of(context).size.width > 720) ...[
+                  const SizedBox(width: 4),
+                  Text('HINT', style: GameTokens.labelLarge.copyWith(color: GameTokens.warning)),
+                ],
               ],
             ),
           ),
@@ -471,8 +473,10 @@ class _ActionBar extends ConsumerWidget {
                 children: [
                   const Icon(Icons.table_chart_outlined,
                       color: GameTokens.info, size: 16),
-                  const SizedBox(width: 4),
-                  Text('SCHEMA', style: GameTokens.labelLarge.copyWith(color: GameTokens.info)),
+                  if (MediaQuery.of(context).size.width > 380) ...[
+                    const SizedBox(width: 4),
+                    Text('SCHEMA', style: GameTokens.labelLarge.copyWith(color: GameTokens.info)),
+                  ]
                 ],
               ),
             ),
@@ -497,7 +501,7 @@ class _ActionBar extends ConsumerWidget {
                   const Icon(Icons.play_arrow_rounded,
                       color: GameTokens.background, size: 16),
                 const SizedBox(width: 8),
-                Text('RUN QUERY', style: GameTokens.labelLarge.copyWith(color: GameTokens.background)),
+                Text(MediaQuery.of(context).size.width <= 380 ? 'RUN' : 'RUN QUERY', style: GameTokens.labelLarge.copyWith(color: GameTokens.background)),
               ],
             ),
           ),
