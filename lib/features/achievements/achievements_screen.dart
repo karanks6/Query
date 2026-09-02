@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../theming/tokens/terminal_classic_tokens.dart';
+import '../../theming/tokens/sci_fi_tokens.dart';
+import '../../theming/components/holo_panel.dart';
+import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/terminal_widgets.dart';
 import '../../core/providers.dart';
 
@@ -38,61 +40,64 @@ class AchievementsScreen extends ConsumerWidget {
     final achievementsAsync = ref.watch(allAchievementsProvider);
 
     return Scaffold(
-      backgroundColor: TerminalClassicTokens.background,
+      backgroundColor: SciFiTokens.background,
       appBar: TerminalAppBar(
         title: 'ACHIEVEMENTS',
         onBack: () => Navigator.of(context).pop(),
       ),
-      body: achievementsAsync.when(
-        data: (earnedList) {
-          final earnedIds = earnedList.map((e) => e.achievementId).toSet();
-          
-          return ListView.separated(
-            padding: const EdgeInsets.all(TerminalClassicTokens.spaceMd),
-            itemCount: _kAchievements.length,
-            separatorBuilder: (context, index) => const SizedBox(height: TerminalClassicTokens.spaceMd),
-            itemBuilder: (context, index) {
-              final def = _kAchievements[index];
-              final isEarned = earnedIds.contains(def.id);
+      body: ParallaxBackground(
+        child: achievementsAsync.when(
+          data: (earnedList) {
+            final earnedIds = earnedList.map((e) => e.achievementId).toSet();
+            
+            return ListView.separated(
+              padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+              itemCount: _kAchievements.length,
+              separatorBuilder: (context, index) => const SizedBox(height: SciFiTokens.spaceMd),
+              itemBuilder: (context, index) {
+                final def = _kAchievements[index];
+                final isEarned = earnedIds.contains(def.id);
 
-              return TerminalCard(
-                borderColor: isEarned ? TerminalClassicTokens.accent : TerminalClassicTokens.accentDim,
-                child: Row(
-                  children: [
+                return HoloPanel(
+                  emissionIntensity: isEarned ? 0.3 : 0.05,
+                  borderColorOverride: isEarned ? SciFiTokens.accent : SciFiTokens.accentDim,
+                  padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                  child: Row(
+                    children: [
                     Container(
                       width: 56,
                       height: 56,
                       decoration: BoxDecoration(
                         color: isEarned 
-                          ? TerminalClassicTokens.accent.withValues(alpha: 0.1)
-                          : TerminalClassicTokens.background,
+                          ? SciFiTokens.accent.withValues(alpha: 0.1)
+                          : SciFiTokens.background,
                         border: Border.all(
-                          color: isEarned ? TerminalClassicTokens.accent : TerminalClassicTokens.accentDim,
+                          color: isEarned ? SciFiTokens.accent : SciFiTokens.accentDim,
                         ),
-                        borderRadius: TerminalClassicTokens.borderRadiusSm,
+                        borderRadius: SciFiTokens.borderRadiusSm,
                       ),
                       child: Icon(
                         isEarned ? def.icon : Icons.lock_outline,
-                        color: isEarned ? TerminalClassicTokens.accent : TerminalClassicTokens.accentDim,
+                        color: isEarned ? SciFiTokens.accent : SciFiTokens.accentDim,
                         size: 28,
                       ),
                     ),
-                    const SizedBox(width: TerminalClassicTokens.spaceMd),
+                    const SizedBox(width: SciFiTokens.spaceMd),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             def.title,
-                            style: TerminalClassicTokens.headlineMedium.copyWith(
-                              color: isEarned ? TerminalClassicTokens.primaryText : TerminalClassicTokens.accentDim,
+                            style: SciFiTokens.headlineMedium.copyWith(
+                              color: isEarned ? SciFiTokens.primaryText : SciFiTokens.accentDim,
                             ),
                           ),
-                          const SizedBox(height: TerminalClassicTokens.spaceXs),
+                          const SizedBox(height: SciFiTokens.spaceXs),
                           Text(
                             isEarned ? def.description : '???',
-                            style: TerminalClassicTokens.bodyMedium.copyWith(
-                              color: isEarned ? TerminalClassicTokens.secondaryText : TerminalClassicTokens.accentDim,
+                            style: SciFiTokens.bodyMedium.copyWith(
+                              color: isEarned ? SciFiTokens.secondaryText : SciFiTokens.accentDim,
                             ),
                           ),
                         ],
@@ -101,7 +106,7 @@ class AchievementsScreen extends ConsumerWidget {
                     if (isEarned)
                       Icon(
                         Icons.check_circle_outline,
-                        color: TerminalClassicTokens.accent,
+                        color: SciFiTokens.accent,
                       ),
                   ],
                 ),
@@ -111,12 +116,13 @@ class AchievementsScreen extends ConsumerWidget {
         },
         loading: () => const Center(
           child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation(TerminalClassicTokens.accent),
+            valueColor: AlwaysStoppedAnimation(SciFiTokens.accent),
             strokeWidth: 2,
           ),
         ),
         error: (err, stack) => Center(
-          child: Text('ERROR: $err', style: TerminalClassicTokens.bodyMedium.copyWith(color: TerminalClassicTokens.error)),
+            child: Text('ERROR: $err', style: SciFiTokens.bodyMedium.copyWith(color: SciFiTokens.error)),
+          ),
         ),
       ),
     );

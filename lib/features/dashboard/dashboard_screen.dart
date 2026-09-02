@@ -1,7 +1,10 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theming/tokens/terminal_classic_tokens.dart';
+import '../../theming/tokens/sci_fi_tokens.dart';
+import '../../theming/components/holo_panel.dart';
+import '../../theming/components/holo_button.dart';
+import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/terminal_widgets.dart';
 import '../../core/providers.dart';
 
@@ -20,65 +23,67 @@ class DashboardScreen extends ConsumerWidget {
     final worldsAsync = ref.watch(allWorldProgressProvider);
 
     return Scaffold(
-      backgroundColor: TerminalClassicTokens.background,
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // â”€â”€ App bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-            SliverToBoxAdapter(
-              child: _DashboardAppBar(profileAsync: profileAsync),
-            ),
+      backgroundColor: SciFiTokens.background,
+      body: ParallaxBackground(
+        child: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              // ── App bar ──────────────────────────────────────────────────────
+              SliverToBoxAdapter(
+                child: _DashboardAppBar(profileAsync: profileAsync),
+              ),
 
-            // â”€â”€ Body â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-            SliverPadding(
-              padding: const EdgeInsets.all(TerminalClassicTokens.spaceMd),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  // Continue banner
-                  profileAsync.when(
-                    data: (profile) => worldsAsync.when(
-                      data: (worlds) => _ContinueBanner(
-                        worlds: worlds,
-                        onContinue: () =>
-                            _navigateToCurrentWorld(context, worlds),
+              // ── Body ──────────────────────────────────────────────────────────
+              SliverPadding(
+                padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    // Continue banner
+                    profileAsync.when(
+                      data: (profile) => worldsAsync.when(
+                        data: (worlds) => _ContinueBanner(
+                          worlds: worlds,
+                          onContinue: () =>
+                              _navigateToCurrentWorld(context, worlds),
+                        ),
+                        loading: () => const _LoadingCard(),
+                        error: (_, __) => const SizedBox.shrink(),
                       ),
                       loading: () => const _LoadingCard(),
                       error: (_, __) => const SizedBox.shrink(),
                     ),
-                    loading: () => const _LoadingCard(),
-                    error: (_, __) => const SizedBox.shrink(),
-                  ),
 
-                  const SizedBox(height: TerminalClassicTokens.spaceMd),
+                    const SizedBox(height: SciFiTokens.spaceMd),
 
-                  // Streak + XP row
-                  profileAsync.when(
-                    data: (profile) => profile != null
-                        ? _StatsRow(profile: profile)
-                        : const SizedBox.shrink(),
-                    loading: () => const _LoadingCard(),
-                    error: (_, __) => const SizedBox.shrink(),
-                  ),
+                    // Streak + XP row
+                    profileAsync.when(
+                      data: (profile) => profile != null
+                          ? _StatsRow(profile: profile)
+                          : const SizedBox.shrink(),
+                      loading: () => const _LoadingCard(),
+                      error: (_, __) => const SizedBox.shrink(),
+                    ),
 
-                  const SizedBox(height: TerminalClassicTokens.spaceMd),
+                    const SizedBox(height: SciFiTokens.spaceMd),
 
-                  // Daily challenge card
-                  _DailyChallengeCard(
-                    onTap: () => Navigator.of(context).pushNamed('/daily_challenge'),
-                  ),
+                    // Daily challenge card
+                    _DailyChallengeCard(
+                      onTap: () => Navigator.of(context).pushNamed('/daily_challenge'),
+                    ),
 
-                  const SizedBox(height: TerminalClassicTokens.spaceLg),
-                  const TerminalDivider(label: '// BUREAU TOOLS'),
-                  const SizedBox(height: TerminalClassicTokens.spaceMd),
+                    const SizedBox(height: SciFiTokens.spaceLg),
+                    const TerminalDivider(label: '// BUREAU TOOLS'),
+                    const SizedBox(height: SciFiTokens.spaceMd),
 
-                  // Nav grid
-                  _NavGrid(context: context),
+                    // Nav grid
+                    _NavGrid(context: context),
 
-                  const SizedBox(height: TerminalClassicTokens.spaceLg),
-                ]),
+                    const SizedBox(height: SciFiTokens.spaceLg),
+                  ]),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -102,13 +107,13 @@ class _DashboardAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: TerminalClassicTokens.spaceMd,
-        vertical: TerminalClassicTokens.spaceSm,
+        horizontal: SciFiTokens.spaceMd,
+        vertical: SciFiTokens.spaceSm,
       ),
       decoration: BoxDecoration(
-        color: TerminalClassicTokens.surface,
+        color: SciFiTokens.surface,
         border: Border(
-          bottom: BorderSide(color: TerminalClassicTokens.accentDim, width: 1),
+          bottom: BorderSide(color: SciFiTokens.accentDim, width: 1),
         ),
       ),
       child: Row(
@@ -116,12 +121,12 @@ class _DashboardAppBar extends StatelessWidget {
           // Logo
           Text(
             'QUERY',
-            style: TerminalClassicTokens.titleLarge.copyWith(
+            style: SciFiTokens.titleLarge.copyWith(
               fontSize: 20,
               letterSpacing: 4,
               shadows: [
                 Shadow(
-                  color: TerminalClassicTokens.accentGlow,
+                  color: SciFiTokens.accentGlow,
                   blurRadius: 10,
                 ),
               ],
@@ -140,15 +145,15 @@ class _DashboardAppBar extends StatelessWidget {
                         children: [
                           Text(
                             profile.displayName,
-                            style: TerminalClassicTokens.bodyMedium,
+                            style: SciFiTokens.bodyMedium,
                           ),
                           Text(
                             profile.rankTitle,
-                            style: TerminalClassicTokens.bodySmall,
+                            style: SciFiTokens.bodySmall,
                           ),
                         ],
                       ),
-                      const SizedBox(width: TerminalClassicTokens.spaceSm),
+                      const SizedBox(width: SciFiTokens.spaceSm),
                       GestureDetector(
                         onTap: () => Navigator.of(context).pushNamed('/profile'),
                         child: Container(
@@ -156,14 +161,14 @@ class _DashboardAppBar extends StatelessWidget {
                           height: 36,
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: TerminalClassicTokens.accent,
+                              color: SciFiTokens.accent,
                               width: 1,
                             ),
-                            borderRadius: TerminalClassicTokens.borderRadiusSm,
+                            borderRadius: SciFiTokens.borderRadiusSm,
                           ),
                           child: const Icon(
                             Icons.person_outline,
-                            color: TerminalClassicTokens.accent,
+                            color: SciFiTokens.accent,
                             size: 20,
                           ),
                         ),
@@ -205,26 +210,32 @@ class _ContinueBanner extends StatelessWidget {
         ? current.levelsCompleted / current.totalLevels
         : 0.0;
 
-    return TerminalCard(
-      onTap: onContinue,
+    return HoloButton(
+      isPrimary: true,
+      onPressed: onContinue,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.play_arrow_rounded,
-                  color: TerminalClassicTokens.accent, size: 20),
-              const SizedBox(width: TerminalClassicTokens.spaceSm),
-              Text('CONTINUE', style: TerminalClassicTokens.labelLarge),
+              const Icon(Icons.play_arrow_rounded,
+                  color: SciFiTokens.background, size: 20),
+              const SizedBox(width: SciFiTokens.spaceSm),
+              Text('CONTINUE', style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.background)),
             ],
           ),
-          const SizedBox(height: TerminalClassicTokens.spaceSm),
-          Text(name, style: TerminalClassicTokens.headlineMedium),
-          const SizedBox(height: TerminalClassicTokens.spaceSm),
-          TerminalProgressBar(
+          const SizedBox(height: SciFiTokens.spaceSm),
+          Text(name, style: SciFiTokens.headlineMedium.copyWith(color: SciFiTokens.background)),
+          const SizedBox(height: SciFiTokens.spaceSm),
+          LinearProgressIndicator(
             value: progress,
-            label:
-                '${current.levelsCompleted} / ${current.totalLevels} levels',
+            backgroundColor: SciFiTokens.background.withValues(alpha: 0.3),
+            valueColor: const AlwaysStoppedAnimation(SciFiTokens.background),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${current.levelsCompleted} / ${current.totalLevels} levels',
+            style: SciFiTokens.bodySmall.copyWith(color: SciFiTokens.background),
           ),
         ],
       ),
@@ -245,74 +256,77 @@ class _StatsRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: TerminalCard(
-            padding: const EdgeInsets.all(TerminalClassicTokens.spaceSm),
+          child: HoloPanel(
+            emissionIntensity: 0.3,
+            padding: const EdgeInsets.all(SciFiTokens.spaceSm),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     const Icon(Icons.local_fire_department,
-                        color: TerminalClassicTokens.warning, size: 16),
+                        color: SciFiTokens.warning, size: 16),
                     const SizedBox(width: 4),
-                    Text('STREAK', style: TerminalClassicTokens.bodySmall),
+                    Text('STREAK', style: SciFiTokens.bodySmall),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '${profile.streakCount} days',
-                  style: TerminalClassicTokens.headlineMedium.copyWith(
-                    color: TerminalClassicTokens.warning,
+                  style: SciFiTokens.headlineMedium.copyWith(
+                    color: SciFiTokens.warning,
                   ),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(width: TerminalClassicTokens.spaceSm),
+        const SizedBox(width: SciFiTokens.spaceSm),
         Expanded(
-          child: TerminalCard(
-            padding: const EdgeInsets.all(TerminalClassicTokens.spaceSm),
+          child: HoloPanel(
+            emissionIntensity: 0.3,
+            padding: const EdgeInsets.all(SciFiTokens.spaceSm),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     const Icon(Icons.bolt,
-                        color: TerminalClassicTokens.accent, size: 16),
+                        color: SciFiTokens.accent, size: 16),
                     const SizedBox(width: 4),
-                    Text('XP', style: TerminalClassicTokens.bodySmall),
+                    Text('XP', style: SciFiTokens.bodySmall),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '${profile.totalXp}',
-                  style: TerminalClassicTokens.headlineMedium,
+                  style: SciFiTokens.headlineMedium,
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(width: TerminalClassicTokens.spaceSm),
+        const SizedBox(width: SciFiTokens.spaceSm),
         Expanded(
-          child: TerminalCard(
-            padding: const EdgeInsets.all(TerminalClassicTokens.spaceSm),
+          child: HoloPanel(
+            emissionIntensity: 0.3,
+            padding: const EdgeInsets.all(SciFiTokens.spaceSm),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     const Icon(Icons.workspace_premium_outlined,
-                        color: TerminalClassicTokens.accent, size: 16),
+                        color: SciFiTokens.accent, size: 16),
                     const SizedBox(width: 4),
-                    Text('RANK', style: TerminalClassicTokens.bodySmall),
+                    Text('RANK', style: SciFiTokens.bodySmall),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
                   profile.rankTitle,
-                  style: TerminalClassicTokens.bodySmall.copyWith(
-                    color: TerminalClassicTokens.accent,
+                  style: SciFiTokens.bodySmall.copyWith(
+                    color: SciFiTokens.accent,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -333,9 +347,8 @@ class _DailyChallengeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TerminalCard(
-      onTap: onTap,
-      borderColor: TerminalClassicTokens.warning,
+    return HoloButton(
+      onPressed: onTap,
       child: Row(
         children: [
           Container(
@@ -343,34 +356,34 @@ class _DailyChallengeCard extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               border:
-                  Border.all(color: TerminalClassicTokens.warning, width: 1),
-              borderRadius: TerminalClassicTokens.borderRadiusSm,
-              color: TerminalClassicTokens.warning.withValues(alpha: 0.1),
+                  Border.all(color: SciFiTokens.warning, width: 1),
+              borderRadius: SciFiTokens.borderRadiusSm,
+              color: SciFiTokens.warning.withValues(alpha: 0.1),
             ),
             child: const Icon(Icons.today_outlined,
-                color: TerminalClassicTokens.warning, size: 22),
+                color: SciFiTokens.warning, size: 22),
           ),
-          const SizedBox(width: TerminalClassicTokens.spaceMd),
+          const SizedBox(width: SciFiTokens.spaceMd),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'DAILY CHALLENGE',
-                  style: TerminalClassicTokens.bodySmall.copyWith(
-                    color: TerminalClassicTokens.warning,
+                  style: SciFiTokens.bodySmall.copyWith(
+                    color: SciFiTokens.warning,
                     letterSpacing: 1.5,
                   ),
                 ),
                 Text(
-                  'A new case every day. +2Ã— XP.',
-                  style: TerminalClassicTokens.bodyMedium,
+                  'A new case every day. +2× XP.',
+                  style: SciFiTokens.bodyMedium,
                 ),
               ],
             ),
           ),
           const Icon(Icons.chevron_right,
-              color: TerminalClassicTokens.secondaryText),
+              color: SciFiTokens.accent),
         ],
       ),
     ).animate().fadeIn(delay: 300.ms, duration: 400.ms);
@@ -395,8 +408,8 @@ class _NavGrid extends StatelessWidget {
 
     return GridView.count(
       crossAxisCount: 3,
-      crossAxisSpacing: TerminalClassicTokens.spaceSm,
-      mainAxisSpacing: TerminalClassicTokens.spaceSm,
+      crossAxisSpacing: SciFiTokens.spaceSm,
+      mainAxisSpacing: SciFiTokens.spaceSm,
       childAspectRatio: 1.1,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -421,23 +434,25 @@ class _NavItem {
   const _NavItem(this.icon, this.label, this.route);
 
   Widget buildCard(BuildContext context) {
-    return TerminalCard(
-      onTap: () => Navigator.of(context).pushNamed(route),
-      padding: const EdgeInsets.all(TerminalClassicTokens.spaceSm),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: TerminalClassicTokens.accent, size: 24),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: TerminalClassicTokens.bodySmall.copyWith(
-              fontSize: 9,
-              letterSpacing: 0.8,
+    return HoloButton(
+      onPressed: () => Navigator.of(context).pushNamed(route),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: SciFiTokens.accent, size: 24),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: SciFiTokens.bodySmall.copyWith(
+                fontSize: 9,
+                letterSpacing: 0.8,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -454,7 +469,7 @@ class _LoadingCard extends StatelessWidget {
         child: Center(
           child: CircularProgressIndicator(
             strokeWidth: 1,
-            valueColor: AlwaysStoppedAnimation(TerminalClassicTokens.accent),
+            valueColor: AlwaysStoppedAnimation(SciFiTokens.accent),
           ),
         ),
       ),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theming/tokens/terminal_classic_tokens.dart';
+import '../../theming/tokens/sci_fi_tokens.dart';
+import '../../theming/components/holo_panel.dart';
+import '../../theming/components/holo_button.dart';
+import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/terminal_widgets.dart';
 import '../../core/providers.dart';
 
@@ -63,7 +66,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   void _nextPage() {
     if (_currentPage < _storyCards.length) {
       _pageController.nextPage(
-        duration: TerminalClassicTokens.durationNormal,
+        duration: SciFiTokens.durationNormal,
         curve: Curves.easeInOut,
       );
     }
@@ -99,23 +102,24 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: TerminalClassicTokens.background,
-      body: SafeArea(
-        child: Column(
+      backgroundColor: SciFiTokens.background,
+      body: ParallaxBackground(
+        child: SafeArea(
+          child: Column(
           children: [
             // Top bar with skip
             Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: TerminalClassicTokens.spaceMd,
-                vertical: TerminalClassicTokens.spaceSm,
+                horizontal: SciFiTokens.spaceMd,
+                vertical: SciFiTokens.spaceSm,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'THE QUERY BUREAU',
-                    style: TerminalClassicTokens.bodySmall.copyWith(
-                      color: TerminalClassicTokens.secondaryText,
+                    style: SciFiTokens.bodySmall.copyWith(
+                      color: SciFiTokens.secondaryText,
                       letterSpacing: 2,
                     ),
                   ),
@@ -124,14 +128,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       onPressed: () {
                         _pageController.animateToPage(
                           _storyCards.length,
-                          duration: TerminalClassicTokens.durationNormal,
+                          duration: SciFiTokens.durationNormal,
                           curve: Curves.easeInOut,
                         );
                       },
                       child: Text(
                         'SKIP',
-                        style: TerminalClassicTokens.bodySmall.copyWith(
-                          color: TerminalClassicTokens.secondaryText,
+                        style: SciFiTokens.bodySmall.copyWith(
+                          color: SciFiTokens.secondaryText,
                         ),
                       ),
                     ),
@@ -145,20 +149,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               children: [
                 for (int i = 0; i <= _storyCards.length; i++)
                   AnimatedContainer(
-                    duration: TerminalClassicTokens.durationFast,
+                    duration: SciFiTokens.durationFast,
                     margin: const EdgeInsets.symmetric(horizontal: 3),
                     width: _currentPage == i ? 20 : 6,
                     height: 2,
                     decoration: BoxDecoration(
                       color: _currentPage == i
-                          ? TerminalClassicTokens.accent
-                          : TerminalClassicTokens.accentDim,
+                          ? SciFiTokens.accent
+                          : SciFiTokens.accentDim,
                       borderRadius: BorderRadius.circular(1),
                     ),
                   ),
               ],
             ),
-            const SizedBox(height: TerminalClassicTokens.spaceMd),
+            const SizedBox(height: SciFiTokens.spaceMd),
 
             // Pages
             Expanded(
@@ -180,18 +184,35 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
             // CTA button
             Padding(
-              padding: const EdgeInsets.all(TerminalClassicTokens.spaceLg),
+              padding: const EdgeInsets.all(SciFiTokens.spaceLg),
               child: _currentPage < _storyCards.length
-                  ? TerminalButton(
-                      label: _currentPage == _storyCards.length - 1
-                          ? 'ENTER THE BUREAU'
-                          : 'NEXT',
+                  ? HoloButton(
+                      isPrimary: true,
                       onPressed: _nextPage,
+                      child: Text(
+                        _currentPage == _storyCards.length - 1
+                            ? 'ENTER THE BUREAU'
+                            : 'NEXT',
+                      ),
                     )
-                  : TerminalButton(
-                      label: 'BEGIN CASE #001',
-                      onPressed: _createProfile,
-                      isLoading: _isSaving,
+                  : HoloButton(
+                      isPrimary: true,
+                      onPressed: _isSaving ? null : _createProfile,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_isSaving)
+                            const Padding(
+                              padding: EdgeInsets.only(right: 8.0),
+                              child: SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(strokeWidth: 2, color: SciFiTokens.background),
+                              ),
+                            ),
+                          const Text('BEGIN CASE #001'),
+                        ],
+                      ),
                     ),
             ),
           ],
@@ -223,64 +244,62 @@ class _StoryCardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: TerminalClassicTokens.spaceLg),
+      padding: const EdgeInsets.symmetric(horizontal: SciFiTokens.spaceLg),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // Icon
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              border: Border.all(color: TerminalClassicTokens.accent, width: 1),
-              borderRadius: TerminalClassicTokens.borderRadiusSm,
-              color: TerminalClassicTokens.accentDim.withValues(alpha: 0.15),
-              boxShadow: TerminalClassicTokens.accentGlowShadow,
-            ),
-            child: Icon(
-              card.icon,
-              color: TerminalClassicTokens.accent,
-              size: 36,
+          HoloPanel(
+            emissionIntensity: 0.5,
+            borderRadius: SciFiTokens.borderRadiusMd,
+            child: SizedBox(
+              width: 80,
+              height: 80,
+              child: Icon(
+                card.icon,
+                color: SciFiTokens.accent,
+                size: 36,
+              ),
             ),
           ).animate().fadeIn(duration: 400.ms).scale(begin: const Offset(0.8, 0.8)),
 
-          const SizedBox(height: TerminalClassicTokens.spaceLg),
+          const SizedBox(height: SciFiTokens.spaceLg),
 
           // Badge
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: TerminalClassicTokens.spaceSm,
+              horizontal: SciFiTokens.spaceSm,
               vertical: 3,
             ),
             decoration: BoxDecoration(
-              border: Border.all(color: TerminalClassicTokens.accentDim, width: 1),
-              borderRadius: TerminalClassicTokens.borderRadiusSm,
+              border: Border.all(color: SciFiTokens.accentDim, width: 1),
+              borderRadius: SciFiTokens.borderRadiusSm,
             ),
             child: Text(
               card.badge,
-              style: TerminalClassicTokens.bodySmall.copyWith(
-                color: TerminalClassicTokens.secondaryText,
+              style: SciFiTokens.bodySmall.copyWith(
+                color: SciFiTokens.secondaryText,
                 letterSpacing: 1.5,
               ),
             ),
           ).animate().fadeIn(delay: 100.ms, duration: 300.ms),
 
-          const SizedBox(height: TerminalClassicTokens.spaceMd),
+          const SizedBox(height: SciFiTokens.spaceMd),
 
           // Title
           Text(
             card.title,
-            style: TerminalClassicTokens.headlineLarge,
+            style: SciFiTokens.headlineLarge,
             textAlign: TextAlign.center,
           ).animate().fadeIn(delay: 200.ms, duration: 400.ms),
 
-          const SizedBox(height: TerminalClassicTokens.spaceMd),
+          const SizedBox(height: SciFiTokens.spaceMd),
 
           // Body
           Text(
             card.body,
-            style: TerminalClassicTokens.bodyLarge.copyWith(
-              color: TerminalClassicTokens.secondaryText,
+            style: SciFiTokens.bodyLarge.copyWith(
+              color: SciFiTokens.secondaryText,
             ),
             textAlign: TextAlign.center,
           ).animate().fadeIn(delay: 300.ms, duration: 400.ms),
@@ -304,46 +323,46 @@ class _NameEntryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: TerminalClassicTokens.spaceLg),
+      padding: const EdgeInsets.symmetric(horizontal: SciFiTokens.spaceLg),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             '// AGENT REGISTRATION',
-            style: TerminalClassicTokens.bodySmall.copyWith(
-              color: TerminalClassicTokens.secondaryText,
+            style: SciFiTokens.bodySmall.copyWith(
+              color: SciFiTokens.secondaryText,
               letterSpacing: 2,
             ),
           ),
-          const SizedBox(height: TerminalClassicTokens.spaceSm),
+          const SizedBox(height: SciFiTokens.spaceSm),
           Text(
             'What do we call you?',
-            style: TerminalClassicTokens.headlineLarge,
+            style: SciFiTokens.headlineLarge,
           ),
-          const SizedBox(height: TerminalClassicTokens.spaceSm),
+          const SizedBox(height: SciFiTokens.spaceSm),
           Text(
             'This name will appear on your detective file and the leaderboards.',
-            style: TerminalClassicTokens.bodyMedium.copyWith(
-              color: TerminalClassicTokens.secondaryText,
+            style: SciFiTokens.bodyMedium.copyWith(
+              color: SciFiTokens.secondaryText,
             ),
           ),
-          const SizedBox(height: TerminalClassicTokens.spaceLg),
+          const SizedBox(height: SciFiTokens.spaceLg),
           TextField(
             controller: controller,
             onChanged: onChanged,
             autofocus: true,
-            style: TerminalClassicTokens.code,
-            cursorColor: TerminalClassicTokens.accent,
+            style: SciFiTokens.code,
+            cursorColor: SciFiTokens.accent,
             decoration: InputDecoration(
               hintText: 'Agent Name',
               errorText: error,
               prefixText: '> ',
-              prefixStyle: TerminalClassicTokens.code.copyWith(
-                color: TerminalClassicTokens.accent,
+              prefixStyle: SciFiTokens.code.copyWith(
+                color: SciFiTokens.accent,
               ),
-              errorStyle: TerminalClassicTokens.bodySmall.copyWith(
-                color: TerminalClassicTokens.error,
+              errorStyle: SciFiTokens.bodySmall.copyWith(
+                color: SciFiTokens.error,
               ),
             ),
           ),

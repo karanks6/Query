@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theming/tokens/terminal_classic_tokens.dart';
+import '../../theming/tokens/sci_fi_tokens.dart';
+import '../../theming/components/holo_panel.dart';
+import '../../theming/components/holo_button.dart';
+import 'widgets/parallax_background.dart';
 import '../../shared/widgets/terminal_widgets.dart';
 import '../../data/content/models/level_model.dart';
 import '../../core/scoring/level_scorer.dart';
@@ -57,20 +60,22 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
     }
 
     return Scaffold(
-      backgroundColor: TerminalClassicTokens.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ── HUD / Top bar ─────────────────────────────────────────────
-            _GameplayHUD(level: widget.level, state: state),
+      backgroundColor: SciFiTokens.background,
+      body: ParallaxBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              // ── HUD / Top bar ─────────────────────────────────────────────
+              _GameplayHUD(level: widget.level, state: state),
 
-            // ── Main area ─────────────────────────────────────────────────
-            Expanded(
-              child: isTablet
-                  ? _TabletLayout(level: widget.level, state: state)
-                  : _PhoneLayout(level: widget.level, state: state),
-            ),
-          ],
+              // ── Main area ─────────────────────────────────────────────────
+              Expanded(
+                child: isTablet
+                    ? _TabletLayout(level: widget.level, state: state)
+                    : _PhoneLayout(level: widget.level, state: state),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -116,11 +121,11 @@ class _GameplayHUD extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       height: 48,
-      padding: const EdgeInsets.symmetric(horizontal: TerminalClassicTokens.spaceSm),
+      padding: const EdgeInsets.symmetric(horizontal: SciFiTokens.spaceSm),
       decoration: BoxDecoration(
-        color: TerminalClassicTokens.surface,
+        color: SciFiTokens.surface,
         border: Border(
-          bottom: BorderSide(color: TerminalClassicTokens.accentDim, width: 1),
+          bottom: BorderSide(color: SciFiTokens.accentDim, width: 1),
         ),
       ),
       child: Row(
@@ -128,13 +133,13 @@ class _GameplayHUD extends ConsumerWidget {
           // Back
           IconButton(
             icon: const Icon(Icons.close,
-                color: TerminalClassicTokens.secondaryText, size: 18),
+                color: SciFiTokens.secondaryText, size: 18),
             onPressed: () => _confirmExit(context),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
           ),
 
-          const SizedBox(width: TerminalClassicTokens.spaceSm),
+          const SizedBox(width: SciFiTokens.spaceSm),
 
           // Level info
           Expanded(
@@ -144,8 +149,8 @@ class _GameplayHUD extends ConsumerWidget {
               children: [
                 Text(
                   level.title,
-                  style: TerminalClassicTokens.bodySmall.copyWith(
-                    color: TerminalClassicTokens.accent,
+                  style: SciFiTokens.bodySmall.copyWith(
+                    color: SciFiTokens.accent,
                     fontSize: 10,
                   ),
                   maxLines: 1,
@@ -154,8 +159,8 @@ class _GameplayHUD extends ConsumerWidget {
                 if (level.type == LevelType.debugging)
                   Text(
                     'DEBUGGING CHALLENGE',
-                    style: TerminalClassicTokens.bodySmall.copyWith(
-                      color: TerminalClassicTokens.error,
+                    style: SciFiTokens.bodySmall.copyWith(
+                      color: SciFiTokens.error,
                       fontSize: 8,
                       fontWeight: FontWeight.bold,
                     ),
@@ -163,8 +168,8 @@ class _GameplayHUD extends ConsumerWidget {
                 else if (level.type == LevelType.optimizationChallenge)
                   Text(
                     'OPTIMIZATION CHALLENGE',
-                    style: TerminalClassicTokens.bodySmall.copyWith(
-                      color: TerminalClassicTokens.warning,
+                    style: SciFiTokens.bodySmall.copyWith(
+                      color: SciFiTokens.warning,
                       fontSize: 8,
                       fontWeight: FontWeight.bold,
                     ),
@@ -177,29 +182,29 @@ class _GameplayHUD extends ConsumerWidget {
           if (!level.type.isBlockModeOnly)
             _ModeToggle(state: state),
 
-          const SizedBox(width: TerminalClassicTokens.spaceSm),
+          const SizedBox(width: SciFiTokens.spaceSm),
 
           // Star preview
           if (level.type.hasStarRating) StarRow(starCount: 0),
 
           // Attempts indicator
-          const SizedBox(width: TerminalClassicTokens.spaceSm),
+          const SizedBox(width: SciFiTokens.spaceSm),
           Text(
             '#${state.attemptCount}',
-            style: TerminalClassicTokens.bodySmall.copyWith(
-              color: TerminalClassicTokens.secondaryText,
+            style: SciFiTokens.bodySmall.copyWith(
+              color: SciFiTokens.secondaryText,
               fontSize: 10,
             ),
           ),
           
           // Speed Timer (Mock)
-          const SizedBox(width: TerminalClassicTokens.spaceSm),
-          Icon(Icons.timer_outlined, color: TerminalClassicTokens.accent, size: 12),
+          const SizedBox(width: SciFiTokens.spaceSm),
+          Icon(Icons.timer_outlined, color: SciFiTokens.accent, size: 12),
           const SizedBox(width: 2),
           Text(
             '00:00',
-            style: TerminalClassicTokens.codeSmall.copyWith(
-              color: TerminalClassicTokens.accent,
+            style: SciFiTokens.codeSmall.copyWith(
+              color: SciFiTokens.accent,
               fontSize: 10,
             ),
           ),
@@ -212,22 +217,22 @@ class _GameplayHUD extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: TerminalClassicTokens.surface,
+        backgroundColor: SciFiTokens.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: TerminalClassicTokens.borderRadiusSm,
-          side: BorderSide(color: TerminalClassicTokens.accentDim),
+          borderRadius: SciFiTokens.borderRadiusSm,
+          side: BorderSide(color: SciFiTokens.accentDim),
         ),
-        title: Text('Exit level?', style: TerminalClassicTokens.headlineMedium),
+        title: Text('Exit level?', style: SciFiTokens.headlineMedium),
         content: Text(
           'Your progress on this attempt won\'t be saved.',
-          style: TerminalClassicTokens.bodyMedium.copyWith(
-            color: TerminalClassicTokens.secondaryText,
+          style: SciFiTokens.bodyMedium.copyWith(
+            color: SciFiTokens.secondaryText,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('KEEP PLAYING', style: TerminalClassicTokens.labelLarge),
+            child: Text('KEEP PLAYING', style: SciFiTokens.labelLarge),
           ),
           TextButton(
             onPressed: () {
@@ -236,8 +241,8 @@ class _GameplayHUD extends ConsumerWidget {
             },
             child: Text(
               'EXIT',
-              style: TerminalClassicTokens.labelLarge
-                  .copyWith(color: TerminalClassicTokens.error),
+              style: SciFiTokens.labelLarge
+                  .copyWith(color: SciFiTokens.error),
             ),
           ),
         ],
@@ -258,31 +263,31 @@ class _ModeToggle extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          border: Border.all(color: TerminalClassicTokens.accentDim, width: 1),
-          borderRadius: TerminalClassicTokens.borderRadiusSm,
+          border: Border.all(color: SciFiTokens.accentDim, width: 1),
+          borderRadius: SciFiTokens.borderRadiusSm,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'BLOCK',
-              style: TerminalClassicTokens.bodySmall.copyWith(
+              style: SciFiTokens.bodySmall.copyWith(
                 color: state.queryMode == QueryMode.block
-                    ? TerminalClassicTokens.accent
-                    : TerminalClassicTokens.disabledText,
+                    ? SciFiTokens.accent
+                    : SciFiTokens.disabledText,
                 fontSize: 9,
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Container(width: 1, height: 10, color: TerminalClassicTokens.accentDim),
+              child: Container(width: 1, height: 10, color: SciFiTokens.accentDim),
             ),
             Text(
               'CODE',
-              style: TerminalClassicTokens.bodySmall.copyWith(
+              style: SciFiTokens.bodySmall.copyWith(
                 color: state.queryMode == QueryMode.code
-                    ? TerminalClassicTokens.accent
-                    : TerminalClassicTokens.disabledText,
+                    ? SciFiTokens.accent
+                    : SciFiTokens.disabledText,
                 fontSize: 9,
               ),
             ),
@@ -346,7 +351,7 @@ class _TabletLayout extends ConsumerWidget {
             child: SchemaBrowser(schema: level.schema),
           ),
 
-        Container(width: 1, color: TerminalClassicTokens.accentDim),
+        Container(width: 1, color: SciFiTokens.accentDim),
 
         // Main area
         Expanded(
@@ -360,7 +365,7 @@ class _TabletLayout extends ConsumerWidget {
                     state.schemaExpanded
                         ? Icons.chevron_left
                         : Icons.chevron_right,
-                    color: TerminalClassicTokens.secondaryText,
+                    color: SciFiTokens.secondaryText,
                   ),
                   onPressed: () =>
                       ref.read(gameplayProvider.notifier).toggleSchemaPanel(),
@@ -400,7 +405,7 @@ class _WorkspaceArea extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AnimatedSwitcher(
-      duration: TerminalClassicTokens.durationNormal,
+      duration: SciFiTokens.durationNormal,
       child: state.queryMode == QueryMode.block
           ? BlockModeWorkspace(
               key: const ValueKey('block'),
@@ -432,57 +437,67 @@ class _ActionBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: TerminalClassicTokens.spaceMd,
-        vertical: TerminalClassicTokens.spaceSm,
+        horizontal: SciFiTokens.spaceMd,
+        vertical: SciFiTokens.spaceSm,
       ),
       decoration: BoxDecoration(
-        color: TerminalClassicTokens.surface,
+        color: SciFiTokens.surface,
         border: Border(
-          top: BorderSide(color: TerminalClassicTokens.accentDim, width: 1),
+          top: BorderSide(color: SciFiTokens.accentDim, width: 1),
         ),
       ),
       child: Row(
         children: [
           // Hints
-          TextButton.icon(
+          HoloButton(
             onPressed: () => _showHints(context, level, state, ref),
-            icon: const Icon(Icons.lightbulb_outline,
-                color: TerminalClassicTokens.warning, size: 16),
-            label: Text(
-              'HINT',
-              style: TerminalClassicTokens.bodySmall.copyWith(
-                color: TerminalClassicTokens.warning,
-                letterSpacing: 1,
-              ),
+            child: Row(
+              children: [
+                const Icon(Icons.lightbulb_outline,
+                    color: SciFiTokens.warning, size: 16),
+                const SizedBox(width: 4),
+                Text('HINT', style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.warning)),
+              ],
             ),
           ),
 
           // Schema (phone only — opens drawer)
           if (MediaQuery.of(context).size.width <= 720)
-            TextButton.icon(
+            HoloButton(
               onPressed: () => _showSchemaBrowser(context, level),
-              icon: const Icon(Icons.table_chart_outlined,
-                  color: TerminalClassicTokens.info, size: 16),
-              label: Text(
-                'SCHEMA',
-                style: TerminalClassicTokens.bodySmall.copyWith(
-                  color: TerminalClassicTokens.info,
-                  letterSpacing: 1,
-                ),
+              child: Row(
+                children: [
+                  const Icon(Icons.table_chart_outlined,
+                      color: SciFiTokens.info, size: 16),
+                  const SizedBox(width: 4),
+                  Text('SCHEMA', style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.info)),
+                ],
               ),
             ),
 
           const Spacer(),
 
           // Run button
-          TerminalButton(
-            label: 'RUN QUERY',
+          HoloButton(
+            isPrimary: true,
             onPressed: state.isRunning
                 ? null
                 : () => ref.read(gameplayProvider.notifier).runQuery(),
-            isLoading: state.isRunning,
-            icon: const Icon(Icons.play_arrow_rounded,
-                color: TerminalClassicTokens.accent, size: 16),
+            child: Row(
+              children: [
+                if (state.isRunning)
+                  const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: SciFiTokens.background),
+                  )
+                else
+                  const Icon(Icons.play_arrow_rounded,
+                      color: SciFiTokens.background, size: 16),
+                const SizedBox(width: 8),
+                Text('RUN QUERY', style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.background)),
+              ],
+            ),
           ),
         ],
       ),
@@ -497,7 +512,7 @@ class _ActionBar extends ConsumerWidget {
   ) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: TerminalClassicTokens.surface,
+      backgroundColor: SciFiTokens.surface,
       isScrollControlled: true,
       builder: (_) => HintsModal(
         hints: level.hints,
@@ -512,7 +527,7 @@ class _ActionBar extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: TerminalClassicTokens.surface,
+      backgroundColor: SciFiTokens.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
       ),
@@ -540,41 +555,41 @@ class _LevelNarrative extends StatelessWidget {
   Widget build(BuildContext context) {
     if (level.narrative.isEmpty) return const SizedBox.shrink();
 
-    return Container(
-      padding: const EdgeInsets.all(TerminalClassicTokens.spaceMd),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: TerminalClassicTokens.surface,
-        border: Border(
-          bottom: BorderSide(color: TerminalClassicTokens.accentDim, width: 1),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return Padding(
+      padding: const EdgeInsets.all(SciFiTokens.spaceSm),
+      child: HoloPanel(
+        emissionIntensity: 0.2, // Subdued so it doesn't distract from interactive elements
+        padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.assignment_outlined, color: TerminalClassicTokens.accent, size: 14),
-              const SizedBox(width: 8),
+              Row(
+                children: [
+                  const Icon(Icons.assignment_outlined, color: SciFiTokens.accent, size: 14),
+                  const SizedBox(width: 8),
+                  Text(
+                    '// OBJECTIVE',
+                    style: SciFiTokens.bodySmall.copyWith(
+                      color: SciFiTokens.accent,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
               Text(
-                '// OBJECTIVE',
-                style: TerminalClassicTokens.bodySmall.copyWith(
-                  color: TerminalClassicTokens.accent,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
+                level.narrative,
+                style: SciFiTokens.bodyMedium.copyWith(
+                  color: SciFiTokens.primaryText, // Changed to primaryText to make it more visible
+                  height: 1.4,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            level.narrative,
-            style: TerminalClassicTokens.bodyMedium.copyWith(
-              color: TerminalClassicTokens.secondaryText,
-              height: 1.4,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

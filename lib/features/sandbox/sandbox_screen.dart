@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
-import '../../theming/tokens/terminal_classic_tokens.dart';
+import '../../theming/tokens/sci_fi_tokens.dart';
+import '../../theming/components/holo_panel.dart';
+import '../../theming/components/holo_button.dart';
+import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/terminal_widgets.dart';
 
 class SandboxScreen extends StatefulWidget {
@@ -84,87 +87,92 @@ class _SandboxScreenState extends State<SandboxScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: TerminalClassicTokens.background,
+      backgroundColor: SciFiTokens.background,
       appBar: TerminalAppBar(
         title: 'SANDBOX TERMINAL',
         onBack: () => Navigator.of(context).pop(),
       ),
-      body: _isInitializing
-          ? const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(TerminalClassicTokens.accent)))
-          : Column(
-              children: [
-                // Info Banner
-                Container(
-                  padding: const EdgeInsets.all(TerminalClassicTokens.spaceMd),
-                  color: TerminalClassicTokens.surface,
-                  width: double.infinity,
-                  child: Text(
-                    'Memory instance active. Available tables: departments, employees, projects, assignments.',
-                    style: TerminalClassicTokens.bodySmall.copyWith(color: TerminalClassicTokens.accent),
+      body: ParallaxBackground(
+        child: _isInitializing
+            ? const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(SciFiTokens.accent)))
+            : Column(
+                children: [
+                  // Info Banner
+                  HoloPanel(
+                    emissionIntensity: 0.2,
+                    padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Text(
+                        'Memory instance active. Available tables: departments, employees, projects, assignments.',
+                        style: SciFiTokens.bodySmall.copyWith(color: SciFiTokens.accent),
+                      ),
+                    ),
                   ),
-                ),
-                
-                // Editor
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    padding: const EdgeInsets.all(TerminalClassicTokens.spaceMd),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: TerminalClassicTokens.accentDim),
-                              borderRadius: TerminalClassicTokens.borderRadiusSm,
-                              color: TerminalClassicTokens.surface,
-                            ),
-                            child: TextField(
-                              controller: _queryController,
-                              maxLines: null,
-                              expands: true,
-                              style: TerminalClassicTokens.bodyMedium.copyWith(
-                                color: TerminalClassicTokens.primaryText,
-                                height: 1.5,
-                              ),
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.all(TerminalClassicTokens.spaceMd),
-                                hintText: 'Enter SQL query...',
-                                hintStyle: TerminalClassicTokens.bodyMedium.copyWith(color: TerminalClassicTokens.secondaryText),
+                  
+                  // Editor
+                  Expanded(
+                    flex: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: HoloPanel(
+                              emissionIntensity: 0.15,
+                              padding: EdgeInsets.zero,
+                              child: TextField(
+                                controller: _queryController,
+                                maxLines: null,
+                                expands: true,
+                                style: SciFiTokens.code.copyWith(
+                                  color: SciFiTokens.primaryText,
+                                  height: 1.5,
+                                ),
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  contentPadding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                                  hintText: 'Enter SQL query...',
+                                  hintStyle: SciFiTokens.bodyMedium.copyWith(color: SciFiTokens.secondaryText),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: TerminalClassicTokens.spaceMd),
-                        TerminalButton(
-                          onPressed: _runQuery,
-                          label: 'EXECUTE QUERY',
-                          icon: const Icon(Icons.play_arrow, size: 16),
-                        ),
-                      ],
+                          const SizedBox(height: SciFiTokens.spaceMd),
+                          HoloButton(
+                            isPrimary: true,
+                            onPressed: _runQuery,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.play_arrow, size: 16),
+                                const SizedBox(width: SciFiTokens.spaceSm),
+                                const Text('EXECUTE QUERY'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                
-                // Divider
-                Container(
-                  height: 1,
-                  color: TerminalClassicTokens.accentDim,
-                ),
-                
-                // Results
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    width: double.infinity,
-                    color: TerminalClassicTokens.background,
-                    padding: const EdgeInsets.all(TerminalClassicTokens.spaceMd),
-                    child: _buildResultsArea(),
+                  
+                  // Results
+                  Expanded(
+                    flex: 3,
+                    child: HoloPanel(
+                      emissionIntensity: 0.1,
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                      padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: _buildResultsArea(),
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
   }
 
@@ -173,7 +181,7 @@ class _SandboxScreenState extends State<SandboxScreen> {
       return SingleChildScrollView(
         child: Text(
           'ERROR: $_error',
-          style: TerminalClassicTokens.bodyMedium.copyWith(color: TerminalClassicTokens.error),
+          style: SciFiTokens.bodyMedium.copyWith(color: SciFiTokens.error),
         ),
       );
     }
@@ -182,7 +190,7 @@ class _SandboxScreenState extends State<SandboxScreen> {
       return Center(
         child: Text(
           'READY FOR INPUT',
-          style: TerminalClassicTokens.bodySmall.copyWith(color: TerminalClassicTokens.secondaryText),
+          style: SciFiTokens.bodySmall.copyWith(color: SciFiTokens.secondaryText),
         ),
       );
     }
@@ -191,7 +199,7 @@ class _SandboxScreenState extends State<SandboxScreen> {
       return Center(
         child: Text(
           '0 ROWS RETURNED',
-          style: TerminalClassicTokens.bodySmall.copyWith(color: TerminalClassicTokens.secondaryText),
+          style: SciFiTokens.bodySmall.copyWith(color: SciFiTokens.secondaryText),
         ),
       );
     }
@@ -201,16 +209,16 @@ class _SandboxScreenState extends State<SandboxScreen> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
-          headingTextStyle: TerminalClassicTokens.bodySmall.copyWith(
-            color: TerminalClassicTokens.accent,
+          headingTextStyle: SciFiTokens.bodySmall.copyWith(
+            color: SciFiTokens.accent,
             fontWeight: FontWeight.bold,
           ),
-          dataTextStyle: TerminalClassicTokens.bodyMedium.copyWith(
-            color: TerminalClassicTokens.primaryText,
+          dataTextStyle: SciFiTokens.bodyMedium.copyWith(
+            color: SciFiTokens.primaryText,
           ),
           dividerThickness: 1,
           border: TableBorder(
-            horizontalInside: BorderSide(color: TerminalClassicTokens.accentDim, width: 1),
+            horizontalInside: BorderSide(color: SciFiTokens.accentDim, width: 1),
           ),
           columns: _result!.columnNames
               .map((col) => DataColumn(label: Text(col)))

@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theming/tokens/terminal_classic_tokens.dart';
+import '../../theming/tokens/sci_fi_tokens.dart';
+import '../../theming/components/holo_panel.dart';
+import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/terminal_widgets.dart';
 import '../../core/providers.dart';
 import '../../data/content/level_loader.dart';
@@ -103,7 +105,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Widget build(BuildContext context) {
     if (_initError != null) {
       return Scaffold(
-        backgroundColor: TerminalClassicTokens.background,
+        backgroundColor: SciFiTokens.background,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -115,7 +117,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 Text(
                   'INITIALIZATION ERROR',
                   style: TextStyle(
-                    color: TerminalClassicTokens.accent,
+                    color: SciFiTokens.accent,
                     fontFamily: 'JetBrainsMono',
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
@@ -139,30 +141,29 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     }
 
     return Scaffold(
-      backgroundColor: TerminalClassicTokens.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Scanline texture overlay
-                    _ScanlineBackground(
-                      child: Padding(
-                        padding: const EdgeInsets.all(TerminalClassicTokens.spaceXl),
+      backgroundColor: SciFiTokens.background,
+      body: ParallaxBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(SciFiTokens.spaceXl),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             // Logo / wordmark
                             _QueryWordmark(),
-                            const SizedBox(height: TerminalClassicTokens.spaceLg),
+                            const SizedBox(height: SciFiTokens.spaceLg),
                             Text(
                               'THE QUERY BUREAU',
-                              style: TerminalClassicTokens.bodySmall.copyWith(
+                              style: SciFiTokens.bodySmall.copyWith(
                                 letterSpacing: 4.0,
-                                color: TerminalClassicTokens.secondaryText,
+                                color: SciFiTokens.secondaryText,
                               ),
                             )
                                 .animate()
@@ -170,49 +171,57 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            // Loading area + tips
-            Padding(
-              padding: const EdgeInsets.all(TerminalClassicTokens.spaceLg),
-              child: Column(
-                children: [
-                  // Tip rotator
-                  AnimatedSwitcher(
-                    duration: TerminalClassicTokens.durationSlow,
-                    child: Text(
-                      '> ${_tips[_tipIndex]}',
-                      key: ValueKey(_tipIndex),
-                      style: TerminalClassicTokens.bodySmall.copyWith(
-                        color: TerminalClassicTokens.secondaryText,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+              // Loading area + tips
+              Padding(
+                padding: const EdgeInsets.all(SciFiTokens.spaceLg),
+                child: HoloPanel(
+                  emissionIntensity: 0.3,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: SciFiTokens.spaceLg,
+                    vertical: SciFiTokens.spaceMd,
                   ),
-                  const SizedBox(height: TerminalClassicTokens.spaceMd),
-
-                  // Loading bar
-                  SizedBox(
-                    width: 160,
-                    child: LinearProgressIndicator(
-                      backgroundColor: TerminalClassicTokens.surfaceVariant,
-                      valueColor: AlwaysStoppedAnimation(TerminalClassicTokens.accent),
-                      minHeight: 2,
-                    )
-                        .animate(onPlay: (c) => c.repeat())
-                        .shimmer(
-                          duration: 1500.ms,
-                          color: TerminalClassicTokens.accentGlow,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Tip rotator
+                      AnimatedSwitcher(
+                        duration: SciFiTokens.durationSlow,
+                        child: Text(
+                          '> ${_tips[_tipIndex]}',
+                          key: ValueKey(_tipIndex),
+                          style: SciFiTokens.bodySmall.copyWith(
+                            color: SciFiTokens.secondaryText,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
+                      ),
+                      const SizedBox(height: SciFiTokens.spaceMd),
+
+                      // Loading bar
+                      SizedBox(
+                        width: 160,
+                        child: LinearProgressIndicator(
+                          backgroundColor: SciFiTokens.surfaceVariant,
+                          valueColor: const AlwaysStoppedAnimation(SciFiTokens.accent),
+                          minHeight: 2,
+                        )
+                            .animate(onPlay: (c) => c.repeat())
+                            .shimmer(
+                              duration: 1500.ms,
+                              color: SciFiTokens.accentGlow,
+                            ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -232,12 +241,12 @@ class _QueryWordmark extends StatelessWidget {
           children: [
             Text(
               'QUERY',
-              style: TerminalClassicTokens.displayLarge.copyWith(
+              style: SciFiTokens.displayLarge.copyWith(
                 fontSize: 52,
                 letterSpacing: 8,
                 shadows: [
                   Shadow(
-                    color: TerminalClassicTokens.accentGlow,
+                    color: SciFiTokens.accentGlow,
                     blurRadius: 20,
                   ),
                 ],
@@ -248,7 +257,7 @@ class _QueryWordmark extends StatelessWidget {
                 .then()
                 .shimmer(
                   duration: 800.ms,
-                  color: TerminalClassicTokens.accent.withValues(alpha: 0.6),
+                  color: SciFiTokens.accent.withValues(alpha: 0.6),
                 ),
             const SizedBox(width: 4),
             BlinkingCursor(
@@ -262,42 +271,4 @@ class _QueryWordmark extends StatelessWidget {
   }
 }
 
-/// Subtle scanline overlay (Terminal theme visual).
-class _ScanlineBackground extends StatelessWidget {
-  final Widget child;
 
-  const _ScanlineBackground({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        child,
-        // Scanline effect via repeating gradient
-        Positioned.fill(
-          child: IgnorePointer(
-            child: CustomPaint(
-              painter: _ScanlinePainter(),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ScanlinePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.black.withValues(alpha: 0.08)
-      ..strokeWidth = 1;
-
-    for (double y = 0; y < size.height; y += 3) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}

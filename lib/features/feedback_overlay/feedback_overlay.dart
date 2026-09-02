@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../theming/tokens/terminal_classic_tokens.dart';
+import '../../theming/tokens/sci_fi_tokens.dart';
+import '../../theming/components/holo_panel.dart';
+import '../../theming/components/holo_button.dart';
 import '../../shared/widgets/terminal_widgets.dart';
 import '../../core/validation/validation_result.dart';
 import '../../core/sandbox_engine/sandbox_engine.dart';
@@ -34,26 +36,19 @@ class FeedbackOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final isSuccess = report?.isComplete ?? false;
     final accentColor = isSuccess
-        ? TerminalClassicTokens.success
-        : TerminalClassicTokens.error;
+        ? SciFiTokens.success
+        : SciFiTokens.error;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: TerminalClassicTokens.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
-        border: Border.all(color: accentColor, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: accentColor.withValues(alpha: 0.2),
-            blurRadius: 20,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
+    return HoloPanel(
+      emissionIntensity: 0.6,
+      borderColorOverride: accentColor,
+      glowColorOverride: accentColor,
+      colorOverride: SciFiTokens.surface,
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.all(TerminalClassicTokens.spaceLg),
+          padding: const EdgeInsets.all(SciFiTokens.spaceLg),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,9 +56,9 @@ class FeedbackOverlay extends StatelessWidget {
               // Header
               _FeedbackHeader(isSuccess: isSuccess, score: score),
 
-              const SizedBox(height: TerminalClassicTokens.spaceMd),
+              const SizedBox(height: SciFiTokens.spaceMd),
               TerminalDivider(),
-              const SizedBox(height: TerminalClassicTokens.spaceMd),
+              const SizedBox(height: SciFiTokens.spaceMd),
 
               // Main feedback message
               _FeedbackMessage(
@@ -78,13 +73,13 @@ class FeedbackOverlay extends StatelessWidget {
                   mistake: _getCommonMistake()!,
                 ),
 
-              const SizedBox(height: TerminalClassicTokens.spaceMd),
+              const SizedBox(height: SciFiTokens.spaceMd),
 
               // Star breakdown (on success)
               if (isSuccess && score != null)
                 _StarBreakdown(score: score!),
 
-              const SizedBox(height: TerminalClassicTokens.spaceLg),
+              const SizedBox(height: SciFiTokens.spaceLg),
 
               // CTAs
               _FeedbackActions(
@@ -100,7 +95,7 @@ class FeedbackOverlay extends StatelessWidget {
     ).animate().slideY(
           begin: 1.0,
           end: 0.0,
-          duration: TerminalClassicTokens.durationNormal,
+          duration: SciFiTokens.durationNormal,
           curve: Curves.easeOut,
         );
   }
@@ -130,19 +125,19 @@ class _FeedbackHeader extends StatelessWidget {
         Icon(
           isSuccess ? Icons.check_circle_outline : Icons.cancel_outlined,
           color: isSuccess
-              ? TerminalClassicTokens.success
-              : TerminalClassicTokens.error,
+              ? SciFiTokens.success
+              : SciFiTokens.error,
           size: 24,
         )
             .animate(target: isSuccess ? 1 : 0)
             .scale(duration: 400.ms, curve: Curves.bounceOut),
-        const SizedBox(width: TerminalClassicTokens.spaceSm),
+        const SizedBox(width: SciFiTokens.spaceSm),
         Text(
           isSuccess ? 'CASE CRACKED!' : 'NOT QUITE.',
-          style: TerminalClassicTokens.headlineLarge.copyWith(
+          style: SciFiTokens.headlineLarge.copyWith(
             color: isSuccess
-                ? TerminalClassicTokens.success
-                : TerminalClassicTokens.error,
+                ? SciFiTokens.success
+                : SciFiTokens.error,
           ),
         ),
         if (isSuccess && score != null) ...[
@@ -190,35 +185,26 @@ class _FeedbackMessage extends StatelessWidget {
       message = report!.resultDiff!.plainEnglishSummary;
     }
 
-    return Container(
-      padding: const EdgeInsets.all(TerminalClassicTokens.spaceMd),
-      decoration: BoxDecoration(
-        color: isSuccess
-            ? TerminalClassicTokens.successSurface
-            : TerminalClassicTokens.errorSurface,
-        borderRadius: TerminalClassicTokens.borderRadiusSm,
-        border: Border.all(
-          color: isSuccess
-              ? TerminalClassicTokens.success
-              : TerminalClassicTokens.error,
-          width: 1,
-        ),
-      ),
+    return HoloPanel(
+      emissionIntensity: 0.2,
+      borderColorOverride: isSuccess ? SciFiTokens.success : SciFiTokens.error,
+      colorOverride: isSuccess ? SciFiTokens.successSurface : SciFiTokens.errorSurface,
+      padding: const EdgeInsets.all(SciFiTokens.spaceMd),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             '> ',
-            style: TerminalClassicTokens.code.copyWith(
+            style: SciFiTokens.code.copyWith(
               color: isSuccess
-                  ? TerminalClassicTokens.success
-                  : TerminalClassicTokens.error,
+                  ? SciFiTokens.success
+                  : SciFiTokens.error,
             ),
           ),
           Expanded(
             child: Text(
               message,
-              style: TerminalClassicTokens.bodyMedium,
+              style: SciFiTokens.bodyMedium,
             ),
           ),
         ],
@@ -234,48 +220,48 @@ class _CommonMistakeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: TerminalClassicTokens.spaceMd),
-      padding: const EdgeInsets.all(TerminalClassicTokens.spaceMd),
-      decoration: BoxDecoration(
-        color: TerminalClassicTokens.warningSurface,
-        borderRadius: TerminalClassicTokens.borderRadiusSm,
-        border: Border.all(color: TerminalClassicTokens.warning, width: 1),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(top: SciFiTokens.spaceMd),
+      child: HoloPanel(
+        emissionIntensity: 0.2,
+        borderColorOverride: SciFiTokens.warning,
+        colorOverride: SciFiTokens.warningSurface,
+        padding: const EdgeInsets.all(SciFiTokens.spaceMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               const Icon(Icons.school_outlined,
-                  color: TerminalClassicTokens.warning, size: 14),
+                  color: SciFiTokens.warning, size: 14),
               const SizedBox(width: 6),
               Text(mistake.title,
-                  style: TerminalClassicTokens.bodySmall.copyWith(
-                    color: TerminalClassicTokens.warning,
+                  style: SciFiTokens.bodySmall.copyWith(
+                    color: SciFiTokens.warning,
                     fontWeight: FontWeight.bold,
                   )),
             ],
           ),
           const SizedBox(height: 6),
-          Text(mistake.explanation, style: TerminalClassicTokens.bodySmall),
+          Text(mistake.explanation, style: SciFiTokens.bodySmall),
           if (mistake.example != null) ...[
             const SizedBox(height: 6),
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: TerminalClassicTokens.surface,
-                borderRadius: TerminalClassicTokens.borderRadiusSm,
+                color: SciFiTokens.surface,
+                borderRadius: SciFiTokens.borderRadiusSm,
               ),
               child: Text(
                 mistake.example!,
-                style: TerminalClassicTokens.codeSmall.copyWith(
-                  color: TerminalClassicTokens.accent,
+                style: SciFiTokens.codeSmall.copyWith(
+                  color: SciFiTokens.accent,
                 ),
               ),
             ),
           ],
         ],
+      ),
       ),
     );
   }
@@ -291,26 +277,26 @@ class _StarBreakdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('STARS EARNED', style: TerminalClassicTokens.bodySmall.copyWith(
-          color: TerminalClassicTokens.secondaryText,
+        Text('STARS EARNED', style: SciFiTokens.bodySmall.copyWith(
+          color: SciFiTokens.secondaryText,
           letterSpacing: 1.5,
         )),
-        const SizedBox(height: TerminalClassicTokens.spaceSm),
+        const SizedBox(height: SciFiTokens.spaceSm),
         _StarItem('Completion', score.completionStar),
         _StarItem('Optimal Query', score.optimalStar),
         _StarItem('First Attempt', score.firstAttemptStar),
         const SizedBox(height: 4),
         Text(
           '+${score.xpEarned} XP earned',
-          style: TerminalClassicTokens.bodySmall.copyWith(
-            color: TerminalClassicTokens.accent,
+          style: SciFiTokens.bodySmall.copyWith(
+            color: SciFiTokens.accent,
           ),
         ),
         if (score.hintCapApplied)
           Text(
             '(Full solution hint used â€” capped at 1 star)',
-            style: TerminalClassicTokens.bodySmall.copyWith(
-              color: TerminalClassicTokens.warning,
+            style: SciFiTokens.bodySmall.copyWith(
+              color: SciFiTokens.warning,
             ),
           ),
       ],
@@ -333,17 +319,17 @@ class _StarItem extends StatelessWidget {
           Icon(
             earned ? Icons.star_rounded : Icons.star_border_rounded,
             color: earned
-                ? TerminalClassicTokens.accent
-                : TerminalClassicTokens.disabledText,
+                ? SciFiTokens.accent
+                : SciFiTokens.disabledText,
             size: 16,
           ),
           const SizedBox(width: 6),
           Text(
             label,
-            style: TerminalClassicTokens.bodySmall.copyWith(
+            style: SciFiTokens.bodySmall.copyWith(
               color: earned
-                  ? TerminalClassicTokens.primaryText
-                  : TerminalClassicTokens.disabledText,
+                  ? SciFiTokens.primaryText
+                  : SciFiTokens.disabledText,
             ),
           ),
         ],
@@ -371,26 +357,34 @@ class _FeedbackActions extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         if (!isSuccess) ...[
-          OutlinedButton(
+          TextButton(
             onPressed: onDismiss,
             child: Text('REVIEW QUERY',
-                style: TerminalClassicTokens.labelLarge.copyWith(
-                  color: TerminalClassicTokens.secondaryText,
+                style: SciFiTokens.labelLarge.copyWith(
+                  color: SciFiTokens.secondaryText,
                 )),
           ),
-          const SizedBox(width: TerminalClassicTokens.spaceMd),
-          TerminalButton(label: 'RETRY', onPressed: onRetry),
+          const SizedBox(width: SciFiTokens.spaceMd),
+          HoloButton(
+            isPrimary: true,
+            onPressed: onRetry,
+            child: const Text('RETRY'),
+          ),
         ] else ...[
           if (onNextLevel != null)
-            TerminalButton(label: 'NEXT LEVEL', onPressed: onNextLevel),
-          const SizedBox(width: TerminalClassicTokens.spaceSm),
-          OutlinedButton(
+            HoloButton(
+              isPrimary: true,
+              onPressed: onNextLevel,
+              child: const Text('NEXT LEVEL'),
+            ),
+          const SizedBox(width: SciFiTokens.spaceSm),
+          TextButton(
             onPressed: onDismiss,
-            child: Text('REVIEW', style: TerminalClassicTokens.labelLarge),
+            child: Text('REVIEW', style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.secondaryText)),
           ),
-          const SizedBox(width: TerminalClassicTokens.spaceSm),
+          const SizedBox(width: SciFiTokens.spaceSm),
           IconButton(
-            icon: Icon(Icons.share, color: TerminalClassicTokens.accent),
+            icon: Icon(Icons.share, color: SciFiTokens.accent),
             onPressed: () {
               Share.share('I just cracked a SQL case in Query!\nLevel passed with flying colors. #QueryGame #SQL');
             },

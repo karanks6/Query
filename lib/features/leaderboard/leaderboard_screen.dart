@@ -1,70 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theming/app_theme.dart';
+import '../../theming/tokens/sci_fi_tokens.dart';
+import '../../theming/components/holo_panel.dart';
+import '../gameplay/widgets/parallax_background.dart';
+import '../../shared/widgets/terminal_widgets.dart';
 
 class LeaderboardScreen extends ConsumerWidget {
   const LeaderboardScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tokens = ref.watch(activeTokensProvider);
-
     return Scaffold(
-      backgroundColor: tokens.background,
-      appBar: AppBar(
-        title: Text('Daily Leaderboard', style: TextStyle(color: tokens.primaryText)),
-        backgroundColor: tokens.surface,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: tokens.primaryText),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+      backgroundColor: SciFiTokens.background,
+      appBar: TerminalAppBar(
+        title: 'LEADERBOARD',
+        onBack: () => Navigator.of(context).pop(),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: 10,
-        itemBuilder: (context, index) {
-          final isTopThree = index < 3;
-          return Container(
-            margin: const EdgeInsets.only(bottom: 8.0),
-            padding: const EdgeInsets.all(12.0),
-            decoration: BoxDecoration(
-              color: tokens.surface,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: isTopThree ? tokens.accent : tokens.surfaceVariant,
-                width: isTopThree ? 2 : 1,
+      body: ParallaxBackground(
+        child: ListView.builder(
+          padding: const EdgeInsets.all(SciFiTokens.spaceLg),
+          itemCount: 10,
+          itemBuilder: (context, index) {
+            final isTopThree = index < 3;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: SciFiTokens.spaceMd),
+              child: HoloPanel(
+                emissionIntensity: isTopThree ? 0.3 : 0.05,
+                borderColorOverride: isTopThree ? SciFiTokens.accent : SciFiTokens.accentDim,
+                padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                child: Row(
+                  children: [
+                    Text(
+                      '#${index + 1}',
+                      style: SciFiTokens.headlineMedium.copyWith(
+                        color: isTopThree ? SciFiTokens.accent : SciFiTokens.secondaryText,
+                      ),
+                    ),
+                    const SizedBox(width: SciFiTokens.spaceLg),
+                    CircleAvatar(
+                      backgroundColor: SciFiTokens.surfaceVariant,
+                      child: const Icon(Icons.person, color: SciFiTokens.primaryText, size: 20),
+                    ),
+                    const SizedBox(width: SciFiTokens.spaceMd),
+                    Expanded(
+                      child: Text(
+                        'Detective_${1000 + index * 42}',
+                        style: SciFiTokens.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Text(
+                      '${15000 - (index * 850)} XP',
+                      style: SciFiTokens.code.copyWith(color: SciFiTokens.secondaryText),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            child: Row(
-              children: [
-                Text(
-                  '#${index + 1}',
-                  style: TextStyle(
-                    color: isTopThree ? tokens.accent : tokens.secondaryText,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                CircleAvatar(
-                  backgroundColor: tokens.background,
-                  child: Icon(Icons.person, color: tokens.primaryText, size: 20),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Detective_${1000 + index * 42}',
-                    style: TextStyle(color: tokens.primaryText, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Text(
-                  '${15000 - (index * 850)} XP',
-                  style: TextStyle(color: tokens.secondaryText),
-                ),
-              ],
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

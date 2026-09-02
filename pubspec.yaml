@@ -49,6 +49,7 @@ dependencies:
   archive: ^4.2.0
   firebase_storage: ^13.5.0
   shared_preferences: ^2.5.3
+  sensors_plus: ^7.1.0
 
 dev_dependencies:
   flutter_test:

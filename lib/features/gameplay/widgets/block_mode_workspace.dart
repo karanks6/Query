@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../theming/tokens/terminal_classic_tokens.dart';
+import '../../../theming/tokens/sci_fi_tokens.dart';
 import '../../../core/sandbox_engine/level_schema.dart';
 
 /// Block Mode workspace (Section 3.1).
@@ -116,7 +116,7 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
         // Active blocks area
         Expanded(
           child: Container(
-            padding: const EdgeInsets.all(TerminalClassicTokens.spaceMd),
+            padding: const EdgeInsets.all(SciFiTokens.spaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -125,19 +125,19 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
                   children: [
                     Text(
                       '// QUERY BUILDER',
-                      style: TerminalClassicTokens.bodySmall.copyWith(
-                        color: TerminalClassicTokens.secondaryText,
+                      style: SciFiTokens.bodySmall.copyWith(
+                        color: SciFiTokens.secondaryText,
                         letterSpacing: 1.5,
                       ),
                     ),
                     TextButton.icon(
                       onPressed: _triggerAssistMode,
-                      icon: Icon(Icons.lightbulb_outline, size: 14, color: TerminalClassicTokens.accent),
-                      label: Text('Assist', style: TerminalClassicTokens.bodySmall.copyWith(color: TerminalClassicTokens.accent)),
+                      icon: Icon(Icons.lightbulb_outline, size: 14, color: SciFiTokens.accent),
+                      label: Text('Assist', style: SciFiTokens.bodySmall.copyWith(color: SciFiTokens.accent)),
                     ),
                   ],
                 ),
-                const SizedBox(height: TerminalClassicTokens.spaceSm),
+                const SizedBox(height: SciFiTokens.spaceSm),
 
                 // Blocks
                 ...List.generate(_blocks.length, (i) {
@@ -154,21 +154,21 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
                 // Drop zone hint
                 if (_blocks.length < 4)
                   Container(
-                    margin: const EdgeInsets.only(top: TerminalClassicTokens.spaceSm),
+                    margin: const EdgeInsets.only(top: SciFiTokens.spaceSm),
                     height: 36,
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: TerminalClassicTokens.accentDim,
+                        color: SciFiTokens.accentDim,
                         width: 1,
                         // Dashed border approximation
                       ),
-                      borderRadius: TerminalClassicTokens.borderRadiusSm,
+                      borderRadius: SciFiTokens.borderRadiusSm,
                     ),
                     child: Center(
                       child: Text(
                         '+ drag a clause here',
-                        style: TerminalClassicTokens.bodySmall.copyWith(
-                          color: TerminalClassicTokens.hintText,
+                        style: SciFiTokens.bodySmall.copyWith(
+                          color: SciFiTokens.hintText,
                         ),
                       ),
                     ),
@@ -182,15 +182,15 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
         Container(
           height: 48,
           decoration: BoxDecoration(
-            color: TerminalClassicTokens.surfaceVariant,
+            color: SciFiTokens.surfaceVariant,
             border: Border(
-              top: BorderSide(color: TerminalClassicTokens.accentDim, width: 1),
+              top: BorderSide(color: SciFiTokens.accentDim, width: 1),
             ),
           ),
           child: ListView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(
-              horizontal: TerminalClassicTokens.spaceSm,
+              horizontal: SciFiTokens.spaceSm,
               vertical: 8,
             ),
             children: _availableClauses.map((clause) {
@@ -205,22 +205,22 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
                         horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: alreadyUsed
-                          ? TerminalClassicTokens.surface
-                          : TerminalClassicTokens.accentDim.withValues(alpha: 0.2),
+                          ? SciFiTokens.surface
+                          : SciFiTokens.accentDim.withValues(alpha: 0.2),
                       border: Border.all(
                         color: alreadyUsed
-                            ? TerminalClassicTokens.disabledText
-                            : TerminalClassicTokens.accent,
+                            ? SciFiTokens.disabledText
+                            : SciFiTokens.accent,
                         width: 1,
                       ),
-                      borderRadius: TerminalClassicTokens.borderRadiusSm,
+                      borderRadius: SciFiTokens.borderRadiusSm,
                     ),
                     child: Text(
                       clause.keyword,
-                      style: TerminalClassicTokens.codeSmall.copyWith(
+                      style: SciFiTokens.codeSmall.copyWith(
                         color: alreadyUsed
-                            ? TerminalClassicTokens.disabledText
-                            : TerminalClassicTokens.accent,
+                            ? SciFiTokens.disabledText
+                            : SciFiTokens.accent,
                         fontSize: 11,
                       ),
                     ),
@@ -253,8 +253,8 @@ class _ClauseBlockWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       decoration: BoxDecoration(
-        color: TerminalClassicTokens.surfaceVariant,
-        borderRadius: TerminalClassicTokens.borderRadiusSm,
+        color: SciFiTokens.surfaceVariant,
+        borderRadius: SciFiTokens.borderRadiusSm,
         border: Border.all(color: block.type.color, width: 1),
       ),
       child: Row(
@@ -274,7 +274,7 @@ class _ClauseBlockWidget extends StatelessWidget {
             ),
             child: Text(
               block.type.keyword,
-              style: TerminalClassicTokens.codeSmall.copyWith(
+              style: SciFiTokens.codeSmall.copyWith(
                 color: block.type.color,
                 fontWeight: FontWeight.bold,
               ),
@@ -286,8 +286,8 @@ class _ClauseBlockWidget extends StatelessWidget {
             child: TextField(
               controller: TextEditingController(text: block.value),
               onChanged: onValueChanged,
-              style: TerminalClassicTokens.code.copyWith(fontSize: 13),
-              cursorColor: TerminalClassicTokens.accent,
+              style: SciFiTokens.code.copyWith(fontSize: 13),
+              cursorColor: SciFiTokens.accent,
               decoration: const InputDecoration(
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -300,7 +300,7 @@ class _ClauseBlockWidget extends StatelessWidget {
           if (onRemove != null)
             IconButton(
               icon: const Icon(Icons.close,
-                  color: TerminalClassicTokens.disabledText, size: 14),
+                  color: SciFiTokens.disabledText, size: 14),
               onPressed: onRemove,
               padding: const EdgeInsets.all(8),
               constraints: const BoxConstraints(),

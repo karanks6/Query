@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theming/app_theme.dart';
+import '../../theming/tokens/sci_fi_tokens.dart';
+import '../../theming/components/holo_panel.dart';
+import '../gameplay/widgets/parallax_background.dart';
+import '../../shared/widgets/terminal_widgets.dart';
 import '../../core/providers.dart';
 import '../../data/local/app_database.dart';
 
@@ -9,74 +12,63 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tokens = ref.watch(activeTokensProvider);
     final profileAsync = ref.watch(playerProfileProvider);
 
     return Scaffold(
-      backgroundColor: tokens.background,
-      appBar: AppBar(
-        title: Text('Detective Profile', style: TextStyle(color: tokens.primaryText)),
-        backgroundColor: tokens.surface,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: tokens.primaryText),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+      backgroundColor: SciFiTokens.background,
+      appBar: TerminalAppBar(
+        title: 'DETECTIVE PROFILE',
+        onBack: () => Navigator.of(context).pop(),
       ),
-      body: profileAsync.when(
-        loading: () => Center(child: CircularProgressIndicator(color: tokens.accent)),
-        error: (err, stack) => Center(child: Text('Error loading profile: $err', style: TextStyle(color: tokens.error))),
-        data: (profile) {
-          if (profile == null) {
-            return Center(child: Text('Profile not found', style: TextStyle(color: tokens.error)));
-          }
+      body: ParallaxBackground(
+        child: profileAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator(color: SciFiTokens.accent)),
+          error: (err, stack) => Center(child: Text('Error loading profile: $err', style: const TextStyle(color: SciFiTokens.error))),
+          data: (profile) {
+            if (profile == null) {
+              return const Center(child: Text('Profile not found', style: TextStyle(color: SciFiTokens.error)));
+            }
 
-          return ListView(
-            padding: const EdgeInsets.all(16.0),
-            children: [
-              _buildHeader(profile, tokens),
-              const SizedBox(height: 24),
-              _buildStatsGrid(profile, tokens),
-              const SizedBox(height: 24),
-              _buildMasteryTracker(tokens),
-            ],
-          );
-        },
+            return ListView(
+              padding: const EdgeInsets.all(SciFiTokens.spaceLg),
+              children: [
+                _buildHeader(profile),
+                const SizedBox(height: SciFiTokens.spaceXl),
+                _buildStatsGrid(profile),
+                const SizedBox(height: SciFiTokens.spaceXl),
+                _buildMasteryTracker(),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
 
-  Widget _buildHeader(PlayerProfile profile, AppThemeTokens tokens) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: tokens.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: tokens.surfaceVariant),
-      ),
+  Widget _buildHeader(PlayerProfile profile) {
+    return HoloPanel(
+      emissionIntensity: 0.2,
+      padding: const EdgeInsets.all(SciFiTokens.spaceLg),
       child: Row(
         children: [
           CircleAvatar(
             radius: 40,
-            backgroundColor: tokens.accent.withValues(alpha: 0.2),
-            child: Icon(Icons.person, size: 40, color: tokens.accent),
+            backgroundColor: SciFiTokens.accent.withValues(alpha: 0.2),
+            child: const Icon(Icons.person, size: 40, color: SciFiTokens.accent),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: SciFiTokens.spaceLg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   profile.displayName,
-                  style: TextStyle(
-                    color: tokens.primaryText,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: SciFiTokens.headlineLarge.copyWith(color: SciFiTokens.primaryText),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   profile.rankTitle,
-                  style: TextStyle(color: tokens.secondaryText, fontSize: 16),
+                  style: SciFiTokens.bodyMedium.copyWith(color: SciFiTokens.secondaryText),
                 ),
               ],
             ),
@@ -86,56 +78,48 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatsGrid(PlayerProfile profile, AppThemeTokens tokens) {
+  Widget _buildStatsGrid(PlayerProfile profile) {
     return Row(
       children: [
-        Expanded(child: _buildStatCard('Total XP', profile.totalXp.toString(), tokens)),
-        const SizedBox(width: 12),
-        Expanded(child: _buildStatCard('Streak', '${profile.streakCount} Days', tokens)),
-        const SizedBox(width: 12),
-        Expanded(child: _buildStatCard('Insight Pts', profile.insightPoints.toString(), tokens)),
+        Expanded(child: _buildStatCard('TOTAL XP', profile.totalXp.toString())),
+        const SizedBox(width: SciFiTokens.spaceMd),
+        Expanded(child: _buildStatCard('STREAK', '${profile.streakCount} DAYS')),
+        const SizedBox(width: SciFiTokens.spaceMd),
+        Expanded(child: _buildStatCard('INSIGHT', profile.insightPoints.toString())),
       ],
     );
   }
 
-  Widget _buildStatCard(String label, String value, AppThemeTokens tokens) {
-    return Container(
-      padding: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        color: tokens.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: tokens.surfaceVariant),
-      ),
+  Widget _buildStatCard(String label, String value) {
+    return HoloPanel(
+      emissionIntensity: 0.1,
+      padding: const EdgeInsets.all(SciFiTokens.spaceMd),
       child: Column(
         children: [
-          Text(label, style: TextStyle(color: tokens.secondaryText, fontSize: 12)),
-          const SizedBox(height: 8),
-          Text(value, style: TextStyle(color: tokens.primaryText, fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(label, style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.secondaryText)),
+          const SizedBox(height: SciFiTokens.spaceSm),
+          Text(value, style: SciFiTokens.headlineMedium.copyWith(color: SciFiTokens.primaryText)),
         ],
       ),
     );
   }
 
-  Widget _buildMasteryTracker(AppThemeTokens tokens) {
+  Widget _buildMasteryTracker() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('CONCEPT MASTERY', style: TextStyle(color: tokens.secondaryText, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: tokens.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: tokens.surfaceVariant),
-          ),
+        Text('CONCEPT MASTERY', style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.secondaryText)),
+        const SizedBox(height: SciFiTokens.spaceMd),
+        HoloPanel(
+          emissionIntensity: 0.1,
+          padding: const EdgeInsets.all(SciFiTokens.spaceLg),
           child: Column(
             children: [
-              _buildMasteryBar('Basic Selects', 1.0, tokens),
-              _buildMasteryBar('Filtering & Logic', 0.85, tokens),
-              _buildMasteryBar('Aggregations', 0.60, tokens),
-              _buildMasteryBar('JOINs', 0.40, tokens),
-              _buildMasteryBar('Subqueries', 0.10, tokens),
+              _buildMasteryBar('Basic Selects', 1.0),
+              _buildMasteryBar('Filtering & Logic', 0.85),
+              _buildMasteryBar('Aggregations', 0.60),
+              _buildMasteryBar('JOINs', 0.40),
+              _buildMasteryBar('Subqueries', 0.10),
             ],
           ),
         )
@@ -143,21 +127,21 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMasteryBar(String concept, double progress, AppThemeTokens tokens) {
+  Widget _buildMasteryBar(String concept, double progress) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
+      padding: const EdgeInsets.only(bottom: SciFiTokens.spaceMd),
       child: Row(
         children: [
           Expanded(
             flex: 2,
-            child: Text(concept, style: TextStyle(color: tokens.primaryText)),
+            child: Text(concept, style: SciFiTokens.bodyMedium),
           ),
           Expanded(
             flex: 3,
             child: LinearProgressIndicator(
               value: progress,
-              backgroundColor: tokens.background,
-              color: progress > 0.8 ? tokens.success : (progress > 0.5 ? tokens.warning : tokens.error),
+              backgroundColor: SciFiTokens.background,
+              color: progress > 0.8 ? SciFiTokens.success : (progress > 0.5 ? SciFiTokens.warning : SciFiTokens.error),
               minHeight: 8,
               borderRadius: BorderRadius.circular(4),
             ),

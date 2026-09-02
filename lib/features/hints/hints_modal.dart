@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../theming/tokens/terminal_classic_tokens.dart';
+import '../../theming/tokens/sci_fi_tokens.dart';
+import '../../theming/components/holo_panel.dart';
+import '../../theming/components/holo_button.dart';
 import '../../data/content/models/level_model.dart';
 import '../../core/scoring/level_scorer.dart';
 
@@ -77,7 +79,7 @@ class _HintsModalState extends State<HintsModal> {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.all(TerminalClassicTokens.spaceLg),
+        padding: const EdgeInsets.all(SciFiTokens.spaceLg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,21 +88,21 @@ class _HintsModalState extends State<HintsModal> {
             Row(
               children: [
                 const Icon(Icons.lightbulb_outline,
-                    color: TerminalClassicTokens.warning, size: 20),
-                const SizedBox(width: TerminalClassicTokens.spaceSm),
-                Text('HINTS', style: TerminalClassicTokens.headlineMedium),
+                    color: SciFiTokens.warning, size: 20),
+                const SizedBox(width: SciFiTokens.spaceSm),
+                Text('HINTS', style: SciFiTokens.headlineMedium),
                 const Spacer(),
                 if (_graceHintAvailable)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      border: Border.all(color: TerminalClassicTokens.accent, width: 1),
-                      borderRadius: TerminalClassicTokens.borderRadiusSm,
+                      border: Border.all(color: SciFiTokens.accent, width: 1),
+                      borderRadius: SciFiTokens.borderRadiusSm,
                     ),
                     child: Text(
                       'GRACE HINT ACTIVE',
-                      style: TerminalClassicTokens.bodySmall.copyWith(
-                        color: TerminalClassicTokens.accent,
+                      style: SciFiTokens.bodySmall.copyWith(
+                        color: SciFiTokens.accent,
                         fontSize: 9,
                         letterSpacing: 1,
                       ),
@@ -108,14 +110,14 @@ class _HintsModalState extends State<HintsModal> {
                   ),
               ],
             ),
-            const SizedBox(height: TerminalClassicTokens.spaceMd),
+            const SizedBox(height: SciFiTokens.spaceMd),
             Text(
               'Hints cost Insight Points. Using a Full Solution caps your rating at 1 star.',
-              style: TerminalClassicTokens.bodySmall.copyWith(
-                color: TerminalClassicTokens.secondaryText,
+              style: SciFiTokens.bodySmall.copyWith(
+                color: SciFiTokens.secondaryText,
               ),
             ),
-            const SizedBox(height: TerminalClassicTokens.spaceLg),
+            const SizedBox(height: SciFiTokens.spaceLg),
 
             // Hint tiers
             for (final tier in HintTierType.values)
@@ -129,7 +131,7 @@ class _HintsModalState extends State<HintsModal> {
                 onReveal: (hint) => _revealHint(tier, hint),
               ),
 
-            const SizedBox(height: TerminalClassicTokens.spaceSm),
+            const SizedBox(height: SciFiTokens.spaceSm),
           ],
         ),
       ),
@@ -167,72 +169,56 @@ class _HintTierRow extends StatelessWidget {
         ? 'Using this caps your rating at ★ only.'
         : null;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: TerminalClassicTokens.spaceSm),
-      decoration: BoxDecoration(
-        color: TerminalClassicTokens.surfaceVariant,
-        borderRadius: TerminalClassicTokens.borderRadiusSm,
-        border: Border.all(
-          color: isUnlocked
-              ? TerminalClassicTokens.accentDim
-              : TerminalClassicTokens.disabledText,
-          width: 1,
-        ),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: SciFiTokens.spaceSm),
+      child: HoloPanel(
+        emissionIntensity: 0.15,
+        borderColorOverride: isUnlocked
+              ? SciFiTokens.accentDim
+              : SciFiTokens.disabledText,
+        colorOverride: SciFiTokens.surfaceVariant,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Tier header
           Padding(
             padding: const EdgeInsets.symmetric(
-              horizontal: TerminalClassicTokens.spaceMd,
-              vertical: TerminalClassicTokens.spaceSm,
+              horizontal: SciFiTokens.spaceMd,
+              vertical: SciFiTokens.spaceSm,
             ),
             child: Row(
               children: [
                 Text(
                   tierLabel,
-                  style: TerminalClassicTokens.bodySmall.copyWith(
+                  style: SciFiTokens.bodySmall.copyWith(
                     color: isUnlocked
-                        ? TerminalClassicTokens.accent
-                        : TerminalClassicTokens.disabledText,
+                        ? SciFiTokens.accent
+                        : SciFiTokens.disabledText,
                     letterSpacing: 1,
                   ),
                 ),
                 const Spacer(),
                 if (!isUnlocked)
                   const Icon(Icons.lock_outline,
-                      color: TerminalClassicTokens.disabledText, size: 14)
+                      color: SciFiTokens.disabledText, size: 14)
                 else if (!isRevealed && hint != null)
-                  GestureDetector(
-                    onTap: () => onReveal(hint!),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: tier == HintTierType.fullSolution
-                              ? TerminalClassicTokens.warning
-                              : TerminalClassicTokens.accent,
-                          width: 1,
-                        ),
-                        borderRadius: TerminalClassicTokens.borderRadiusSm,
-                      ),
-                      child: Text(
-                        '[ REVEAL — $cost ]',
-                        style: TerminalClassicTokens.bodySmall.copyWith(
-                          color: tier == HintTierType.fullSolution
-                              ? TerminalClassicTokens.warning
-                              : TerminalClassicTokens.accent,
-                          fontSize: 10,
-                        ),
+                  HoloButton(
+                    onPressed: () => onReveal(hint!),
+                    isPrimary: true,
+                    child: Text(
+                      'REVEAL — $cost',
+                      style: SciFiTokens.bodySmall.copyWith(
+                        color: SciFiTokens.background,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   )
                 else
                   Text(
                     '[ REVEALED ]',
-                    style: TerminalClassicTokens.bodySmall.copyWith(
-                      color: TerminalClassicTokens.secondaryText,
+                    style: SciFiTokens.bodySmall.copyWith(
+                      color: SciFiTokens.secondaryText,
                       fontSize: 10,
                     ),
                   ),
@@ -244,12 +230,12 @@ class _HintTierRow extends StatelessWidget {
           if (warningText != null && isUnlocked && !isRevealed)
             Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: TerminalClassicTokens.spaceMd,
+                horizontal: SciFiTokens.spaceMd,
               ),
               child: Text(
                 warningText,
-                style: TerminalClassicTokens.bodySmall.copyWith(
-                  color: TerminalClassicTokens.warning,
+                style: SciFiTokens.bodySmall.copyWith(
+                  color: SciFiTokens.warning,
                   fontSize: 10,
                 ),
               ),
@@ -258,31 +244,31 @@ class _HintTierRow extends StatelessWidget {
           // Revealed content
           if (isRevealed && hint != null) ...[
             const Divider(
-              color: TerminalClassicTokens.accentDim,
+              color: SciFiTokens.accentDim,
               height: 1,
               thickness: 1,
             ),
             Padding(
-              padding: const EdgeInsets.all(TerminalClassicTokens.spaceMd),
+              padding: const EdgeInsets.all(SciFiTokens.spaceMd),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(hint!.content, style: TerminalClassicTokens.bodyMedium),
+                  Text(hint!.content, style: SciFiTokens.bodyMedium),
                   if (hint!.codeSnippet != null) ...[
-                    const SizedBox(height: TerminalClassicTokens.spaceSm),
+                    const SizedBox(height: SciFiTokens.spaceSm),
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(TerminalClassicTokens.spaceSm),
+                      padding: const EdgeInsets.all(SciFiTokens.spaceSm),
                       decoration: BoxDecoration(
-                        color: TerminalClassicTokens.surface,
-                        borderRadius: TerminalClassicTokens.borderRadiusSm,
+                        color: SciFiTokens.surface,
+                        borderRadius: SciFiTokens.borderRadiusSm,
                         border: Border.all(
-                            color: TerminalClassicTokens.accentDim, width: 1),
+                            color: SciFiTokens.accentDim, width: 1),
                       ),
                       child: Text(
                         hint!.codeSnippet!,
-                        style: TerminalClassicTokens.code.copyWith(
-                          color: TerminalClassicTokens.accent,
+                        style: SciFiTokens.code.copyWith(
+                          color: SciFiTokens.accent,
                           fontSize: 12,
                         ),
                       ),
@@ -293,6 +279,7 @@ class _HintTierRow extends StatelessWidget {
             ),
           ],
         ],
+      ),
       ),
     );
   }

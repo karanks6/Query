@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../theming/tokens/terminal_classic_tokens.dart';
+import '../../../theming/tokens/sci_fi_tokens.dart';
 import '../../../core/sandbox_engine/level_schema.dart';
 
 /// Code Mode workspace (Section 3.1).
@@ -132,28 +132,28 @@ class _CodeModeWorkspaceState extends State<CodeModeWorkspace> {
         // Code header bar
         Container(
           padding: const EdgeInsets.symmetric(
-            horizontal: TerminalClassicTokens.spaceMd,
+            horizontal: SciFiTokens.spaceMd,
             vertical: 6,
           ),
           decoration: BoxDecoration(
-            color: TerminalClassicTokens.surfaceVariant,
+            color: SciFiTokens.surfaceVariant,
             border: Border(
-              bottom: BorderSide(color: TerminalClassicTokens.accentDim, width: 1),
+              bottom: BorderSide(color: SciFiTokens.accentDim, width: 1),
             ),
           ),
           child: Row(
             children: [
               Text(
                 'query.sql',
-                style: TerminalClassicTokens.bodySmall.copyWith(
-                  color: TerminalClassicTokens.accent,
+                style: SciFiTokens.bodySmall.copyWith(
+                  color: SciFiTokens.accent,
                 ),
               ),
               const Spacer(),
               Text(
                 '${_controller.text.split('\n').length} lines',
-                style: TerminalClassicTokens.bodySmall.copyWith(
-                  color: TerminalClassicTokens.secondaryText,
+                style: SciFiTokens.bodySmall.copyWith(
+                  color: SciFiTokens.secondaryText,
                   fontSize: 10,
                 ),
               ),
@@ -180,13 +180,13 @@ class _CodeModeWorkspaceState extends State<CodeModeWorkspace> {
                       maxLines: null,
                       expands: true,
                       textAlignVertical: TextAlignVertical.top,
-                      style: TerminalClassicTokens.code,
-                      cursorColor: TerminalClassicTokens.accent,
+                      style: SciFiTokens.code,
+                      cursorColor: SciFiTokens.accent,
                       cursorWidth: 8,
                       cursorHeight: 16,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.all(TerminalClassicTokens.spaceSm),
+                        contentPadding: EdgeInsets.all(SciFiTokens.spaceSm),
                         isDense: true,
                       ),
                     ),
@@ -223,16 +223,16 @@ class _LineNumbers extends StatelessWidget {
     final lineCount = '\n'.allMatches(text).length + 1;
     return Container(
       width: 36,
-      color: TerminalClassicTokens.surfaceVariant,
-      padding: const EdgeInsets.all(TerminalClassicTokens.spaceSm),
+      color: SciFiTokens.surfaceVariant,
+      padding: const EdgeInsets.all(SciFiTokens.spaceSm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: List.generate(
           lineCount,
           (i) => Text(
             '${i + 1}',
-            style: TerminalClassicTokens.codeSmall.copyWith(
-              color: TerminalClassicTokens.disabledText,
+            style: SciFiTokens.codeSmall.copyWith(
+              color: SciFiTokens.disabledText,
               fontSize: 10,
               height: 1.6,
             ),
@@ -255,10 +255,10 @@ class _AutocompleteSuggestions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: TerminalClassicTokens.surfaceVariant,
+      color: SciFiTokens.surfaceVariant,
       decoration: BoxDecoration(
         border: Border(
-          top: BorderSide(color: TerminalClassicTokens.accent, width: 1),
+          top: BorderSide(color: SciFiTokens.accent, width: 1),
         ),
       ),
       child: Column(
@@ -267,18 +267,18 @@ class _AutocompleteSuggestions extends StatelessWidget {
             onTap: () => onSelect(s),
             child: Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: TerminalClassicTokens.spaceMd,
+                horizontal: SciFiTokens.spaceMd,
                 vertical: 8,
               ),
               child: Row(
                 children: [
                   const Icon(Icons.arrow_forward,
-                      color: TerminalClassicTokens.accent, size: 12),
+                      color: SciFiTokens.accent, size: 12),
                   const SizedBox(width: 8),
                   Text(
                     s,
-                    style: TerminalClassicTokens.codeSmall.copyWith(
-                      color: TerminalClassicTokens.primaryText,
+                    style: SciFiTokens.codeSmall.copyWith(
+                      color: SciFiTokens.primaryText,
                     ),
                   ),
                 ],

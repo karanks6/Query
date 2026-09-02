@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../theming/tokens/terminal_classic_tokens.dart';
+import '../../theming/tokens/sci_fi_tokens.dart';
 
 /// Blinking block cursor â€” the Terminal/Classic theme's signature element.
 class BlinkingCursor extends StatefulWidget {
@@ -26,7 +26,7 @@ class _BlinkingCursorState extends State<BlinkingCursor>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: TerminalClassicTokens.cursorBlinkDuration,
+      duration: SciFiTokens.cursorBlinkDuration,
       vsync: this,
     )..repeat(reverse: true);
   }
@@ -47,7 +47,7 @@ class _BlinkingCursorState extends State<BlinkingCursor>
           child: Container(
             width: widget.width,
             height: widget.height,
-            color: widget.color ?? TerminalClassicTokens.accent,
+            color: widget.color ?? SciFiTokens.accent,
           ),
         );
       },
@@ -77,31 +77,31 @@ class TerminalButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor = isDanger
-        ? TerminalClassicTokens.error
+        ? SciFiTokens.error
         : isPrimary
-            ? TerminalClassicTokens.accent
-            : TerminalClassicTokens.accentDim;
+            ? SciFiTokens.accent
+            : SciFiTokens.accentDim;
     final textColor = isDanger
-        ? TerminalClassicTokens.error
+        ? SciFiTokens.error
         : isPrimary
-            ? TerminalClassicTokens.accent
-            : TerminalClassicTokens.secondaryText;
+            ? SciFiTokens.accent
+            : SciFiTokens.secondaryText;
     final bgColor = isPrimary
-        ? TerminalClassicTokens.accentDim.withValues(alpha: 0.2)
+        ? SciFiTokens.accentDim.withValues(alpha: 0.2)
         : Colors.transparent;
 
     return InkWell(
       onTap: isLoading ? null : onPressed,
-      borderRadius: TerminalClassicTokens.borderRadiusSm,
+      borderRadius: SciFiTokens.borderRadiusSm,
       child: AnimatedContainer(
-        duration: TerminalClassicTokens.durationFast,
+        duration: SciFiTokens.durationFast,
         padding: const EdgeInsets.symmetric(
-          horizontal: TerminalClassicTokens.spaceLg,
-          vertical: TerminalClassicTokens.spaceSm,
+          horizontal: SciFiTokens.spaceLg,
+          vertical: SciFiTokens.spaceSm,
         ),
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: TerminalClassicTokens.borderRadiusSm,
+          borderRadius: SciFiTokens.borderRadiusSm,
           border: Border.all(color: borderColor, width: 1),
         ),
         child: Row(
@@ -118,11 +118,11 @@ class TerminalButton extends StatelessWidget {
               )
             else if (icon != null) ...[
               icon!,
-              const SizedBox(width: TerminalClassicTokens.spaceSm),
+              const SizedBox(width: SciFiTokens.spaceSm),
             ],
             Text(
               '[ $label ]',
-              style: TerminalClassicTokens.labelLarge.copyWith(color: textColor),
+              style: SciFiTokens.labelLarge.copyWith(color: textColor),
             ),
           ],
         ),
@@ -142,17 +142,17 @@ class TerminalDivider extends StatelessWidget {
     if (label == null) {
       return Container(
         height: 1,
-        color: TerminalClassicTokens.accentDim,
+        color: SciFiTokens.accentDim,
       );
     }
     return Row(
       children: [
-        Expanded(child: Container(height: 1, color: TerminalClassicTokens.accentDim)),
+        Expanded(child: Container(height: 1, color: SciFiTokens.accentDim)),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: TerminalClassicTokens.spaceSm),
-          child: Text(label!, style: TerminalClassicTokens.bodySmall),
+          padding: const EdgeInsets.symmetric(horizontal: SciFiTokens.spaceSm),
+          child: Text(label!, style: SciFiTokens.bodySmall),
         ),
-        Expanded(child: Container(height: 1, color: TerminalClassicTokens.accentDim)),
+        Expanded(child: Container(height: 1, color: SciFiTokens.accentDim)),
       ],
     );
   }
@@ -178,15 +178,15 @@ class TerminalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final container = Container(
-      padding: padding ?? const EdgeInsets.all(TerminalClassicTokens.spaceMd),
+      padding: padding ?? const EdgeInsets.all(SciFiTokens.spaceMd),
       decoration: BoxDecoration(
-        color: TerminalClassicTokens.surface,
-        borderRadius: TerminalClassicTokens.borderRadiusSm,
+        color: SciFiTokens.surface,
+        borderRadius: SciFiTokens.borderRadiusSm,
         border: Border.all(
-          color: borderColor ?? TerminalClassicTokens.accentDim,
+          color: borderColor ?? SciFiTokens.accentDim,
           width: 1,
         ),
-        boxShadow: shadows ?? TerminalClassicTokens.cardShadow,
+        boxShadow: shadows ?? SciFiTokens.cardShadow,
       ),
       child: child,
     );
@@ -194,7 +194,7 @@ class TerminalCard extends StatelessWidget {
     if (onTap != null) {
       return InkWell(
         onTap: onTap,
-        borderRadius: TerminalClassicTokens.borderRadiusSm,
+        borderRadius: SciFiTokens.borderRadiusSm,
         child: container,
       );
     }
@@ -222,12 +222,12 @@ class TerminalProgressBar extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (label != null)
-          Text(label!, style: TerminalClassicTokens.bodySmall),
+          Text(label!, style: SciFiTokens.bodySmall),
         const SizedBox(height: 4),
         Container(
           height: 6,
           decoration: BoxDecoration(
-            color: TerminalClassicTokens.surfaceVariant,
+            color: SciFiTokens.surfaceVariant,
             borderRadius: BorderRadius.circular(2),
           ),
           child: FractionallySizedBox(
@@ -235,11 +235,11 @@ class TerminalProgressBar extends StatelessWidget {
             widthFactor: value.clamp(0.0, 1.0),
             child: Container(
               decoration: BoxDecoration(
-                color: color ?? TerminalClassicTokens.accent,
+                color: color ?? SciFiTokens.accent,
                 borderRadius: BorderRadius.circular(2),
                 boxShadow: [
                   BoxShadow(
-                    color: (color ?? TerminalClassicTokens.accent).withValues(alpha: 0.5),
+                    color: (color ?? SciFiTokens.accent).withValues(alpha: 0.5),
                     blurRadius: 4,
                   ),
                 ],
@@ -276,8 +276,8 @@ class StarRow extends StatelessWidget {
             child: Icon(
               i < starCount ? Icons.star_rounded : Icons.star_border_rounded,
               color: i < starCount
-                  ? TerminalClassicTokens.accent
-                  : TerminalClassicTokens.accentDim,
+                  ? SciFiTokens.accent
+                  : SciFiTokens.accentDim,
               size: 20,
             ),
           ),
@@ -286,13 +286,13 @@ class StarRow extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              border: Border.all(color: TerminalClassicTokens.warning, width: 1),
-              borderRadius: TerminalClassicTokens.borderRadiusSm,
+              border: Border.all(color: SciFiTokens.warning, width: 1),
+              borderRadius: SciFiTokens.borderRadiusSm,
             ),
             child: Text(
               medalLabel!,
-              style: TerminalClassicTokens.bodySmall.copyWith(
-                color: TerminalClassicTokens.warning,
+              style: SciFiTokens.bodySmall.copyWith(
+                color: SciFiTokens.warning,
               ),
             ),
           ),
@@ -318,10 +318,10 @@ class TerminalAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: TerminalClassicTokens.surface,
+        color: SciFiTokens.surface,
         border: Border(
           bottom: BorderSide(
-            color: TerminalClassicTokens.accentDim,
+            color: SciFiTokens.accentDim,
             width: 1.0,
           ),
         ),
@@ -333,16 +333,16 @@ class TerminalAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               if (onBack != null)
                 IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new, color: TerminalClassicTokens.accent, size: 20),
+                  icon: const Icon(Icons.arrow_back_ios_new, color: SciFiTokens.accent, size: 20),
                   onPressed: onBack,
                 )
               else
-                const SizedBox(width: TerminalClassicTokens.spaceMd),
+                const SizedBox(width: SciFiTokens.spaceMd),
               Expanded(
                 child: Text(
                   title,
-                  style: TerminalClassicTokens.titleLarge.copyWith(
-                    color: TerminalClassicTokens.accent,
+                  style: SciFiTokens.titleLarge.copyWith(
+                    color: SciFiTokens.accent,
                     letterSpacing: 2,
                   ),
                 ),
