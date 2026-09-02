@@ -21,16 +21,23 @@ import 'package:query/features/profile/profile_screen.dart';
 import 'package:query/features/leaderboard/leaderboard_screen.dart';
 import 'firebase_options.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:query/core/settings/settings_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  final prefs = await SharedPreferences.getInstance();
+
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
     
     await FirebaseAppCheck.instance.activate(
+      // ignore: deprecated_member_use
       androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+      // ignore: deprecated_member_use
       appleProvider: AppleProvider.deviceCheck,
     );
   } catch (e) {
@@ -38,8 +45,11 @@ void main() async {
   }
   
   runApp(
-    const ProviderScope(
-      child: QueryApp(),
+    ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+      ],
+      child: const QueryApp(),
     ),
   );
 }

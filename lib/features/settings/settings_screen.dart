@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import '../../theming/app_theme.dart';
 import '../../theming/tokens/sci_fi_tokens.dart';
 import '../../theming/components/holo_panel.dart';
 import '../../shared/widgets/terminal_widgets.dart';
 import '../gameplay/widgets/parallax_background.dart';
+import '../../core/settings/settings_service.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -13,6 +15,9 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ref.watch(themeNotifierProvider);
     final themeNotifier = ref.read(themeNotifierProvider.notifier);
+    
+    final settings = ref.watch(settingsProvider);
+    final settingsNotifier = ref.read(settingsProvider.notifier);
 
     return Scaffold(
       backgroundColor: SciFiTokens.background,
@@ -57,19 +62,27 @@ class SettingsScreen extends ConsumerWidget {
                 children: [
                   SwitchListTile(
                     title: Text('Sound Effects', style: SciFiTokens.bodyMedium),
-                    value: true,
+                    value: settings.soundEffectsEnabled,
                     activeColor: SciFiTokens.accent,
                     onChanged: (bool value) {
-                      // TODO: Implement audio toggle state
+                      settingsNotifier.toggleSoundEffects(value);
+                    },
+                  ),
+                  SwitchListTile(
+                    title: Text('Background Music', style: SciFiTokens.bodyMedium),
+                    value: settings.musicEnabled,
+                    activeColor: SciFiTokens.accent,
+                    onChanged: (bool value) {
+                      settingsNotifier.toggleMusic(value);
                     },
                   ),
                   SwitchListTile(
                     title: Text('Color-blind Safe Results', style: SciFiTokens.bodyMedium),
                     subtitle: Text('Uses shapes in addition to color', style: SciFiTokens.bodySmall.copyWith(color: SciFiTokens.secondaryText)),
-                    value: false,
+                    value: settings.colorblindModeEnabled,
                     activeColor: SciFiTokens.accent,
                     onChanged: (bool value) {
-                      // TODO: Implement colorblind state
+                      settingsNotifier.toggleColorblindMode(value);
                     },
                   ),
                 ],
@@ -83,10 +96,25 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: SciFiTokens.spaceSm),
             HoloPanel(
               emissionIntensity: 0.1,
-              child: ListTile(
-                title: Text('App Check Status', style: SciFiTokens.bodyMedium),
-                subtitle: Text('Initialized', style: SciFiTokens.bodySmall.copyWith(color: SciFiTokens.success)),
-                leading: const Icon(Icons.security, color: SciFiTokens.success),
+              child: FutureBuilder<String?>(
+                future: FirebaseAppCheck.instance.getToken().then((value) => value),
+                builder: (context, snapshot) {
+                  final isReady = snapshot.hasData;
+                  final hasError = snapshot.hasError;
+                  return ListTile(
+                    title: Text('App Check Status', style: SciFiTokens.bodyMedium),
+                    subtitle: Text(
+                      hasError ? 'Error initializing' : (isReady ? 'Active & Protected' : 'Initializing...'),
+                      style: SciFiTokens.bodySmall.copyWith(
+                        color: hasError ? SciFiTokens.error : (isReady ? SciFiTokens.success : SciFiTokens.warning)
+                      ),
+                    ),
+                    leading: Icon(
+                      hasError ? Icons.error_outline : (isReady ? Icons.security : Icons.sync),
+                      color: hasError ? SciFiTokens.error : (isReady ? SciFiTokens.success : SciFiTokens.warning),
+                    ),
+                  );
+                }
               ),
             ),
           ],
