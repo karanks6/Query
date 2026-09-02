@@ -5,7 +5,6 @@ import '../../theming/tokens/sci_fi_tokens.dart';
 import '../../theming/components/holo_panel.dart';
 import '../../theming/components/holo_button.dart';
 import '../gameplay/widgets/parallax_background.dart';
-import '../../shared/widgets/terminal_widgets.dart';
 import '../../core/providers.dart';
 
 /// Onboarding flow (Section 5.2):
@@ -217,6 +216,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

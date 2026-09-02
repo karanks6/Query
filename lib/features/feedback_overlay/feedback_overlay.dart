@@ -386,6 +386,7 @@ class _FeedbackActions extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.share, color: SciFiTokens.accent),
             onPressed: () {
+              // ignore: deprecated_member_use
               Share.share('I just cracked a SQL case in Query!\nLevel passed with flying colors. #QueryGame #SQL');
             },
           ),
