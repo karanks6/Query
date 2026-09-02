@@ -223,7 +223,7 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
     final achievementsDao = _ref.read(achievementsDaoProvider);
     await achievementsDao.awardAchievement('first_query');
     
-    if (level.performanceActive && report.efficiencyScore >= 1.0) {
+    if (level.performanceActive && (report.efficiencyScore ?? 0.0) >= 1.0) {
       await achievementsDao.awardAchievement('perfect_optimization');
     }
     
