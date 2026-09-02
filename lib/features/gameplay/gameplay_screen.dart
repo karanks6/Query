@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:flutter_markdown/flutter_markdown.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
 import '../../theming/components/action_button.dart';
@@ -582,11 +584,16 @@ class _LevelNarrative extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              Text(
-                level.narrative,
-                style: GameTokens.bodyMedium.copyWith(
-                  color: GameTokens.primaryText, // Changed to primaryText to make it more visible
-                  height: 1.4,
+              MarkdownBody(
+                data: level.narrative,
+                styleSheet: MarkdownStyleSheet(
+                  p: GameTokens.bodyMedium.copyWith(
+                    color: GameTokens.primaryText,
+                    height: 1.4,
+                  ),
+                  tableBody: GameTokens.codeSmall.copyWith(color: GameTokens.primaryText),
+                  tableHead: GameTokens.codeSmall.copyWith(color: GameTokens.accent, fontWeight: FontWeight.bold),
+                  tableBorder: TableBorder.all(color: GameTokens.accentDim, width: 1),
                 ),
               ),
             ],

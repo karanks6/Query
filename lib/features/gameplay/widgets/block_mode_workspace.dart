@@ -166,7 +166,7 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
                     ),
                     child: Center(
                       child: Text(
-                        '+ drag a clause here',
+                        '+ tap a clause below to add',
                         style: GameTokens.bodySmall.copyWith(
                           color: GameTokens.hintText,
                         ),

@@ -50,6 +50,7 @@ dependencies:
   firebase_storage: ^13.5.0
   shared_preferences: ^2.5.3
   sensors_plus: ^7.1.0
+  flutter_markdown: ^0.7.7+1
 
 dev_dependencies:
   flutter_test:
