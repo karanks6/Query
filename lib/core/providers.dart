@@ -79,3 +79,29 @@ final allAchievementsProvider = StreamProvider((ref) {
   final db = ref.watch(appDatabaseProvider);
   return db.select(db.achievementsEarned).watch();
 });
+
+// ─── Mastery Provider ─────────────────────────────────────────────────────────
+
+final masteryProgressProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  final allProgress = await ref.watch(allWorldProgressProvider.future);
+  final loader = ref.read(levelLoaderProvider);
+  
+  final List<Map<String, dynamic>> masteries = [];
+  
+  for (final progress in allProgress) {
+    if (progress.totalLevels == 0) continue;
+    try {
+      final world = await loader.loadWorld(progress.worldId);
+      final concept = world.coreSqlConcept;
+      if (concept.isNotEmpty) {
+        masteries.add({
+          'concept': concept,
+          'progress': progress.levelsCompleted / progress.totalLevels,
+        });
+      }
+    } catch (e) {
+      // Ignore worlds that fail to load
+    }
+  }
+  return masteries;
+});

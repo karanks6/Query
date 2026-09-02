@@ -36,7 +36,7 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: SciFiTokens.spaceXl),
                 _buildStatsGrid(profile),
                 const SizedBox(height: SciFiTokens.spaceXl),
-                _buildMasteryTracker(),
+                _buildMasteryTracker(ref),
               ],
             );
           },
@@ -104,7 +104,9 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMasteryTracker() {
+  Widget _buildMasteryTracker(WidgetRef ref) {
+    final masteryAsync = ref.watch(masteryProgressProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -113,14 +115,17 @@ class ProfileScreen extends ConsumerWidget {
         HoloPanel(
           emissionIntensity: 0.1,
           padding: const EdgeInsets.all(SciFiTokens.spaceLg),
-          child: Column(
-            children: [
-              _buildMasteryBar('Basic Selects', 1.0),
-              _buildMasteryBar('Filtering & Logic', 0.85),
-              _buildMasteryBar('Aggregations', 0.60),
-              _buildMasteryBar('JOINs', 0.40),
-              _buildMasteryBar('Subqueries', 0.10),
-            ],
+          child: masteryAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator(color: SciFiTokens.accent)),
+            error: (e, st) => Text('Failed to load mastery.', style: const TextStyle(color: SciFiTokens.error)),
+            data: (masteries) {
+              if (masteries.isEmpty) {
+                return Text('No data yet.', style: SciFiTokens.bodyMedium.copyWith(color: SciFiTokens.secondaryText));
+              }
+              return Column(
+                children: masteries.map((m) => _buildMasteryBar(m['concept'] as String, m['progress'] as double)).toList(),
+              );
+            },
           ),
         )
       ],
@@ -141,7 +146,7 @@ class ProfileScreen extends ConsumerWidget {
             child: LinearProgressIndicator(
               value: progress,
               backgroundColor: SciFiTokens.background,
-              color: progress > 0.8 ? SciFiTokens.success : (progress > 0.5 ? SciFiTokens.warning : SciFiTokens.error),
+              color: progress >= 1.0 ? SciFiTokens.success : (progress > 0.5 ? SciFiTokens.warning : SciFiTokens.error),
               minHeight: 8,
               borderRadius: BorderRadius.circular(4),
             ),
