@@ -118,13 +118,15 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (_) => SlantedPanel(
         child: _LevelPreviewSheet(
           level: level,
           stars: _levelStars[level.id] ?? 0,
-          onStart: () {
+          onStart: () async {
             Navigator.of(context).pop();
-            Navigator.of(context).pushNamed('/gameplay', arguments: level);
+            await Navigator.of(context).pushNamed('/gameplay', arguments: level);
+            _loadWorld();
           },
         ),
       ),
@@ -322,54 +324,56 @@ class _LevelPreviewSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(GameTokens.spaceLg),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              _LevelTypeIcon(type: level.type),
-              const SizedBox(width: GameTokens.spaceSm),
-              Expanded(
-                child: Text(
-                  level.title,
-                  style: GameTokens.headlineMedium,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                _LevelTypeIcon(type: level.type),
+                const SizedBox(width: GameTokens.spaceSm),
+                Expanded(
+                  child: Text(
+                    level.title,
+                    style: GameTokens.headlineMedium,
+                  ),
                 ),
-              ),
-              if (stars > 0) StarRow(starCount: stars),
-            ],
-          ),
-          const SizedBox(height: GameTokens.spaceMd),
-          Text(
-            level.narrative,
-            style: GameTokens.bodyMedium.copyWith(
-              color: GameTokens.secondaryText,
+                if (stars > 0) StarRow(starCount: stars),
+              ],
             ),
-          ),
-          const SizedBox(height: GameTokens.spaceSm),
-          Row(
-            children: [
-              const Icon(Icons.bolt,
-                  color: GameTokens.accent, size: 14),
-              const SizedBox(width: 4),
-              Text(
-                '+${level.xpReward} XP',
-                style: GameTokens.bodySmall.copyWith(
-                  color: GameTokens.accent,
+            const SizedBox(height: GameTokens.spaceMd),
+            Text(
+              level.narrative,
+              style: GameTokens.bodyMedium.copyWith(
+                color: GameTokens.secondaryText,
+              ),
+            ),
+            const SizedBox(height: GameTokens.spaceSm),
+            Row(
+              children: [
+                const Icon(Icons.bolt,
+                    color: GameTokens.accent, size: 14),
+                const SizedBox(width: 4),
+                Text(
+                  '+${level.xpReward} XP',
+                  style: GameTokens.bodySmall.copyWith(
+                    color: GameTokens.accent,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: GameTokens.spaceLg),
-          Center(
-            child: ActionButton(
-              isPrimary: true,
-              onPressed: onStart,
-              child: Text(stars > 0 ? 'REPLAY' : 'START CASE'),
+              ],
             ),
-          ),
-          const SizedBox(height: GameTokens.spaceSm),
-        ],
+            const SizedBox(height: GameTokens.spaceLg),
+            Center(
+              child: ActionButton(
+                isPrimary: true,
+                onPressed: onStart,
+                child: Text(stars > 0 ? 'REPLAY' : 'START CASE'),
+              ),
+            ),
+            const SizedBox(height: GameTokens.spaceSm),
+          ],
+        ),
       ),
     );
   }
