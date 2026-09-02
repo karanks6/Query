@@ -95,78 +95,91 @@ class _SandboxScreenState extends State<SandboxScreen> {
       body: ParallaxBackground(
         child: _isInitializing
             ? const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(GameTokens.accent)))
-            : Column(
-                children: [
-                  // Info Banner
-                  SlantedPanel(
-                    padding: const EdgeInsets.all(GameTokens.spaceMd),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Text(
-                        'Memory instance active. Available tables: departments, employees, projects, assignments.',
-                        style: GameTokens.bodySmall.copyWith(color: GameTokens.accent),
+            : LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
                       ),
-                    ),
-                  ),
-                  
-                  // Editor
-                  Expanded(
-                    flex: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.all(GameTokens.spaceMd),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: SlantedPanel(
-                              padding: EdgeInsets.zero,
-                              child: TextField(
-                                controller: _queryController,
-                                maxLines: null,
-                                expands: true,
-                                style: GameTokens.code.copyWith(
-                                  color: GameTokens.primaryText,
-                                  height: 1.5,
-                                ),
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.all(GameTokens.spaceMd),
-                                  hintText: 'Enter SQL query...',
-                                  hintStyle: GameTokens.bodyMedium.copyWith(color: GameTokens.secondaryText),
+                      child: IntrinsicHeight(
+                        child: Column(
+                          children: [
+                            // Info Banner
+                            SlantedPanel(
+                              padding: const EdgeInsets.all(GameTokens.spaceMd),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: Text(
+                                  'Memory instance active. Available tables: departments, employees, projects, assignments.',
+                                  style: GameTokens.bodySmall.copyWith(color: GameTokens.accent),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: GameTokens.spaceMd),
-                          ActionButton(
-                            isPrimary: true,
-                            onPressed: _runQuery,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.play_arrow, size: 16),
-                                const SizedBox(width: GameTokens.spaceSm),
-                                const Text('EXECUTE QUERY'),
-                              ],
+                            
+                            // Editor
+                            Expanded(
+                              flex: 2,
+                              child: Padding(
+                                padding: const EdgeInsets.all(GameTokens.spaceMd),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    Expanded(
+                                      child: SlantedPanel(
+                                        padding: EdgeInsets.zero,
+                                        child: TextField(
+                                          controller: _queryController,
+                                          maxLines: null,
+                                          expands: true,
+                                          style: GameTokens.code.copyWith(
+                                            color: GameTokens.primaryText,
+                                            height: 1.5,
+                                          ),
+                                          decoration: InputDecoration(
+                                            border: InputBorder.none,
+                                            contentPadding: const EdgeInsets.all(GameTokens.spaceMd),
+                                            hintText: 'Enter SQL query...',
+                                            hintStyle: GameTokens.bodyMedium.copyWith(color: GameTokens.secondaryText),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: GameTokens.spaceMd),
+                                    ActionButton(
+                                      isPrimary: true,
+                                      onPressed: _runQuery,
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(Icons.play_arrow, size: 16),
+                                          const SizedBox(width: GameTokens.spaceSm),
+                                          const Text('EXECUTE QUERY'),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                            
+                            // Results
+                            Expanded(
+                              flex: 3,
+                              child: SlantedPanel(
+                                padding: const EdgeInsets.all(GameTokens.spaceMd),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: _buildResultsArea(),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  
-                  // Results
-                  Expanded(
-                    flex: 3,
-                    child: SlantedPanel(
-                      padding: const EdgeInsets.all(GameTokens.spaceMd),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: _buildResultsArea(),
-                      ),
-                    ),
-                  ),
-                ],
+                  );
+                },
               ),
       ),
     );

@@ -11,7 +11,7 @@ class SyntaxValidator {
 
   static final SyntaxValidator instance = SyntaxValidator._();
 
-  ValidationResult validate(String sql) {
+  ValidationResult validate(String sql, String schemaSql) {
     if (sql.trim().isEmpty) {
       return const ValidationResult.failure(
         errorMessage: 'Query is empty.',
@@ -20,19 +20,32 @@ class SyntaxValidator {
     }
 
     Database? db;
-    PreparedStatement? stmt;
     try {
       db = sqlite3.openInMemory();
-      stmt = db.prepare(sql, checkNoTail: false);
+      if (schemaSql.trim().isNotEmpty) {
+        db.execute(schemaSql);
+      }
+      
+      // Execute the query to catch syntax errors even in multi-statement queries.
+      // This DB is disposed immediately, so execution side-effects don't matter.
+      db.execute(sql);
+      
       return const ValidationResult.success();
     } on SqliteException catch (e) {
+      final lower = e.message.toLowerCase();
+      // SQLite execution will throw on missing tables/columns. We want to bypass
+      // these here so that Layer 2 (SemanticValidator) can catch them and give
+      // user-friendly feedback instead of generic syntax errors.
+      if (lower.contains('no such table') || lower.contains('no such column')) {
+        return const ValidationResult.success();
+      }
+
       return ValidationResult.failure(
         errorMessage: e.message,
         plainEnglishMessage: _translateSyntaxError(e.message, sql),
         commonMistakeKey: _detectCommonMistakeKey(e.message),
       );
     } finally {
-      stmt?.dispose();
       db?.dispose();
     }
   }

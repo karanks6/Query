@@ -78,9 +78,10 @@ class _HintsModalState extends State<HintsModal> {
   Widget build(BuildContext context) {
     return SafeArea(
       top: false,
-      child: Padding(
-        padding: const EdgeInsets.all(GameTokens.spaceLg),
-        child: Column(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(GameTokens.spaceLg),
+          child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -133,6 +134,7 @@ class _HintsModalState extends State<HintsModal> {
 
             const SizedBox(height: GameTokens.spaceSm),
           ],
+        ),
         ),
       ),
     );

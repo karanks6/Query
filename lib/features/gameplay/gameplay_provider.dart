@@ -139,6 +139,7 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
         performanceActive: level.performanceActive,
         efficiencyThreshold: level.efficiencyThreshold,
         isFirstAttempt: state.isFirstAttempt,
+        worldId: level.allowedWorldNumber,
       );
 
       final newAttemptCount = state.attemptCount + 1;

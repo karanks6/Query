@@ -319,26 +319,37 @@ class _PhoneLayout extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      children: [
-        // Level objective
-        _LevelNarrative(level: level),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: IntrinsicHeight(
+              child: Column(
+                children: [
+                  // Level objective
+                  _LevelNarrative(level: level),
 
-        // Workspace (fills available space)
-        Expanded(
-          child: _WorkspaceArea(level: level, state: state),
-        ),
+                  // Workspace (fills available space)
+                  Expanded(
+                    child: _WorkspaceArea(level: level, state: state),
+                  ),
 
-        // Results area (shows after run)
-        if (state.lastReport?.resultRows != null)
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 200),
-            child: ResultPane(rows: state.lastReport!.resultRows!),
+                  // Results area (shows after run)
+                  if (state.lastReport?.resultRows != null)
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 200),
+                      child: ResultPane(rows: state.lastReport!.resultRows!),
+                    ),
+
+                  // Bottom action bar
+                  _ActionBar(level: level, state: state),
+                ],
+              ),
+            ),
           ),
-
-        // Bottom action bar
-        _ActionBar(level: level, state: state),
-      ],
+        );
+      },
     );
   }
 }

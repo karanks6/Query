@@ -25,14 +25,15 @@ class SandboxEngine {
   static const int _maxResultRows = 10000;
 
   /// Executes [sql] inside a fresh in-memory sandbox seeded with
-  /// [schemaSql] and [seedSql], then calls [onExecuted] with the open
-  /// database and result rows. Returns whatever [onExecuted] returns.
-  ///
-  /// Throws [SandboxException] on policy violations (whitelist, timeout, etc).
+  /// [schemaSql] and [seedSql]. If [postExecutionSql] is provided, it will
+  /// be executed and its result returned. Otherwise, [sql] will be queried
+  /// for results if it's a SELECT.
+  /// Then calls [onExecuted] with the open database and result rows.
   T executeInSandbox<T>({
     required String sql,
     required String schemaSql,
     required String seedSql,
+    String? postExecutionSql,
     required SandboxCallback<T> onExecuted,
     StatementWhitelist whitelist = StatementWhitelist.selectOnly,
   }) {
@@ -67,13 +68,34 @@ class SandboxEngine {
         db.execute(seedSql);
       }
 
-      // Execute player query
-      final stmt = db.prepare(sql);
       ResultSet resultSet;
-      try {
-        resultSet = stmt.select();
-      } finally {
-        stmt.dispose();
+      
+      if (postExecutionSql != null) {
+        // Run player query (can be multiple statements like INSERT; UPDATE)
+        db.execute(sql);
+        // Run validation SELECT
+        final stmt = db.prepare(postExecutionSql);
+        try {
+          resultSet = stmt.select();
+        } finally {
+          stmt.dispose();
+        }
+      } else {
+        // Run player query natively to catch multi-statement syntax errors
+        db.execute(sql);
+        
+        // Unfortunately db.execute doesn't return results. So for SELECT queries,
+        // we must re-run the final SELECT statement to get the rows.
+        // We split by ; to find the last statement.
+        final statements = sql.split(';').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+        final lastStatement = statements.isNotEmpty ? statements.last : sql;
+        
+        final stmt = db.prepare(lastStatement);
+        try {
+          resultSet = stmt.select();
+        } finally {
+          stmt.dispose();
+        }
       }
 
       // Apply row cap

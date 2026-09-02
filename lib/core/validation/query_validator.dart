@@ -5,6 +5,7 @@ import 'performance_validator.dart';
 import 'validation_result.dart';
 import '../sandbox_engine/level_schema.dart';
 import '../sandbox_engine/sandbox_engine.dart';
+import '../sandbox_engine/statement_whitelist.dart';
 import '../../data/content/models/level_model.dart';
 
 /// Orchestrates the 4-layer validation pipeline (Section 3.2).
@@ -60,15 +61,17 @@ class QueryValidator {
     double efficiencyThreshold = 0.8,
     bool isFirstAttempt = false,
     LevelType levelType = LevelType.puzzle,
+    int worldId = 1,
   }) async {
-    // Check for DML statements and wrap them to return a result set
-    String executionSql = sql;
+    // Check for DML statements
+    String? postExecutionSql;
     final isDml = RegExp(r'^\s*(INSERT|UPDATE|DELETE)', caseSensitive: false).hasMatch(sql);
     if (isDml && schema.tables.isNotEmpty) {
-      executionSql = '$sql; SELECT * FROM ${schema.tables.first.name};';
+      postExecutionSql = 'SELECT * FROM ${schema.tables.first.name};';
     }
+    
     // --- Layer 1: Syntax ---
-    final syntaxResult = _syntaxValidator.validate(sql);
+    final syntaxResult = _syntaxValidator.validate(sql, schemaSql);
     if (!syntaxResult.passed) {
       return QueryValidationReport(
         syntaxPassed: false,
@@ -97,9 +100,11 @@ class QueryValidator {
 
     // --- Layers 3 & 4: Execute in sandbox ---
     return _sandboxEngine.executeInSandbox(
-      sql: executionSql,
+      sql: sql,
+      postExecutionSql: postExecutionSql,
       schemaSql: schemaSql,
       seedSql: seedSql,
+      whitelist: StatementWhitelist.forWorld(worldId),
       onExecuted: (db, actualRows) {
         // Layer 3: Result
         final resultResult = _resultValidator.validate(

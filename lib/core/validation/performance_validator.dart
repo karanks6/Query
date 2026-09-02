@@ -51,7 +51,16 @@ class PerformanceValidator {
 
   List<Map<String, dynamic>> _explainQueryPlan(Database db, String sql) {
     final results = <Map<String, dynamic>>[];
-    final stmt = db.prepare('EXPLAIN QUERY PLAN $sql');
+    
+    // For performance validation, we only care about SELECT statements.
+    // If it's a multi-statement or DML query, we extract the first SELECT.
+    String queryToAnalyze = sql;
+    final selectMatch = RegExp(r'(SELECT\s+.*?)(?:;|$)', caseSensitive: false, dotAll: true).firstMatch(sql);
+    if (selectMatch != null) {
+      queryToAnalyze = selectMatch.group(1)!;
+    }
+    
+    final stmt = db.prepare('EXPLAIN QUERY PLAN $queryToAnalyze');
     try {
       final resultSet = stmt.select();
       for (final row in resultSet.rows) {

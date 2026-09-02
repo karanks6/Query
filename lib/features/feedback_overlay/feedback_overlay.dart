@@ -44,48 +44,50 @@ class FeedbackOverlay extends StatelessWidget {
       colorOverride: GameTokens.surface,
       child: SafeArea(
         top: false,
-        child: Padding(
-          padding: const EdgeInsets.all(GameTokens.spaceLg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              _FeedbackHeader(isSuccess: isSuccess, score: score),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(GameTokens.spaceLg),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                _FeedbackHeader(isSuccess: isSuccess, score: score),
 
-              const SizedBox(height: GameTokens.spaceMd),
-              GameDivider(),
-              const SizedBox(height: GameTokens.spaceMd),
+                const SizedBox(height: GameTokens.spaceMd),
+                GameDivider(),
+                const SizedBox(height: GameTokens.spaceMd),
 
-              // Main feedback message
-              _FeedbackMessage(
-                report: report,
-                sandboxError: sandboxError,
-                isSuccess: isSuccess,
-              ),
-
-              // Common mistake explainer
-              if (!isSuccess && _hasCommonMistake())
-                _CommonMistakeCard(
-                  mistake: _getCommonMistake()!,
+                // Main feedback message
+                _FeedbackMessage(
+                  report: report,
+                  sandboxError: sandboxError,
+                  isSuccess: isSuccess,
                 ),
 
-              const SizedBox(height: GameTokens.spaceMd),
+                // Common mistake explainer
+                if (!isSuccess && _hasCommonMistake())
+                  _CommonMistakeCard(
+                    mistake: _getCommonMistake()!,
+                  ),
 
-              // Star breakdown (on success)
-              if (isSuccess && score != null)
-                _StarBreakdown(score: score!),
+                const SizedBox(height: GameTokens.spaceMd),
 
-              const SizedBox(height: GameTokens.spaceLg),
+                // Star breakdown (on success)
+                if (isSuccess && score != null)
+                  _StarBreakdown(score: score!),
 
-              // CTAs
-              _FeedbackActions(
-                isSuccess: isSuccess,
-                onDismiss: onDismiss,
-                onNextLevel: onNextLevel,
-                onRetry: onRetry,
-              ),
-            ],
+                const SizedBox(height: GameTokens.spaceLg),
+
+                // CTAs
+                _FeedbackActions(
+                  isSuccess: isSuccess,
+                  onDismiss: onDismiss,
+                  onNextLevel: onNextLevel,
+                  onRetry: onRetry,
+                ),
+              ],
+            ),
           ),
         ),
       ),
