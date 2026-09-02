@@ -216,8 +216,23 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
     await playerDao.addXp(score.xpEarned);
     await playerDao.earnInsightPoints(score.xpEarned ~/ 5);
 
-    // Check world unlock
+    // Check world unlock and achievements
     await progressDao.checkAndUnlockNextWorld(level.worldId);
+    final currentWorldProg = await progressDao.getWorldProgress(level.worldId);
+    
+    final achievementsDao = _ref.read(achievementsDaoProvider);
+    await achievementsDao.awardAchievement('first_query');
+    
+    if (level.performanceActive && report.efficiencyScore >= 1.0) {
+      await achievementsDao.awardAchievement('perfect_optimization');
+    }
+    
+    if (currentWorldProg != null && currentWorldProg.levelsCompleted >= currentWorldProg.totalLevels) {
+      if (level.worldId == 'world_01') await achievementsDao.awardAchievement('world_1_complete');
+      if (level.worldId == 'world_02') await achievementsDao.awardAchievement('world_2_complete');
+      if (level.worldId == 'world_03') await achievementsDao.awardAchievement('world_3_complete');
+      if (level.worldId == 'world_04') await achievementsDao.awardAchievement('world_4_complete');
+    }
 
     state = state.copyWith(
       levelCompleted: true,
