@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_panel.dart';
 import '../../theming/components/holo_button.dart';
 import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/terminal_widgets.dart';
@@ -51,7 +50,6 @@ class WorldSelectScreen extends ConsumerWidget {
 
               final title = worldTitles[world.worldId] ?? world.worldId;
               final progress = world.totalLevels > 0 ? world.levelsCompleted / world.totalLevels : 0.0;
-              final displayProgress = (progress * 100).toInt();
 
               return HoloButton(
                 onPressed: isUnlocked
