@@ -7,7 +7,7 @@ import '../../core/scoring/level_scorer.dart';
 
 /// 3-tier hint modal (Section 5.7).
 ///
-/// Tiers: Nudge Ã¢â€ â€™ Partial Reveal Ã¢â€ â€™ Full Solution
+/// Tiers: Nudge → Partial Reveal → Full Solution
 /// - Each tier must be used in order before the next unlocks
 /// - Shows Insight Point cost up front
 /// - After 3 failed attempts: grace hint (Nudge for free)
@@ -166,7 +166,7 @@ class _HintTierRow extends StatelessWidget {
 
     final cost = isFree ? 'FREE' : '${tier.insightPointCost} IP';
     final warningText = tier == HintTierType.fullSolution
-        ? 'Using this caps your rating at Ã¢Ëœâ€¦ only.'
+        ? 'Using this caps your rating at ★ only.'
         : null;
 
     return Padding(

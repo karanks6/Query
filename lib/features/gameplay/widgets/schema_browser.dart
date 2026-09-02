@@ -165,10 +165,12 @@ class _ColumnItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
-          Text(
-            col.primaryKey ? 'Ã°Å¸â€â€˜ ' : '  ',
-            style: const TextStyle(fontSize: 9),
+          Icon(
+            col.primaryKey ? Icons.key : Icons.circle,
+            size: col.primaryKey ? 10 : 0,
+            color: GameTokens.warning,
           ),
+          const SizedBox(width: 4),
           Text(
             col.name,
             style: GameTokens.codeSmall.copyWith(

@@ -32,7 +32,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     'WHERE filters rows before they\'re returned.',
     'JOIN combines data from two or more tables.',
     'GROUP BY collapses rows with the same value.',
-    'NULL means unknown ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â use IS NULL, not = NULL.',
+    'NULL means unknown — use IS NULL, not = NULL.',
     'ORDER BY sorts your result. ASC is default.',
     'DISTINCT removes duplicate rows from results.',
     'LIMIT caps how many rows are returned.',

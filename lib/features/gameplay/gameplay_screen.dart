@@ -14,6 +14,7 @@ import 'widgets/schema_browser.dart';
 import 'widgets/block_mode_workspace.dart';
 import 'widgets/code_mode_workspace.dart';
 import 'widgets/result_pane.dart';
+import 'widgets/concept_lesson_dialog.dart';
 import '../feedback_overlay/feedback_overlay.dart';
 import '../hints/hints_modal.dart';
 
@@ -44,6 +45,14 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
     // Load level into gameplay notifier
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(gameplayProvider.notifier).loadLevel(widget.level);
+      
+      if (widget.level.type == LevelType.tutorial || widget.level.levelNumber == 1) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => ConceptLessonDialog(level: widget.level),
+        );
+      }
     });
   }
 
@@ -599,6 +608,15 @@ class _LevelNarrative extends StatelessWidget {
                   tableHead: GameTokens.codeSmall.copyWith(color: GameTokens.accent, fontWeight: FontWeight.bold),
                   tableBorder: TableBorder.all(color: GameTokens.accentDim, width: 1),
                 ),
+              ),
+              const SizedBox(height: GameTokens.spaceMd),
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  border: Border.all(color: GameTokens.accentDim, width: 1),
+                  borderRadius: GameTokens.borderRadiusSm,
+                ),
+                child: SchemaBrowser(schema: level.schema),
               ),
             ],
           ),

@@ -78,7 +78,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       return;
     }
     if (name.length < 2 || name.length > 30) {
-      setState(() => _nameError = 'Name must be 2ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“30 characters.');
+      setState(() => _nameError = 'Name must be 2–30 characters.');
       return;
     }
 

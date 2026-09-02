@@ -5,7 +5,7 @@ import '../../../core/sandbox_engine/level_schema.dart';
 /// Block Mode workspace (Section 3.1).
 ///
 /// Draggable clause blocks that snap together:
-/// SELECT Ã¢â€ â€™ FROM Ã¢â€ â€™ WHERE Ã¢â€ â€™ GROUP BY Ã¢â€ â€™ HAVING Ã¢â€ â€™ ORDER BY Ã¢â€ â€™ LIMIT
+/// SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT
 ///
 /// Each block accepts typed values via inline text fields.
 /// Produces valid SQL string via [onQueryChanged].
@@ -235,7 +235,7 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
   }
 }
 
-class _ClauseBlockWidget extends StatelessWidget {
+class _ClauseBlockWidget extends StatefulWidget {
   final ClauseBlock block;
   final LevelSchema schema;
   final ValueChanged<String> onValueChanged;
@@ -249,13 +249,41 @@ class _ClauseBlockWidget extends StatelessWidget {
   });
 
   @override
+  State<_ClauseBlockWidget> createState() => _ClauseBlockWidgetState();
+}
+
+class _ClauseBlockWidgetState extends State<_ClauseBlockWidget> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.block.value);
+  }
+
+  @override
+  void didUpdateWidget(covariant _ClauseBlockWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Only update if the parent forced a completely new value that isn't what we already have
+    if (widget.block.value != _controller.text) {
+      _controller.text = widget.block.value;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       decoration: BoxDecoration(
         color: GameTokens.surfaceVariant,
         borderRadius: GameTokens.borderRadiusSm,
-        border: Border.all(color: block.type.color, width: 1),
+        border: Border.all(color: widget.block.type.color, width: 1),
       ),
       child: Row(
         children: [
@@ -265,17 +293,17 @@ class _ClauseBlockWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(
                 horizontal: 8, vertical: 10),
             decoration: BoxDecoration(
-              color: block.type.color.withValues(alpha: 0.15),
-              border: Border(right: BorderSide(color: block.type.color, width: 1)),
+              color: widget.block.type.color.withValues(alpha: 0.15),
+              border: Border(right: BorderSide(color: widget.block.type.color, width: 1)),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(2),
                 bottomLeft: Radius.circular(2),
               ),
             ),
             child: Text(
-              block.type.keyword,
+              widget.block.type.keyword,
               style: GameTokens.codeSmall.copyWith(
-                color: block.type.color,
+                color: widget.block.type.color,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -284,8 +312,8 @@ class _ClauseBlockWidget extends StatelessWidget {
           // Value field
           Expanded(
             child: TextField(
-              controller: TextEditingController(text: block.value),
-              onChanged: onValueChanged,
+              controller: _controller,
+              onChanged: widget.onValueChanged,
               style: GameTokens.code.copyWith(fontSize: 13),
               cursorColor: GameTokens.accent,
               decoration: const InputDecoration(
@@ -297,11 +325,11 @@ class _ClauseBlockWidget extends StatelessWidget {
           ),
 
           // Remove button
-          if (onRemove != null)
+          if (widget.onRemove != null)
             IconButton(
               icon: const Icon(Icons.close,
                   color: GameTokens.disabledText, size: 14),
-              onPressed: onRemove,
+              onPressed: widget.onRemove,
               padding: const EdgeInsets.all(8),
               constraints: const BoxConstraints(),
             ),
