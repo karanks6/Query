@@ -375,7 +375,7 @@ class _DailyChallengeCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'A new case every day. +2Ãƒâ€” XP.',
+                  'A new case every day. +2× XP.',
                   style: GameTokens.bodyMedium,
                 ),
               ],

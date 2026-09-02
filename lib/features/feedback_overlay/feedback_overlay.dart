@@ -291,7 +291,7 @@ class _StarBreakdown extends StatelessWidget {
         ),
         if (score.hintCapApplied)
           Text(
-            '(Full solution hint used ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â capped at 1 star)',
+            '(Full solution hint used — capped at 1 star)',
             style: GameTokens.bodySmall.copyWith(
               color: GameTokens.warning,
             ),

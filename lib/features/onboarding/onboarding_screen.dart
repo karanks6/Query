@@ -40,7 +40,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       title: 'SQL is your interrogation tool.',
       body:
           'SELECT the truth. JOIN the evidence. WHERE the facts lead. '
-          'Each case gives you a new database ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â and only the right query '
+          'Each case gives you a new database – and only the right query '
           'will crack it open.',
       icon: Icons.terminal_outlined,
     ),

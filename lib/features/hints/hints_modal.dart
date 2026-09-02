@@ -161,9 +161,9 @@ class _HintTierRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tierLabel = switch (tier) {
-      HintTierType.nudge => '1 Ã¢â‚¬â€ NUDGE',
-      HintTierType.partialReveal => '2 Ã¢â‚¬â€ PARTIAL REVEAL',
-      HintTierType.fullSolution => '3 Ã¢â‚¬â€ FULL SOLUTION',
+      HintTierType.nudge => '1 — NUDGE',
+      HintTierType.partialReveal => '2 — PARTIAL REVEAL',
+      HintTierType.fullSolution => '3 — FULL SOLUTION',
     };
 
     final cost = isFree ? 'FREE' : '${tier.insightPointCost} IP';
@@ -207,7 +207,7 @@ class _HintTierRow extends StatelessWidget {
                     onPressed: () => onReveal(hint!),
                     isPrimary: true,
                     child: Text(
-                      'REVEAL Ã¢â‚¬â€ $cost',
+                      'REVEAL — $cost',
                       style: GameTokens.bodySmall.copyWith(
                         color: GameTokens.background,
                         fontSize: 10,
