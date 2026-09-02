@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 
-import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_panel.dart';
-import '../../theming/components/holo_button.dart';
+import '../../theming/tokens/game_tokens.dart';
+import '../../theming/components/slanted_panel.dart';
+import '../../theming/components/action_button.dart';
 import '../gameplay/widgets/parallax_background.dart';
-import '../../shared/widgets/terminal_widgets.dart';
+import '../../shared/widgets/game_widgets.dart';
 import '../../data/content/models/level_model.dart';
 import 'daily_challenge_service.dart';
 
@@ -71,8 +71,8 @@ class _DailyChallengeScreenState extends ConsumerState<DailyChallengeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SciFiTokens.background,
-      appBar: TerminalAppBar(
+      backgroundColor: GameTokens.background,
+      appBar: GameAppBar(
         title: 'DAILY_CHALLENGE',
         onBack: () => Navigator.of(context).pop(),
       ),
@@ -83,51 +83,50 @@ class _DailyChallengeScreenState extends ConsumerState<DailyChallengeScreen> {
                 ? const Center(
                     child: Text(
                       'No challenge available today.',
-                      style: TextStyle(color: SciFiTokens.error),
+                      style: TextStyle(color: GameTokens.error),
                     ),
                   )
                 : Center(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 600),
-                      child: HoloPanel(
-                        padding: const EdgeInsets.all(SciFiTokens.spaceLg),
+                      child: SlantedPanel(
+                        padding: const EdgeInsets.all(GameTokens.spaceLg),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.calendar_today, size: 64, color: SciFiTokens.accent),
-                            const SizedBox(height: SciFiTokens.spaceLg),
+                            Icon(Icons.calendar_today, size: 64, color: GameTokens.accent),
+                            const SizedBox(height: GameTokens.spaceLg),
                             Text(
                               _todayChallenge!.title,
-                              style: SciFiTokens.headlineMedium.copyWith(color: SciFiTokens.accent),
+                              style: GameTokens.headlineMedium.copyWith(color: GameTokens.accent),
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: SciFiTokens.spaceMd),
+                            const SizedBox(height: GameTokens.spaceMd),
                             Text(
                               _todayChallenge!.narrative,
-                              style: SciFiTokens.bodyLarge,
+                              style: GameTokens.bodyLarge,
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: SciFiTokens.spaceLg),
-                            HoloPanel(
-                              emissionIntensity: 0.1,
-                              padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                            const SizedBox(height: GameTokens.spaceLg),
+                            SlantedPanel(
+                              padding: const EdgeInsets.all(GameTokens.spaceMd),
                               child: Column(
                                 children: [
                                   Text(
                                     'NEXT CHALLENGE IN:',
-                                    style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.secondaryText),
+                                    style: GameTokens.labelLarge.copyWith(color: GameTokens.secondaryText),
                                   ),
-                                  const SizedBox(height: SciFiTokens.spaceSm),
+                                  const SizedBox(height: GameTokens.spaceSm),
                                   Text(
                                     _formatDuration(_timeUntilTomorrow),
-                                    style: SciFiTokens.headlineLarge.copyWith(color: SciFiTokens.accent),
+                                    style: GameTokens.headlineLarge.copyWith(color: GameTokens.accent),
                                   ),
                                 ],
                               ),
                             ),
-                            const SizedBox(height: SciFiTokens.spaceXl),
-                            HoloButton(
+                            const SizedBox(height: GameTokens.spaceXl),
+                            ActionButton(
                               isPrimary: true,
                               child: const Text('START CHALLENGE'),
                               onPressed: () {

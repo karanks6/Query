@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_panel.dart';
-import '../../theming/components/holo_button.dart';
+import '../../theming/tokens/game_tokens.dart';
+import '../../theming/components/slanted_panel.dart';
+import '../../theming/components/action_button.dart';
 import '../gameplay/widgets/parallax_background.dart';
-import '../../shared/widgets/terminal_widgets.dart';
+import '../../shared/widgets/game_widgets.dart';
 import '../../data/content/level_loader.dart';
 import '../../data/content/models/level_model.dart';
 import '../../core/providers.dart';
@@ -70,27 +70,27 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SciFiTokens.background,
+      backgroundColor: GameTokens.background,
       appBar: AppBar(
-        backgroundColor: SciFiTokens.surface,
+        backgroundColor: GameTokens.surface,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new,
-              color: SciFiTokens.accent, size: 16),
+              color: GameTokens.accent, size: 16),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: _world != null
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('CASE FILE', style: SciFiTokens.bodySmall),
-                  Text(_world!.title, style: SciFiTokens.titleLarge),
+                  Text('CASE FILE', style: GameTokens.bodySmall),
+                  Text(_world!.title, style: GameTokens.titleLarge),
                 ],
               )
-            : Text('CASE FILE', style: SciFiTokens.titleLarge),
+            : Text('CASE FILE', style: GameTokens.titleLarge),
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: SciFiTokens.accentDim),
+          child: Container(height: 1, color: GameTokens.accentDim),
         ),
       ),
       body: ParallaxBackground(
@@ -98,7 +98,7 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
             ? const Center(
                 child: CircularProgressIndicator(
                   valueColor:
-                      AlwaysStoppedAnimation(SciFiTokens.accent),
+                      AlwaysStoppedAnimation(GameTokens.accent),
                   strokeWidth: 1,
                 ),
               )
@@ -118,9 +118,7 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (_) => HoloPanel(
-        emissionIntensity: 0.2,
-        borderRadius: SciFiTokens.borderRadiusMd,
+      builder: (_) => SlantedPanel(
         child: _LevelPreviewSheet(
           level: level,
           stars: _levelStars[level.id] ?? 0,
@@ -152,32 +150,31 @@ class _LevelGrid extends StatelessWidget {
         // World narrative header
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.all(SciFiTokens.spaceMd),
-            child: HoloPanel(
-              emissionIntensity: 0.1,
-              padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+            padding: const EdgeInsets.all(GameTokens.spaceMd),
+            child: SlantedPanel(
+              padding: const EdgeInsets.all(GameTokens.spaceMd),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     '// ${world.caseFile.toUpperCase()}',
-                    style: SciFiTokens.bodySmall.copyWith(
-                      color: SciFiTokens.secondaryText,
+                    style: GameTokens.bodySmall.copyWith(
+                      color: GameTokens.secondaryText,
                       letterSpacing: 1.5,
                     ),
                   ),
-                  const SizedBox(height: SciFiTokens.spaceSm),
+                  const SizedBox(height: GameTokens.spaceSm),
                   Text(
                     world.narrativeIntro,
-                    style: SciFiTokens.bodyMedium.copyWith(
-                      color: SciFiTokens.secondaryText,
+                    style: GameTokens.bodyMedium.copyWith(
+                      color: GameTokens.secondaryText,
                     ),
                   ),
-                  const SizedBox(height: SciFiTokens.spaceMd),
+                  const SizedBox(height: GameTokens.spaceMd),
                   Text(
                     'Concepts: ${world.coreSqlConcept}',
-                    style: SciFiTokens.bodySmall.copyWith(
-                      color: SciFiTokens.accent,
+                    style: GameTokens.bodySmall.copyWith(
+                      color: GameTokens.accent,
                     ),
                   ),
                 ],
@@ -189,7 +186,7 @@ class _LevelGrid extends StatelessWidget {
         // Level nodes
         SliverPadding(
           padding: const EdgeInsets.symmetric(
-            horizontal: SciFiTokens.spaceMd,
+            horizontal: GameTokens.spaceMd,
           ),
           sliver: SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -225,7 +222,7 @@ class _LevelGrid extends StatelessWidget {
         ),
 
         const SliverToBoxAdapter(
-          child: SizedBox(height: SciFiTokens.spaceXl),
+          child: SizedBox(height: GameTokens.spaceXl),
         ),
       ],
     );
@@ -250,10 +247,10 @@ class _LevelNode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textColor = isUnlocked
-        ? SciFiTokens.primaryText
-        : SciFiTokens.disabledText;
+        ? GameTokens.primaryText
+        : GameTokens.disabledText;
 
-    return HoloButton(
+    return ActionButton(
       onPressed: onTap,
       isPrimary: isCompleted,
       child: Column(
@@ -261,13 +258,13 @@ class _LevelNode extends StatelessWidget {
         children: [
           if (!isUnlocked)
             const Icon(Icons.lock_outline,
-                color: SciFiTokens.disabledText, size: 14)
+                color: GameTokens.disabledText, size: 14)
           else
             _LevelTypeIcon(type: level.type),
           const SizedBox(height: 3),
           Text(
             '${level.levelNumber}',
-            style: SciFiTokens.bodySmall.copyWith(
+            style: GameTokens.bodySmall.copyWith(
               color: textColor,
               fontWeight: FontWeight.bold,
               fontSize: 12,
@@ -293,19 +290,19 @@ class _LevelTypeIcon extends StatelessWidget {
     switch (type) {
       case LevelType.tutorial:
         return const Icon(Icons.school_outlined,
-            color: SciFiTokens.info, size: 14);
+            color: GameTokens.info, size: 14);
       case LevelType.debugging:
         return const Icon(Icons.bug_report_outlined,
-            color: SciFiTokens.error, size: 14);
+            color: GameTokens.error, size: 14);
       case LevelType.optimizationChallenge:
         return const Icon(Icons.speed_outlined,
-            color: SciFiTokens.warning, size: 14);
+            color: GameTokens.warning, size: 14);
       case LevelType.boss:
         return const Icon(Icons.gavel_outlined,
-            color: SciFiTokens.accent, size: 14);
+            color: GameTokens.accent, size: 14);
       default:
         return const Icon(Icons.search_outlined,
-            color: SciFiTokens.accent, size: 14);
+            color: GameTokens.accent, size: 14);
     }
   }
 }
@@ -324,7 +321,7 @@ class _LevelPreviewSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(SciFiTokens.spaceLg),
+      padding: const EdgeInsets.all(GameTokens.spaceLg),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,46 +329,46 @@ class _LevelPreviewSheet extends StatelessWidget {
           Row(
             children: [
               _LevelTypeIcon(type: level.type),
-              const SizedBox(width: SciFiTokens.spaceSm),
+              const SizedBox(width: GameTokens.spaceSm),
               Expanded(
                 child: Text(
                   level.title,
-                  style: SciFiTokens.headlineMedium,
+                  style: GameTokens.headlineMedium,
                 ),
               ),
               if (stars > 0) StarRow(starCount: stars),
             ],
           ),
-          const SizedBox(height: SciFiTokens.spaceMd),
+          const SizedBox(height: GameTokens.spaceMd),
           Text(
             level.narrative,
-            style: SciFiTokens.bodyMedium.copyWith(
-              color: SciFiTokens.secondaryText,
+            style: GameTokens.bodyMedium.copyWith(
+              color: GameTokens.secondaryText,
             ),
           ),
-          const SizedBox(height: SciFiTokens.spaceSm),
+          const SizedBox(height: GameTokens.spaceSm),
           Row(
             children: [
               const Icon(Icons.bolt,
-                  color: SciFiTokens.accent, size: 14),
+                  color: GameTokens.accent, size: 14),
               const SizedBox(width: 4),
               Text(
                 '+${level.xpReward} XP',
-                style: SciFiTokens.bodySmall.copyWith(
-                  color: SciFiTokens.accent,
+                style: GameTokens.bodySmall.copyWith(
+                  color: GameTokens.accent,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: SciFiTokens.spaceLg),
+          const SizedBox(height: GameTokens.spaceLg),
           Center(
-            child: HoloButton(
+            child: ActionButton(
               isPrimary: true,
               onPressed: onStart,
               child: Text(stars > 0 ? 'REPLAY' : 'START CASE'),
             ),
           ),
-          const SizedBox(height: SciFiTokens.spaceSm),
+          const SizedBox(height: GameTokens.spaceSm),
         ],
       ),
     );
@@ -387,11 +384,11 @@ class _ErrorView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(SciFiTokens.spaceLg),
+        padding: const EdgeInsets.all(GameTokens.spaceLg),
         child: Text(
           '// ERROR: $error',
-          style: SciFiTokens.bodyMedium.copyWith(
-            color: SciFiTokens.error,
+          style: GameTokens.bodyMedium.copyWith(
+            color: GameTokens.error,
           ),
         ),
       ),

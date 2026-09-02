@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_panel.dart';
-import '../../theming/components/holo_button.dart';
-import '../../shared/widgets/terminal_widgets.dart';
+import '../../theming/tokens/game_tokens.dart';
+import '../../theming/components/slanted_panel.dart';
+import '../../theming/components/action_button.dart';
+import '../../shared/widgets/game_widgets.dart';
 import '../../core/validation/validation_result.dart';
 import '../../core/sandbox_engine/sandbox_engine.dart';
 import '../../core/scoring/level_scorer.dart';
@@ -36,19 +36,16 @@ class FeedbackOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final isSuccess = report?.isComplete ?? false;
     final accentColor = isSuccess
-        ? SciFiTokens.success
-        : SciFiTokens.error;
+        ? GameTokens.success
+        : GameTokens.error;
 
-    return HoloPanel(
-      emissionIntensity: 0.6,
+    return SlantedPanel(
       borderColorOverride: accentColor,
-      glowColorOverride: accentColor,
-      colorOverride: SciFiTokens.surface,
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+      colorOverride: GameTokens.surface,
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.all(SciFiTokens.spaceLg),
+          padding: const EdgeInsets.all(GameTokens.spaceLg),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,9 +53,9 @@ class FeedbackOverlay extends StatelessWidget {
               // Header
               _FeedbackHeader(isSuccess: isSuccess, score: score),
 
-              const SizedBox(height: SciFiTokens.spaceMd),
-              TerminalDivider(),
-              const SizedBox(height: SciFiTokens.spaceMd),
+              const SizedBox(height: GameTokens.spaceMd),
+              GameDivider(),
+              const SizedBox(height: GameTokens.spaceMd),
 
               // Main feedback message
               _FeedbackMessage(
@@ -73,13 +70,13 @@ class FeedbackOverlay extends StatelessWidget {
                   mistake: _getCommonMistake()!,
                 ),
 
-              const SizedBox(height: SciFiTokens.spaceMd),
+              const SizedBox(height: GameTokens.spaceMd),
 
               // Star breakdown (on success)
               if (isSuccess && score != null)
                 _StarBreakdown(score: score!),
 
-              const SizedBox(height: SciFiTokens.spaceLg),
+              const SizedBox(height: GameTokens.spaceLg),
 
               // CTAs
               _FeedbackActions(
@@ -95,7 +92,7 @@ class FeedbackOverlay extends StatelessWidget {
     ).animate().slideY(
           begin: 1.0,
           end: 0.0,
-          duration: SciFiTokens.durationNormal,
+          duration: GameTokens.durationNormal,
           curve: Curves.easeOut,
         );
   }
@@ -125,19 +122,19 @@ class _FeedbackHeader extends StatelessWidget {
         Icon(
           isSuccess ? Icons.check_circle_outline : Icons.cancel_outlined,
           color: isSuccess
-              ? SciFiTokens.success
-              : SciFiTokens.error,
+              ? GameTokens.success
+              : GameTokens.error,
           size: 24,
         )
             .animate(target: isSuccess ? 1 : 0)
             .scale(duration: 400.ms, curve: Curves.bounceOut),
-        const SizedBox(width: SciFiTokens.spaceSm),
+        const SizedBox(width: GameTokens.spaceSm),
         Text(
           isSuccess ? 'CASE CRACKED!' : 'NOT QUITE.',
-          style: SciFiTokens.headlineLarge.copyWith(
+          style: GameTokens.headlineLarge.copyWith(
             color: isSuccess
-                ? SciFiTokens.success
-                : SciFiTokens.error,
+                ? GameTokens.success
+                : GameTokens.error,
           ),
         ),
         if (isSuccess && score != null) ...[
@@ -185,26 +182,25 @@ class _FeedbackMessage extends StatelessWidget {
       message = report!.resultDiff!.plainEnglishSummary;
     }
 
-    return HoloPanel(
-      emissionIntensity: 0.2,
-      borderColorOverride: isSuccess ? SciFiTokens.success : SciFiTokens.error,
-      colorOverride: isSuccess ? SciFiTokens.successSurface : SciFiTokens.errorSurface,
-      padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+    return SlantedPanel(
+      borderColorOverride: isSuccess ? GameTokens.success : GameTokens.error,
+      colorOverride: isSuccess ? GameTokens.successSurface : GameTokens.errorSurface,
+      padding: const EdgeInsets.all(GameTokens.spaceMd),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             '> ',
-            style: SciFiTokens.code.copyWith(
+            style: GameTokens.code.copyWith(
               color: isSuccess
-                  ? SciFiTokens.success
-                  : SciFiTokens.error,
+                  ? GameTokens.success
+                  : GameTokens.error,
             ),
           ),
           Expanded(
             child: Text(
               message,
-              style: SciFiTokens.bodyMedium,
+              style: GameTokens.bodyMedium,
             ),
           ),
         ],
@@ -221,41 +217,40 @@ class _CommonMistakeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: SciFiTokens.spaceMd),
-      child: HoloPanel(
-        emissionIntensity: 0.2,
-        borderColorOverride: SciFiTokens.warning,
-        colorOverride: SciFiTokens.warningSurface,
-        padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+      padding: const EdgeInsets.only(top: GameTokens.spaceMd),
+      child: SlantedPanel(
+        borderColorOverride: GameTokens.warning,
+        colorOverride: GameTokens.warningSurface,
+        padding: const EdgeInsets.all(GameTokens.spaceMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               const Icon(Icons.school_outlined,
-                  color: SciFiTokens.warning, size: 14),
+                  color: GameTokens.warning, size: 14),
               const SizedBox(width: 6),
               Text(mistake.title,
-                  style: SciFiTokens.bodySmall.copyWith(
-                    color: SciFiTokens.warning,
+                  style: GameTokens.bodySmall.copyWith(
+                    color: GameTokens.warning,
                     fontWeight: FontWeight.bold,
                   )),
             ],
           ),
           const SizedBox(height: 6),
-          Text(mistake.explanation, style: SciFiTokens.bodySmall),
+          Text(mistake.explanation, style: GameTokens.bodySmall),
           if (mistake.example != null) ...[
             const SizedBox(height: 6),
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: SciFiTokens.surface,
-                borderRadius: SciFiTokens.borderRadiusSm,
+                color: GameTokens.surface,
+                borderRadius: GameTokens.borderRadiusSm,
               ),
               child: Text(
                 mistake.example!,
-                style: SciFiTokens.codeSmall.copyWith(
-                  color: SciFiTokens.accent,
+                style: GameTokens.codeSmall.copyWith(
+                  color: GameTokens.accent,
                 ),
               ),
             ),
@@ -277,26 +272,26 @@ class _StarBreakdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('STARS EARNED', style: SciFiTokens.bodySmall.copyWith(
-          color: SciFiTokens.secondaryText,
+        Text('STARS EARNED', style: GameTokens.bodySmall.copyWith(
+          color: GameTokens.secondaryText,
           letterSpacing: 1.5,
         )),
-        const SizedBox(height: SciFiTokens.spaceSm),
+        const SizedBox(height: GameTokens.spaceSm),
         _StarItem('Completion', score.completionStar),
         _StarItem('Optimal Query', score.optimalStar),
         _StarItem('First Attempt', score.firstAttemptStar),
         const SizedBox(height: 4),
         Text(
           '+${score.xpEarned} XP earned',
-          style: SciFiTokens.bodySmall.copyWith(
-            color: SciFiTokens.accent,
+          style: GameTokens.bodySmall.copyWith(
+            color: GameTokens.accent,
           ),
         ),
         if (score.hintCapApplied)
           Text(
-            '(Full solution hint used â€” capped at 1 star)',
-            style: SciFiTokens.bodySmall.copyWith(
-              color: SciFiTokens.warning,
+            '(Full solution hint used ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â capped at 1 star)',
+            style: GameTokens.bodySmall.copyWith(
+              color: GameTokens.warning,
             ),
           ),
       ],
@@ -319,17 +314,17 @@ class _StarItem extends StatelessWidget {
           Icon(
             earned ? Icons.star_rounded : Icons.star_border_rounded,
             color: earned
-                ? SciFiTokens.accent
-                : SciFiTokens.disabledText,
+                ? GameTokens.accent
+                : GameTokens.disabledText,
             size: 16,
           ),
           const SizedBox(width: 6),
           Text(
             label,
-            style: SciFiTokens.bodySmall.copyWith(
+            style: GameTokens.bodySmall.copyWith(
               color: earned
-                  ? SciFiTokens.primaryText
-                  : SciFiTokens.disabledText,
+                  ? GameTokens.primaryText
+                  : GameTokens.disabledText,
             ),
           ),
         ],
@@ -360,31 +355,31 @@ class _FeedbackActions extends StatelessWidget {
           TextButton(
             onPressed: onDismiss,
             child: Text('REVIEW QUERY',
-                style: SciFiTokens.labelLarge.copyWith(
-                  color: SciFiTokens.secondaryText,
+                style: GameTokens.labelLarge.copyWith(
+                  color: GameTokens.secondaryText,
                 )),
           ),
-          const SizedBox(width: SciFiTokens.spaceMd),
-          HoloButton(
+          const SizedBox(width: GameTokens.spaceMd),
+          ActionButton(
             isPrimary: true,
             onPressed: onRetry,
             child: const Text('RETRY'),
           ),
         ] else ...[
           if (onNextLevel != null)
-            HoloButton(
+            ActionButton(
               isPrimary: true,
               onPressed: onNextLevel,
               child: const Text('NEXT LEVEL'),
             ),
-          const SizedBox(width: SciFiTokens.spaceSm),
+          const SizedBox(width: GameTokens.spaceSm),
           TextButton(
             onPressed: onDismiss,
-            child: Text('REVIEW', style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.secondaryText)),
+            child: Text('REVIEW', style: GameTokens.labelLarge.copyWith(color: GameTokens.secondaryText)),
           ),
-          const SizedBox(width: SciFiTokens.spaceSm),
+          const SizedBox(width: GameTokens.spaceSm),
           IconButton(
-            icon: Icon(Icons.share, color: SciFiTokens.accent),
+            icon: Icon(Icons.share, color: GameTokens.accent),
             onPressed: () {
               // ignore: deprecated_member_use
               Share.share('I just cracked a SQL case in Query!\nLevel passed with flying colors. #QueryGame #SQL');

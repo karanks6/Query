@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-import '../../../theming/tokens/sci_fi_tokens.dart';
+import '../../../theming/tokens/game_tokens.dart';
 
 /// Layered parallax background (Section 3.1 & 6.1).
 /// 
@@ -72,13 +72,13 @@ class _ParallaxBackgroundState extends State<ParallaxBackground> with SingleTick
           offset: Offset(_currentRoll * -20, _currentPitch * -20),
           child: Container(
             decoration: BoxDecoration(
-              color: SciFiTokens.background,
+              color: GameTokens.background,
               gradient: RadialGradient(
                 center: Alignment.center,
                 radius: 1.5,
                 colors: [
-                  SciFiTokens.surfaceHighlight.withValues(alpha: 0.3),
-                  SciFiTokens.background,
+                  GameTokens.surfaceHighlight.withValues(alpha: 0.3),
+                  GameTokens.background,
                 ],
               ),
             ),
@@ -91,7 +91,7 @@ class _ParallaxBackgroundState extends State<ParallaxBackground> with SingleTick
           child: Opacity(
             opacity: 0.5,
             child: CustomPaint(
-              painter: _CircuitTracePainter(color: SciFiTokens.accentDim),
+              painter: _CircuitTracePainter(color: GameTokens.accentDim),
               size: Size.infinite,
             ),
           ),

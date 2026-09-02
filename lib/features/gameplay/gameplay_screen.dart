@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_panel.dart';
-import '../../theming/components/holo_button.dart';
+import '../../theming/tokens/game_tokens.dart';
+import '../../theming/components/slanted_panel.dart';
+import '../../theming/components/action_button.dart';
 import 'widgets/parallax_background.dart';
-import '../../shared/widgets/terminal_widgets.dart';
+import '../../shared/widgets/game_widgets.dart';
 import '../../data/content/models/level_model.dart';
 import '../../core/scoring/level_scorer.dart';
 import 'gameplay_provider.dart';
@@ -60,15 +60,15 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
     }
 
     return Scaffold(
-      backgroundColor: SciFiTokens.background,
+      backgroundColor: GameTokens.background,
       body: ParallaxBackground(
         child: SafeArea(
           child: Column(
             children: [
-              // ── HUD / Top bar ─────────────────────────────────────────────
+              // Ã¢â€â‚¬Ã¢â€â‚¬ HUD / Top bar Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
               _GameplayHUD(level: widget.level, state: state),
 
-              // ── Main area ─────────────────────────────────────────────────
+              // Ã¢â€â‚¬Ã¢â€â‚¬ Main area Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
               Expanded(
                 child: isTablet
                     ? _TabletLayout(level: widget.level, state: state)
@@ -109,7 +109,7 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
   }
 }
 
-// ─── HUD ──────────────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ HUD Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 class _GameplayHUD extends ConsumerWidget {
   final LevelModel level;
@@ -121,11 +121,11 @@ class _GameplayHUD extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       height: 48,
-      padding: const EdgeInsets.symmetric(horizontal: SciFiTokens.spaceSm),
+      padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceSm),
       decoration: BoxDecoration(
-        color: SciFiTokens.surface,
+        color: GameTokens.surface,
         border: Border(
-          bottom: BorderSide(color: SciFiTokens.accentDim, width: 1),
+          bottom: BorderSide(color: GameTokens.accentDim, width: 1),
         ),
       ),
       child: Row(
@@ -133,13 +133,13 @@ class _GameplayHUD extends ConsumerWidget {
           // Back
           IconButton(
             icon: const Icon(Icons.close,
-                color: SciFiTokens.secondaryText, size: 18),
+                color: GameTokens.secondaryText, size: 18),
             onPressed: () => _confirmExit(context),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
           ),
 
-          const SizedBox(width: SciFiTokens.spaceSm),
+          const SizedBox(width: GameTokens.spaceSm),
 
           // Level info
           Expanded(
@@ -149,8 +149,8 @@ class _GameplayHUD extends ConsumerWidget {
               children: [
                 Text(
                   level.title,
-                  style: SciFiTokens.bodySmall.copyWith(
-                    color: SciFiTokens.accent,
+                  style: GameTokens.bodySmall.copyWith(
+                    color: GameTokens.accent,
                     fontSize: 10,
                   ),
                   maxLines: 1,
@@ -159,8 +159,8 @@ class _GameplayHUD extends ConsumerWidget {
                 if (level.type == LevelType.debugging)
                   Text(
                     'DEBUGGING CHALLENGE',
-                    style: SciFiTokens.bodySmall.copyWith(
-                      color: SciFiTokens.error,
+                    style: GameTokens.bodySmall.copyWith(
+                      color: GameTokens.error,
                       fontSize: 8,
                       fontWeight: FontWeight.bold,
                     ),
@@ -168,8 +168,8 @@ class _GameplayHUD extends ConsumerWidget {
                 else if (level.type == LevelType.optimizationChallenge)
                   Text(
                     'OPTIMIZATION CHALLENGE',
-                    style: SciFiTokens.bodySmall.copyWith(
-                      color: SciFiTokens.warning,
+                    style: GameTokens.bodySmall.copyWith(
+                      color: GameTokens.warning,
                       fontSize: 8,
                       fontWeight: FontWeight.bold,
                     ),
@@ -182,29 +182,29 @@ class _GameplayHUD extends ConsumerWidget {
           if (!level.type.isBlockModeOnly)
             _ModeToggle(state: state),
 
-          const SizedBox(width: SciFiTokens.spaceSm),
+          const SizedBox(width: GameTokens.spaceSm),
 
           // Star preview
           if (level.type.hasStarRating) StarRow(starCount: 0),
 
           // Attempts indicator
-          const SizedBox(width: SciFiTokens.spaceSm),
+          const SizedBox(width: GameTokens.spaceSm),
           Text(
             '#${state.attemptCount}',
-            style: SciFiTokens.bodySmall.copyWith(
-              color: SciFiTokens.secondaryText,
+            style: GameTokens.bodySmall.copyWith(
+              color: GameTokens.secondaryText,
               fontSize: 10,
             ),
           ),
           
           // Speed Timer (Mock)
-          const SizedBox(width: SciFiTokens.spaceSm),
-          Icon(Icons.timer_outlined, color: SciFiTokens.accent, size: 12),
+          const SizedBox(width: GameTokens.spaceSm),
+          Icon(Icons.timer_outlined, color: GameTokens.accent, size: 12),
           const SizedBox(width: 2),
           Text(
             '00:00',
-            style: SciFiTokens.codeSmall.copyWith(
-              color: SciFiTokens.accent,
+            style: GameTokens.codeSmall.copyWith(
+              color: GameTokens.accent,
               fontSize: 10,
             ),
           ),
@@ -217,22 +217,22 @@ class _GameplayHUD extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: SciFiTokens.surface,
+        backgroundColor: GameTokens.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: SciFiTokens.borderRadiusSm,
-          side: BorderSide(color: SciFiTokens.accentDim),
+          borderRadius: GameTokens.borderRadiusSm,
+          side: BorderSide(color: GameTokens.accentDim),
         ),
-        title: Text('Exit level?', style: SciFiTokens.headlineMedium),
+        title: Text('Exit level?', style: GameTokens.headlineMedium),
         content: Text(
           'Your progress on this attempt won\'t be saved.',
-          style: SciFiTokens.bodyMedium.copyWith(
-            color: SciFiTokens.secondaryText,
+          style: GameTokens.bodyMedium.copyWith(
+            color: GameTokens.secondaryText,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('KEEP PLAYING', style: SciFiTokens.labelLarge),
+            child: Text('KEEP PLAYING', style: GameTokens.labelLarge),
           ),
           TextButton(
             onPressed: () {
@@ -241,8 +241,8 @@ class _GameplayHUD extends ConsumerWidget {
             },
             child: Text(
               'EXIT',
-              style: SciFiTokens.labelLarge
-                  .copyWith(color: SciFiTokens.error),
+              style: GameTokens.labelLarge
+                  .copyWith(color: GameTokens.error),
             ),
           ),
         ],
@@ -263,31 +263,31 @@ class _ModeToggle extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          border: Border.all(color: SciFiTokens.accentDim, width: 1),
-          borderRadius: SciFiTokens.borderRadiusSm,
+          border: Border.all(color: GameTokens.accentDim, width: 1),
+          borderRadius: GameTokens.borderRadiusSm,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'BLOCK',
-              style: SciFiTokens.bodySmall.copyWith(
+              style: GameTokens.bodySmall.copyWith(
                 color: state.queryMode == QueryMode.block
-                    ? SciFiTokens.accent
-                    : SciFiTokens.disabledText,
+                    ? GameTokens.accent
+                    : GameTokens.disabledText,
                 fontSize: 9,
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Container(width: 1, height: 10, color: SciFiTokens.accentDim),
+              child: Container(width: 1, height: 10, color: GameTokens.accentDim),
             ),
             Text(
               'CODE',
-              style: SciFiTokens.bodySmall.copyWith(
+              style: GameTokens.bodySmall.copyWith(
                 color: state.queryMode == QueryMode.code
-                    ? SciFiTokens.accent
-                    : SciFiTokens.disabledText,
+                    ? GameTokens.accent
+                    : GameTokens.disabledText,
                 fontSize: 9,
               ),
             ),
@@ -298,7 +298,7 @@ class _ModeToggle extends ConsumerWidget {
   }
 }
 
-// ─── Phone Layout ─────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Phone Layout Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 class _PhoneLayout extends ConsumerWidget {
   final LevelModel level;
@@ -332,7 +332,7 @@ class _PhoneLayout extends ConsumerWidget {
   }
 }
 
-// ─── Tablet Layout ────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Tablet Layout Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 class _TabletLayout extends ConsumerWidget {
   final LevelModel level;
@@ -351,7 +351,7 @@ class _TabletLayout extends ConsumerWidget {
             child: SchemaBrowser(schema: level.schema),
           ),
 
-        Container(width: 1, color: SciFiTokens.accentDim),
+        Container(width: 1, color: GameTokens.accentDim),
 
         // Main area
         Expanded(
@@ -365,7 +365,7 @@ class _TabletLayout extends ConsumerWidget {
                     state.schemaExpanded
                         ? Icons.chevron_left
                         : Icons.chevron_right,
-                    color: SciFiTokens.secondaryText,
+                    color: GameTokens.secondaryText,
                   ),
                   onPressed: () =>
                       ref.read(gameplayProvider.notifier).toggleSchemaPanel(),
@@ -394,7 +394,7 @@ class _TabletLayout extends ConsumerWidget {
   }
 }
 
-// ─── Workspace area ───────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Workspace area Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 class _WorkspaceArea extends ConsumerWidget {
   final LevelModel level;
@@ -405,7 +405,7 @@ class _WorkspaceArea extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AnimatedSwitcher(
-      duration: SciFiTokens.durationNormal,
+      duration: GameTokens.durationNormal,
       child: state.queryMode == QueryMode.block
           ? BlockModeWorkspace(
               key: const ValueKey('block'),
@@ -425,7 +425,7 @@ class _WorkspaceArea extends ConsumerWidget {
   }
 }
 
-// ─── Action bar ───────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Action bar Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 class _ActionBar extends ConsumerWidget {
   final LevelModel level;
@@ -437,40 +437,40 @@ class _ActionBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: SciFiTokens.spaceMd,
-        vertical: SciFiTokens.spaceSm,
+        horizontal: GameTokens.spaceMd,
+        vertical: GameTokens.spaceSm,
       ),
       decoration: BoxDecoration(
-        color: SciFiTokens.surface,
+        color: GameTokens.surface,
         border: Border(
-          top: BorderSide(color: SciFiTokens.accentDim, width: 1),
+          top: BorderSide(color: GameTokens.accentDim, width: 1),
         ),
       ),
       child: Row(
         children: [
           // Hints
-          HoloButton(
+          ActionButton(
             onPressed: () => _showHints(context, level, state, ref),
             child: Row(
               children: [
                 const Icon(Icons.lightbulb_outline,
-                    color: SciFiTokens.warning, size: 16),
+                    color: GameTokens.warning, size: 16),
                 const SizedBox(width: 4),
-                Text('HINT', style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.warning)),
+                Text('HINT', style: GameTokens.labelLarge.copyWith(color: GameTokens.warning)),
               ],
             ),
           ),
 
-          // Schema (phone only — opens drawer)
+          // Schema (phone only Ã¢â‚¬â€ opens drawer)
           if (MediaQuery.of(context).size.width <= 720)
-            HoloButton(
+            ActionButton(
               onPressed: () => _showSchemaBrowser(context, level),
               child: Row(
                 children: [
                   const Icon(Icons.table_chart_outlined,
-                      color: SciFiTokens.info, size: 16),
+                      color: GameTokens.info, size: 16),
                   const SizedBox(width: 4),
-                  Text('SCHEMA', style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.info)),
+                  Text('SCHEMA', style: GameTokens.labelLarge.copyWith(color: GameTokens.info)),
                 ],
               ),
             ),
@@ -478,7 +478,7 @@ class _ActionBar extends ConsumerWidget {
           const Spacer(),
 
           // Run button
-          HoloButton(
+          ActionButton(
             isPrimary: true,
             onPressed: state.isRunning
                 ? null
@@ -489,13 +489,13 @@ class _ActionBar extends ConsumerWidget {
                   const SizedBox(
                     width: 16,
                     height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: SciFiTokens.background),
+                    child: CircularProgressIndicator(strokeWidth: 2, color: GameTokens.background),
                   )
                 else
                   const Icon(Icons.play_arrow_rounded,
-                      color: SciFiTokens.background, size: 16),
+                      color: GameTokens.background, size: 16),
                 const SizedBox(width: 8),
-                Text('RUN QUERY', style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.background)),
+                Text('RUN QUERY', style: GameTokens.labelLarge.copyWith(color: GameTokens.background)),
               ],
             ),
           ),
@@ -512,7 +512,7 @@ class _ActionBar extends ConsumerWidget {
   ) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: SciFiTokens.surface,
+      backgroundColor: GameTokens.surface,
       isScrollControlled: true,
       builder: (_) => HintsModal(
         hints: level.hints,
@@ -527,7 +527,7 @@ class _ActionBar extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: SciFiTokens.surface,
+      backgroundColor: GameTokens.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
       ),
@@ -544,7 +544,7 @@ class _ActionBar extends ConsumerWidget {
   }
 }
 
-// ─── Level Narrative (Question) ────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Level Narrative (Question) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 class _LevelNarrative extends StatelessWidget {
   final LevelModel level;
@@ -556,10 +556,10 @@ class _LevelNarrative extends StatelessWidget {
     if (level.narrative.isEmpty) return const SizedBox.shrink();
 
     return Padding(
-      padding: const EdgeInsets.all(SciFiTokens.spaceSm),
-      child: HoloPanel(
-        emissionIntensity: 0.2, // Subdued so it doesn't distract from interactive elements
-        padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+      padding: const EdgeInsets.all(GameTokens.spaceSm),
+      child: SlantedPanel(
+        // Subdued so it doesn't distract from interactive elements
+        padding: const EdgeInsets.all(GameTokens.spaceMd),
         child: SizedBox(
           width: double.infinity,
           child: Column(
@@ -567,14 +567,16 @@ class _LevelNarrative extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.assignment_outlined, color: SciFiTokens.accent, size: 14),
-                  const SizedBox(width: 8),
-                  Text(
-                    '// OBJECTIVE',
-                    style: SciFiTokens.bodySmall.copyWith(
-                      color: SciFiTokens.accent,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    color: GameTokens.accent,
+                    child: Text(
+                      'TARGET',
+                      style: GameTokens.labelLarge.copyWith(
+                        color: GameTokens.background,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 2,
+                      ),
                     ),
                   ),
                 ],
@@ -582,8 +584,8 @@ class _LevelNarrative extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 level.narrative,
-                style: SciFiTokens.bodyMedium.copyWith(
-                  color: SciFiTokens.primaryText, // Changed to primaryText to make it more visible
+                style: GameTokens.bodyMedium.copyWith(
+                  color: GameTokens.primaryText, // Changed to primaryText to make it more visible
                   height: 1.4,
                 ),
               ),

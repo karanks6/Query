@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import '../../theming/app_theme.dart';
-import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_panel.dart';
-import '../../shared/widgets/terminal_widgets.dart';
+import '../../theming/tokens/game_tokens.dart';
+import '../../theming/components/slanted_panel.dart';
+import '../../shared/widgets/game_widgets.dart';
 import '../gameplay/widgets/parallax_background.dart';
 import '../../core/settings/settings_service.dart';
 
@@ -20,29 +20,28 @@ class SettingsScreen extends ConsumerWidget {
     final settingsNotifier = ref.read(settingsProvider.notifier);
 
     return Scaffold(
-      backgroundColor: SciFiTokens.background,
-      appBar: TerminalAppBar(
+      backgroundColor: GameTokens.background,
+      appBar: GameAppBar(
         title: 'SETTINGS',
         onBack: () => Navigator.of(context).pop(),
       ),
       body: ParallaxBackground(
         child: ListView(
-          padding: const EdgeInsets.all(SciFiTokens.spaceLg),
+          padding: const EdgeInsets.all(GameTokens.spaceLg),
           children: [
             Text(
               'APPEARANCE',
-              style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.secondaryText),
+              style: GameTokens.labelLarge.copyWith(color: GameTokens.secondaryText),
             ),
-            const SizedBox(height: SciFiTokens.spaceSm),
-            HoloPanel(
-              emissionIntensity: 0.1,
+            const SizedBox(height: GameTokens.spaceSm),
+            SlantedPanel(
               child: Column(
                 children: AppTheme.values.map((t) {
                   return RadioListTile<AppTheme>(
-                    title: Text(t.displayName, style: SciFiTokens.bodyMedium),
+                    title: Text(t.displayName, style: GameTokens.bodyMedium),
                     value: t,
                     groupValue: theme,
-                    activeColor: SciFiTokens.accent,
+                    activeColor: GameTokens.accent,
                     onChanged: (value) {
                       if (value != null) themeNotifier.setTheme(value);
                     },
@@ -50,37 +49,36 @@ class SettingsScreen extends ConsumerWidget {
                 }).toList(),
               ),
             ),
-            const SizedBox(height: SciFiTokens.spaceXl),
+            const SizedBox(height: GameTokens.spaceXl),
             Text(
               'ACCESSIBILITY & AUDIO',
-              style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.secondaryText),
+              style: GameTokens.labelLarge.copyWith(color: GameTokens.secondaryText),
             ),
-            const SizedBox(height: SciFiTokens.spaceSm),
-            HoloPanel(
-              emissionIntensity: 0.1,
+            const SizedBox(height: GameTokens.spaceSm),
+            SlantedPanel(
               child: Column(
                 children: [
                   SwitchListTile(
-                    title: Text('Sound Effects', style: SciFiTokens.bodyMedium),
+                    title: Text('Sound Effects', style: GameTokens.bodyMedium),
                     value: settings.soundEffectsEnabled,
-                    activeColor: SciFiTokens.accent,
+                    activeColor: GameTokens.accent,
                     onChanged: (bool value) {
                       settingsNotifier.toggleSoundEffects(value);
                     },
                   ),
                   SwitchListTile(
-                    title: Text('Background Music', style: SciFiTokens.bodyMedium),
+                    title: Text('Background Music', style: GameTokens.bodyMedium),
                     value: settings.musicEnabled,
-                    activeColor: SciFiTokens.accent,
+                    activeColor: GameTokens.accent,
                     onChanged: (bool value) {
                       settingsNotifier.toggleMusic(value);
                     },
                   ),
                   SwitchListTile(
-                    title: Text('Color-blind Safe Results', style: SciFiTokens.bodyMedium),
-                    subtitle: Text('Uses shapes in addition to color', style: SciFiTokens.bodySmall.copyWith(color: SciFiTokens.secondaryText)),
+                    title: Text('Color-blind Safe Results', style: GameTokens.bodyMedium),
+                    subtitle: Text('Uses shapes in addition to color', style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText)),
                     value: settings.colorblindModeEnabled,
-                    activeColor: SciFiTokens.accent,
+                    activeColor: GameTokens.accent,
                     onChanged: (bool value) {
                       settingsNotifier.toggleColorblindMode(value);
                     },
@@ -88,30 +86,29 @@ class SettingsScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(height: SciFiTokens.spaceXl),
+            const SizedBox(height: GameTokens.spaceXl),
             Text(
               'SYSTEM',
-              style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.secondaryText),
+              style: GameTokens.labelLarge.copyWith(color: GameTokens.secondaryText),
             ),
-            const SizedBox(height: SciFiTokens.spaceSm),
-            HoloPanel(
-              emissionIntensity: 0.1,
+            const SizedBox(height: GameTokens.spaceSm),
+            SlantedPanel(
               child: FutureBuilder<String?>(
                 future: FirebaseAppCheck.instance.getToken().then((value) => value),
                 builder: (context, snapshot) {
                   final isReady = snapshot.hasData;
                   final hasError = snapshot.hasError;
                   return ListTile(
-                    title: Text('App Check Status', style: SciFiTokens.bodyMedium),
+                    title: Text('App Check Status', style: GameTokens.bodyMedium),
                     subtitle: Text(
                       hasError ? 'Error initializing' : (isReady ? 'Active & Protected' : 'Initializing...'),
-                      style: SciFiTokens.bodySmall.copyWith(
-                        color: hasError ? SciFiTokens.error : (isReady ? SciFiTokens.success : SciFiTokens.warning)
+                      style: GameTokens.bodySmall.copyWith(
+                        color: hasError ? GameTokens.error : (isReady ? GameTokens.success : GameTokens.warning)
                       ),
                     ),
                     leading: Icon(
                       hasError ? Icons.error_outline : (isReady ? Icons.security : Icons.sync),
-                      color: hasError ? SciFiTokens.error : (isReady ? SciFiTokens.success : SciFiTokens.warning),
+                      color: hasError ? GameTokens.error : (isReady ? GameTokens.success : GameTokens.warning),
                     ),
                   );
                 }

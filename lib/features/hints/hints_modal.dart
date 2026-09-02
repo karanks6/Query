@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_panel.dart';
-import '../../theming/components/holo_button.dart';
+import '../../theming/tokens/game_tokens.dart';
+import '../../theming/components/slanted_panel.dart';
+import '../../theming/components/action_button.dart';
 import '../../data/content/models/level_model.dart';
 import '../../core/scoring/level_scorer.dart';
 
 /// 3-tier hint modal (Section 5.7).
 ///
-/// Tiers: Nudge → Partial Reveal → Full Solution
+/// Tiers: Nudge Ã¢â€ â€™ Partial Reveal Ã¢â€ â€™ Full Solution
 /// - Each tier must be used in order before the next unlocks
 /// - Shows Insight Point cost up front
 /// - After 3 failed attempts: grace hint (Nudge for free)
@@ -79,7 +79,7 @@ class _HintsModalState extends State<HintsModal> {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.all(SciFiTokens.spaceLg),
+        padding: const EdgeInsets.all(GameTokens.spaceLg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,21 +88,21 @@ class _HintsModalState extends State<HintsModal> {
             Row(
               children: [
                 const Icon(Icons.lightbulb_outline,
-                    color: SciFiTokens.warning, size: 20),
-                const SizedBox(width: SciFiTokens.spaceSm),
-                Text('HINTS', style: SciFiTokens.headlineMedium),
+                    color: GameTokens.warning, size: 20),
+                const SizedBox(width: GameTokens.spaceSm),
+                Text('HINTS', style: GameTokens.headlineMedium),
                 const Spacer(),
                 if (_graceHintAvailable)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      border: Border.all(color: SciFiTokens.accent, width: 1),
-                      borderRadius: SciFiTokens.borderRadiusSm,
+                      border: Border.all(color: GameTokens.accent, width: 1),
+                      borderRadius: GameTokens.borderRadiusSm,
                     ),
                     child: Text(
                       'GRACE HINT ACTIVE',
-                      style: SciFiTokens.bodySmall.copyWith(
-                        color: SciFiTokens.accent,
+                      style: GameTokens.bodySmall.copyWith(
+                        color: GameTokens.accent,
                         fontSize: 9,
                         letterSpacing: 1,
                       ),
@@ -110,14 +110,14 @@ class _HintsModalState extends State<HintsModal> {
                   ),
               ],
             ),
-            const SizedBox(height: SciFiTokens.spaceMd),
+            const SizedBox(height: GameTokens.spaceMd),
             Text(
               'Hints cost Insight Points. Using a Full Solution caps your rating at 1 star.',
-              style: SciFiTokens.bodySmall.copyWith(
-                color: SciFiTokens.secondaryText,
+              style: GameTokens.bodySmall.copyWith(
+                color: GameTokens.secondaryText,
               ),
             ),
-            const SizedBox(height: SciFiTokens.spaceLg),
+            const SizedBox(height: GameTokens.spaceLg),
 
             // Hint tiers
             for (final tier in HintTierType.values)
@@ -131,7 +131,7 @@ class _HintsModalState extends State<HintsModal> {
                 onReveal: (hint) => _revealHint(tier, hint),
               ),
 
-            const SizedBox(height: SciFiTokens.spaceSm),
+            const SizedBox(height: GameTokens.spaceSm),
           ],
         ),
       ),
@@ -159,56 +159,55 @@ class _HintTierRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tierLabel = switch (tier) {
-      HintTierType.nudge => '1 — NUDGE',
-      HintTierType.partialReveal => '2 — PARTIAL REVEAL',
-      HintTierType.fullSolution => '3 — FULL SOLUTION',
+      HintTierType.nudge => '1 Ã¢â‚¬â€ NUDGE',
+      HintTierType.partialReveal => '2 Ã¢â‚¬â€ PARTIAL REVEAL',
+      HintTierType.fullSolution => '3 Ã¢â‚¬â€ FULL SOLUTION',
     };
 
     final cost = isFree ? 'FREE' : '${tier.insightPointCost} IP';
     final warningText = tier == HintTierType.fullSolution
-        ? 'Using this caps your rating at ★ only.'
+        ? 'Using this caps your rating at Ã¢Ëœâ€¦ only.'
         : null;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: SciFiTokens.spaceSm),
-      child: HoloPanel(
-        emissionIntensity: 0.15,
+      padding: const EdgeInsets.only(bottom: GameTokens.spaceSm),
+      child: SlantedPanel(
         borderColorOverride: isUnlocked
-              ? SciFiTokens.accentDim
-              : SciFiTokens.disabledText,
-        colorOverride: SciFiTokens.surfaceVariant,
+              ? GameTokens.accentDim
+              : GameTokens.disabledText,
+        colorOverride: GameTokens.surfaceVariant,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Tier header
           Padding(
             padding: const EdgeInsets.symmetric(
-              horizontal: SciFiTokens.spaceMd,
-              vertical: SciFiTokens.spaceSm,
+              horizontal: GameTokens.spaceMd,
+              vertical: GameTokens.spaceSm,
             ),
             child: Row(
               children: [
                 Text(
                   tierLabel,
-                  style: SciFiTokens.bodySmall.copyWith(
+                  style: GameTokens.bodySmall.copyWith(
                     color: isUnlocked
-                        ? SciFiTokens.accent
-                        : SciFiTokens.disabledText,
+                        ? GameTokens.accent
+                        : GameTokens.disabledText,
                     letterSpacing: 1,
                   ),
                 ),
                 const Spacer(),
                 if (!isUnlocked)
                   const Icon(Icons.lock_outline,
-                      color: SciFiTokens.disabledText, size: 14)
+                      color: GameTokens.disabledText, size: 14)
                 else if (!isRevealed && hint != null)
-                  HoloButton(
+                  ActionButton(
                     onPressed: () => onReveal(hint!),
                     isPrimary: true,
                     child: Text(
-                      'REVEAL — $cost',
-                      style: SciFiTokens.bodySmall.copyWith(
-                        color: SciFiTokens.background,
+                      'REVEAL Ã¢â‚¬â€ $cost',
+                      style: GameTokens.bodySmall.copyWith(
+                        color: GameTokens.background,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
@@ -217,8 +216,8 @@ class _HintTierRow extends StatelessWidget {
                 else
                   Text(
                     '[ REVEALED ]',
-                    style: SciFiTokens.bodySmall.copyWith(
-                      color: SciFiTokens.secondaryText,
+                    style: GameTokens.bodySmall.copyWith(
+                      color: GameTokens.secondaryText,
                       fontSize: 10,
                     ),
                   ),
@@ -230,12 +229,12 @@ class _HintTierRow extends StatelessWidget {
           if (warningText != null && isUnlocked && !isRevealed)
             Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: SciFiTokens.spaceMd,
+                horizontal: GameTokens.spaceMd,
               ),
               child: Text(
                 warningText,
-                style: SciFiTokens.bodySmall.copyWith(
-                  color: SciFiTokens.warning,
+                style: GameTokens.bodySmall.copyWith(
+                  color: GameTokens.warning,
                   fontSize: 10,
                 ),
               ),
@@ -244,31 +243,31 @@ class _HintTierRow extends StatelessWidget {
           // Revealed content
           if (isRevealed && hint != null) ...[
             const Divider(
-              color: SciFiTokens.accentDim,
+              color: GameTokens.accentDim,
               height: 1,
               thickness: 1,
             ),
             Padding(
-              padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+              padding: const EdgeInsets.all(GameTokens.spaceMd),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(hint!.content, style: SciFiTokens.bodyMedium),
+                  Text(hint!.content, style: GameTokens.bodyMedium),
                   if (hint!.codeSnippet != null) ...[
-                    const SizedBox(height: SciFiTokens.spaceSm),
+                    const SizedBox(height: GameTokens.spaceSm),
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(SciFiTokens.spaceSm),
+                      padding: const EdgeInsets.all(GameTokens.spaceSm),
                       decoration: BoxDecoration(
-                        color: SciFiTokens.surface,
-                        borderRadius: SciFiTokens.borderRadiusSm,
+                        color: GameTokens.surface,
+                        borderRadius: GameTokens.borderRadiusSm,
                         border: Border.all(
-                            color: SciFiTokens.accentDim, width: 1),
+                            color: GameTokens.accentDim, width: 1),
                       ),
                       child: Text(
                         hint!.codeSnippet!,
-                        style: SciFiTokens.code.copyWith(
-                          color: SciFiTokens.accent,
+                        style: GameTokens.code.copyWith(
+                          color: GameTokens.accent,
                           fontSize: 12,
                         ),
                       ),

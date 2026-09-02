@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_panel.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../theming/tokens/game_tokens.dart';
+import '../../theming/components/slanted_panel.dart';
 import '../gameplay/widgets/parallax_background.dart';
-import '../../shared/widgets/terminal_widgets.dart';
+import '../../shared/widgets/game_widgets.dart';
 import '../../data/remote/leaderboard_service.dart';
 
 class LeaderboardScreen extends ConsumerWidget {
@@ -14,72 +15,80 @@ class LeaderboardScreen extends ConsumerWidget {
     final topPlayersAsync = ref.watch(topPlayersProvider);
 
     return Scaffold(
-      backgroundColor: SciFiTokens.background,
-      appBar: TerminalAppBar(
+      backgroundColor: GameTokens.background,
+      appBar: GameAppBar(
         title: 'LEADERBOARD',
         onBack: () => Navigator.of(context).pop(),
       ),
       body: ParallaxBackground(
         child: topPlayersAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator(color: SciFiTokens.accent)),
+          loading: () => const Center(child: CircularProgressIndicator(color: GameTokens.accent)),
           error: (e, st) => Center(
-            child: Text('Failed to connect to global network.', style: SciFiTokens.bodyMedium.copyWith(color: SciFiTokens.error)),
+            child: Text('Failed to connect to global network.', style: GameTokens.bodyMedium.copyWith(color: GameTokens.error)),
           ),
           data: (players) {
             if (players.isEmpty) {
               return Center(
-                child: Text('No agents found in global network.', style: SciFiTokens.bodyMedium.copyWith(color: SciFiTokens.secondaryText)),
+                child: Text('No agents found in global network.', style: GameTokens.bodyMedium.copyWith(color: GameTokens.secondaryText)),
               );
             }
             
             return ListView.builder(
-              padding: const EdgeInsets.all(SciFiTokens.spaceLg),
+              padding: const EdgeInsets.all(GameTokens.spaceLg),
               itemCount: players.length,
               itemBuilder: (context, index) {
                 final player = players[index];
                 final isTopThree = index < 3;
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: SciFiTokens.spaceMd),
-                  child: HoloPanel(
-                    emissionIntensity: isTopThree ? 0.3 : 0.05,
-                    borderColorOverride: isTopThree ? SciFiTokens.accent : SciFiTokens.accentDim,
-                    padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                  padding: const EdgeInsets.only(bottom: GameTokens.spaceMd),
+                  child: SlantedPanel(
+                    borderColorOverride: isTopThree ? GameTokens.accent : GameTokens.accentDim,
+                    padding: const EdgeInsets.all(GameTokens.spaceMd),
                     child: Row(
                       children: [
                         Text(
                           '#${index + 1}',
-                          style: SciFiTokens.headlineMedium.copyWith(
-                            color: isTopThree ? SciFiTokens.accent : SciFiTokens.secondaryText,
+                          style: GameTokens.headlineMedium.copyWith(
+                            color: isTopThree ? GameTokens.accent : GameTokens.secondaryText,
                           ),
                         ),
-                        const SizedBox(width: SciFiTokens.spaceLg),
-                        CircleAvatar(
-                          backgroundColor: SciFiTokens.surfaceVariant,
-                          child: const Icon(Icons.person, color: SciFiTokens.primaryText, size: 20),
+                        const SizedBox(width: GameTokens.spaceLg),
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: GameTokens.accent.withValues(alpha: 0.1),
+                            border: Border.all(color: GameTokens.accentDim, width: 1),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                            ),
+                          ),
+                          child: const Icon(Icons.person, color: GameTokens.primaryText, size: 20),
                         ),
-                        const SizedBox(width: SciFiTokens.spaceMd),
+                        const SizedBox(width: GameTokens.spaceMd),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 player.displayName,
-                                style: SciFiTokens.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                                style: GameTokens.bodyMedium.copyWith(fontWeight: FontWeight.bold),
                               ),
                               Text(
                                 player.rankTitle,
-                                style: SciFiTokens.bodySmall.copyWith(color: SciFiTokens.secondaryText),
+                                style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText),
                               ),
                             ],
                           ),
                         ),
                         Text(
                           '${player.totalXp} XP',
-                          style: SciFiTokens.code.copyWith(color: SciFiTokens.secondaryText),
+                          style: GameTokens.code.copyWith(color: GameTokens.secondaryText),
                         ),
                       ],
                     ),
-                  ),
+                  ).animate().fadeIn(delay: (50 + index * 30).ms, duration: 400.ms).slideX(begin: 0.1, end: 0),
                 );
               },
             );

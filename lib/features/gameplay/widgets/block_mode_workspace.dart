@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../theming/tokens/sci_fi_tokens.dart';
+import '../../../theming/tokens/game_tokens.dart';
 import '../../../core/sandbox_engine/level_schema.dart';
 
 /// Block Mode workspace (Section 3.1).
 ///
 /// Draggable clause blocks that snap together:
-/// SELECT â†’ FROM â†’ WHERE â†’ GROUP BY â†’ HAVING â†’ ORDER BY â†’ LIMIT
+/// SELECT Ã¢â€ â€™ FROM Ã¢â€ â€™ WHERE Ã¢â€ â€™ GROUP BY Ã¢â€ â€™ HAVING Ã¢â€ â€™ ORDER BY Ã¢â€ â€™ LIMIT
 ///
 /// Each block accepts typed values via inline text fields.
 /// Produces valid SQL string via [onQueryChanged].
@@ -116,7 +116,7 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
         // Active blocks area
         Expanded(
           child: Container(
-            padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+            padding: const EdgeInsets.all(GameTokens.spaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -125,19 +125,19 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
                   children: [
                     Text(
                       '// QUERY BUILDER',
-                      style: SciFiTokens.bodySmall.copyWith(
-                        color: SciFiTokens.secondaryText,
+                      style: GameTokens.bodySmall.copyWith(
+                        color: GameTokens.secondaryText,
                         letterSpacing: 1.5,
                       ),
                     ),
                     TextButton.icon(
                       onPressed: _triggerAssistMode,
-                      icon: Icon(Icons.lightbulb_outline, size: 14, color: SciFiTokens.accent),
-                      label: Text('Assist', style: SciFiTokens.bodySmall.copyWith(color: SciFiTokens.accent)),
+                      icon: Icon(Icons.lightbulb_outline, size: 14, color: GameTokens.accent),
+                      label: Text('Assist', style: GameTokens.bodySmall.copyWith(color: GameTokens.accent)),
                     ),
                   ],
                 ),
-                const SizedBox(height: SciFiTokens.spaceSm),
+                const SizedBox(height: GameTokens.spaceSm),
 
                 // Blocks
                 ...List.generate(_blocks.length, (i) {
@@ -154,21 +154,21 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
                 // Drop zone hint
                 if (_blocks.length < 4)
                   Container(
-                    margin: const EdgeInsets.only(top: SciFiTokens.spaceSm),
+                    margin: const EdgeInsets.only(top: GameTokens.spaceSm),
                     height: 36,
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: SciFiTokens.accentDim,
+                        color: GameTokens.accentDim,
                         width: 1,
                         // Dashed border approximation
                       ),
-                      borderRadius: SciFiTokens.borderRadiusSm,
+                      borderRadius: GameTokens.borderRadiusSm,
                     ),
                     child: Center(
                       child: Text(
                         '+ drag a clause here',
-                        style: SciFiTokens.bodySmall.copyWith(
-                          color: SciFiTokens.hintText,
+                        style: GameTokens.bodySmall.copyWith(
+                          color: GameTokens.hintText,
                         ),
                       ),
                     ),
@@ -182,15 +182,15 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
         Container(
           height: 48,
           decoration: BoxDecoration(
-            color: SciFiTokens.surfaceVariant,
+            color: GameTokens.surfaceVariant,
             border: Border(
-              top: BorderSide(color: SciFiTokens.accentDim, width: 1),
+              top: BorderSide(color: GameTokens.accentDim, width: 1),
             ),
           ),
           child: ListView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(
-              horizontal: SciFiTokens.spaceSm,
+              horizontal: GameTokens.spaceSm,
               vertical: 8,
             ),
             children: _availableClauses.map((clause) {
@@ -205,22 +205,22 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
                         horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: alreadyUsed
-                          ? SciFiTokens.surface
-                          : SciFiTokens.accentDim.withValues(alpha: 0.2),
+                          ? GameTokens.surface
+                          : GameTokens.accentDim.withValues(alpha: 0.2),
                       border: Border.all(
                         color: alreadyUsed
-                            ? SciFiTokens.disabledText
-                            : SciFiTokens.accent,
+                            ? GameTokens.disabledText
+                            : GameTokens.accent,
                         width: 1,
                       ),
-                      borderRadius: SciFiTokens.borderRadiusSm,
+                      borderRadius: GameTokens.borderRadiusSm,
                     ),
                     child: Text(
                       clause.keyword,
-                      style: SciFiTokens.codeSmall.copyWith(
+                      style: GameTokens.codeSmall.copyWith(
                         color: alreadyUsed
-                            ? SciFiTokens.disabledText
-                            : SciFiTokens.accent,
+                            ? GameTokens.disabledText
+                            : GameTokens.accent,
                         fontSize: 11,
                       ),
                     ),
@@ -253,8 +253,8 @@ class _ClauseBlockWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       decoration: BoxDecoration(
-        color: SciFiTokens.surfaceVariant,
-        borderRadius: SciFiTokens.borderRadiusSm,
+        color: GameTokens.surfaceVariant,
+        borderRadius: GameTokens.borderRadiusSm,
         border: Border.all(color: block.type.color, width: 1),
       ),
       child: Row(
@@ -274,7 +274,7 @@ class _ClauseBlockWidget extends StatelessWidget {
             ),
             child: Text(
               block.type.keyword,
-              style: SciFiTokens.codeSmall.copyWith(
+              style: GameTokens.codeSmall.copyWith(
                 color: block.type.color,
                 fontWeight: FontWeight.bold,
               ),
@@ -286,8 +286,8 @@ class _ClauseBlockWidget extends StatelessWidget {
             child: TextField(
               controller: TextEditingController(text: block.value),
               onChanged: onValueChanged,
-              style: SciFiTokens.code.copyWith(fontSize: 13),
-              cursorColor: SciFiTokens.accent,
+              style: GameTokens.code.copyWith(fontSize: 13),
+              cursorColor: GameTokens.accent,
               decoration: const InputDecoration(
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -300,7 +300,7 @@ class _ClauseBlockWidget extends StatelessWidget {
           if (onRemove != null)
             IconButton(
               icon: const Icon(Icons.close,
-                  color: SciFiTokens.disabledText, size: 14),
+                  color: GameTokens.disabledText, size: 14),
               onPressed: onRemove,
               padding: const EdgeInsets.all(8),
               constraints: const BoxConstraints(),
@@ -311,7 +311,7 @@ class _ClauseBlockWidget extends StatelessWidget {
   }
 }
 
-// â”€â”€â”€ Data models â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Data models Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 class ClauseBlock {
   final ClauseType type;

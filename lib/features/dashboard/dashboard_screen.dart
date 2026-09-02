@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_panel.dart';
-import '../../theming/components/holo_button.dart';
+import '../../theming/tokens/game_tokens.dart';
+import '../../theming/components/slanted_panel.dart';
+import '../../theming/components/action_button.dart';
 import '../gameplay/widgets/parallax_background.dart';
-import '../../shared/widgets/terminal_widgets.dart';
+import '../../shared/widgets/game_widgets.dart';
 import '../../core/providers.dart';
 
 /// Main Menu / Dashboard (Section 5.3).
@@ -23,19 +23,19 @@ class DashboardScreen extends ConsumerWidget {
     final worldsAsync = ref.watch(allWorldProgressProvider);
 
     return Scaffold(
-      backgroundColor: SciFiTokens.background,
+      backgroundColor: GameTokens.background,
       body: ParallaxBackground(
         child: SafeArea(
           child: CustomScrollView(
             slivers: [
-              // ── App bar ──────────────────────────────────────────────────────
+              // Ã¢â€â‚¬Ã¢â€â‚¬ App bar Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
               SliverToBoxAdapter(
                 child: _DashboardAppBar(profileAsync: profileAsync),
               ),
 
-              // ── Body ──────────────────────────────────────────────────────────
+              // Ã¢â€â‚¬Ã¢â€â‚¬ Body Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
               SliverPadding(
-                padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                padding: const EdgeInsets.all(GameTokens.spaceMd),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
                     // Continue banner
@@ -53,7 +53,7 @@ class DashboardScreen extends ConsumerWidget {
                       error: (_, __) => const SizedBox.shrink(),
                     ),
 
-                    const SizedBox(height: SciFiTokens.spaceMd),
+                    const SizedBox(height: GameTokens.spaceMd),
 
                     // Streak + XP row
                     profileAsync.when(
@@ -64,21 +64,21 @@ class DashboardScreen extends ConsumerWidget {
                       error: (_, __) => const SizedBox.shrink(),
                     ),
 
-                    const SizedBox(height: SciFiTokens.spaceMd),
+                    const SizedBox(height: GameTokens.spaceMd),
 
                     // Daily challenge card
                     _DailyChallengeCard(
                       onTap: () => Navigator.of(context).pushNamed('/daily_challenge'),
                     ),
 
-                    const SizedBox(height: SciFiTokens.spaceLg),
-                    const TerminalDivider(label: '// BUREAU TOOLS'),
-                    const SizedBox(height: SciFiTokens.spaceMd),
+                    const SizedBox(height: GameTokens.spaceLg),
+                    const GameDivider(label: '// BUREAU TOOLS'),
+                    const SizedBox(height: GameTokens.spaceMd),
 
                     // Nav grid
                     _NavGrid(context: context),
 
-                    const SizedBox(height: SciFiTokens.spaceLg),
+                    const SizedBox(height: GameTokens.spaceLg),
                   ]),
                 ),
               ),
@@ -107,13 +107,13 @@ class _DashboardAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: SciFiTokens.spaceMd,
-        vertical: SciFiTokens.spaceSm,
+        horizontal: GameTokens.spaceMd,
+        vertical: GameTokens.spaceSm,
       ),
       decoration: BoxDecoration(
-        color: SciFiTokens.surface,
+        color: GameTokens.surface,
         border: Border(
-          bottom: BorderSide(color: SciFiTokens.accentDim, width: 1),
+          bottom: BorderSide(color: GameTokens.accentDim, width: 1),
         ),
       ),
       child: Row(
@@ -121,13 +121,15 @@ class _DashboardAppBar extends StatelessWidget {
           // Logo
           Text(
             'QUERY',
-            style: SciFiTokens.titleLarge.copyWith(
-              fontSize: 20,
-              letterSpacing: 4,
+            style: GameTokens.displayMedium.copyWith(
+              fontSize: 24,
+              letterSpacing: 6,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w900,
               shadows: [
                 Shadow(
-                  color: SciFiTokens.accentGlow,
-                  blurRadius: 10,
+                  color: GameTokens.accent.withValues(alpha: 0.5),
+                  offset: const Offset(2, 2),
                 ),
               ],
             ),
@@ -145,15 +147,15 @@ class _DashboardAppBar extends StatelessWidget {
                         children: [
                           Text(
                             profile.displayName,
-                            style: SciFiTokens.bodyMedium,
+                            style: GameTokens.bodyMedium,
                           ),
                           Text(
                             profile.rankTitle,
-                            style: SciFiTokens.bodySmall,
+                            style: GameTokens.bodySmall,
                           ),
                         ],
                       ),
-                      const SizedBox(width: SciFiTokens.spaceSm),
+                      const SizedBox(width: GameTokens.spaceSm),
                       GestureDetector(
                         onTap: () => Navigator.of(context).pushNamed('/profile'),
                         child: Container(
@@ -161,14 +163,14 @@ class _DashboardAppBar extends StatelessWidget {
                           height: 36,
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: SciFiTokens.accent,
+                              color: GameTokens.accent,
                               width: 1,
                             ),
-                            borderRadius: SciFiTokens.borderRadiusSm,
+                            borderRadius: GameTokens.borderRadiusSm,
                           ),
                           child: const Icon(
                             Icons.person_outline,
-                            color: SciFiTokens.accent,
+                            color: GameTokens.accent,
                             size: 20,
                           ),
                         ),
@@ -210,7 +212,7 @@ class _ContinueBanner extends StatelessWidget {
         ? current.levelsCompleted / current.totalLevels
         : 0.0;
 
-    return HoloButton(
+    return ActionButton(
       isPrimary: true,
       onPressed: onContinue,
       child: Column(
@@ -219,23 +221,23 @@ class _ContinueBanner extends StatelessWidget {
           Row(
             children: [
               const Icon(Icons.play_arrow_rounded,
-                  color: SciFiTokens.background, size: 20),
-              const SizedBox(width: SciFiTokens.spaceSm),
-              Text('CONTINUE', style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.background)),
+                  color: GameTokens.background, size: 20),
+              const SizedBox(width: GameTokens.spaceSm),
+              Text('CONTINUE', style: GameTokens.labelLarge.copyWith(color: GameTokens.background)),
             ],
           ),
-          const SizedBox(height: SciFiTokens.spaceSm),
-          Text(name, style: SciFiTokens.headlineMedium.copyWith(color: SciFiTokens.background)),
-          const SizedBox(height: SciFiTokens.spaceSm),
+          const SizedBox(height: GameTokens.spaceSm),
+          Text(name, style: GameTokens.headlineMedium.copyWith(color: GameTokens.background)),
+          const SizedBox(height: GameTokens.spaceSm),
           LinearProgressIndicator(
             value: progress,
-            backgroundColor: SciFiTokens.background.withValues(alpha: 0.3),
-            valueColor: const AlwaysStoppedAnimation(SciFiTokens.background),
+            backgroundColor: GameTokens.background.withValues(alpha: 0.3),
+            valueColor: const AlwaysStoppedAnimation(GameTokens.background),
           ),
           const SizedBox(height: 4),
           Text(
             '${current.levelsCompleted} / ${current.totalLevels} levels',
-            style: SciFiTokens.bodySmall.copyWith(color: SciFiTokens.background),
+            style: GameTokens.bodySmall.copyWith(color: GameTokens.background),
           ),
         ],
       ),
@@ -256,77 +258,74 @@ class _StatsRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: HoloPanel(
-            emissionIntensity: 0.3,
-            padding: const EdgeInsets.all(SciFiTokens.spaceSm),
+          child: SlantedPanel(
+            padding: const EdgeInsets.all(GameTokens.spaceSm),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     const Icon(Icons.local_fire_department,
-                        color: SciFiTokens.warning, size: 16),
+                        color: GameTokens.warning, size: 16),
                     const SizedBox(width: 4),
-                    Text('STREAK', style: SciFiTokens.bodySmall),
+                    Text('STREAK', style: GameTokens.bodySmall),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '${profile.streakCount} days',
-                  style: SciFiTokens.headlineMedium.copyWith(
-                    color: SciFiTokens.warning,
+                  style: GameTokens.headlineMedium.copyWith(
+                    color: GameTokens.warning,
                   ),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(width: SciFiTokens.spaceSm),
+        const SizedBox(width: GameTokens.spaceSm),
         Expanded(
-          child: HoloPanel(
-            emissionIntensity: 0.3,
-            padding: const EdgeInsets.all(SciFiTokens.spaceSm),
+          child: SlantedPanel(
+            padding: const EdgeInsets.all(GameTokens.spaceSm),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     const Icon(Icons.bolt,
-                        color: SciFiTokens.accent, size: 16),
+                        color: GameTokens.accent, size: 16),
                     const SizedBox(width: 4),
-                    Text('XP', style: SciFiTokens.bodySmall),
+                    Text('XP', style: GameTokens.bodySmall),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '${profile.totalXp}',
-                  style: SciFiTokens.headlineMedium,
+                  style: GameTokens.headlineMedium,
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(width: SciFiTokens.spaceSm),
+        const SizedBox(width: GameTokens.spaceSm),
         Expanded(
-          child: HoloPanel(
-            emissionIntensity: 0.3,
-            padding: const EdgeInsets.all(SciFiTokens.spaceSm),
+          child: SlantedPanel(
+            padding: const EdgeInsets.all(GameTokens.spaceSm),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     const Icon(Icons.workspace_premium_outlined,
-                        color: SciFiTokens.accent, size: 16),
+                        color: GameTokens.accent, size: 16),
                     const SizedBox(width: 4),
-                    Text('RANK', style: SciFiTokens.bodySmall),
+                    Text('RANK', style: GameTokens.bodySmall),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
                   profile.rankTitle,
-                  style: SciFiTokens.bodySmall.copyWith(
-                    color: SciFiTokens.accent,
+                  style: GameTokens.bodySmall.copyWith(
+                    color: GameTokens.accent,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -347,7 +346,7 @@ class _DailyChallengeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HoloButton(
+    return ActionButton(
       onPressed: onTap,
       child: Row(
         children: [
@@ -356,34 +355,34 @@ class _DailyChallengeCard extends StatelessWidget {
             height: 44,
             decoration: BoxDecoration(
               border:
-                  Border.all(color: SciFiTokens.warning, width: 1),
-              borderRadius: SciFiTokens.borderRadiusSm,
-              color: SciFiTokens.warning.withValues(alpha: 0.1),
+                  Border.all(color: GameTokens.warning, width: 1),
+              borderRadius: GameTokens.borderRadiusSm,
+              color: GameTokens.warning.withValues(alpha: 0.1),
             ),
             child: const Icon(Icons.today_outlined,
-                color: SciFiTokens.warning, size: 22),
+                color: GameTokens.warning, size: 22),
           ),
-          const SizedBox(width: SciFiTokens.spaceMd),
+          const SizedBox(width: GameTokens.spaceMd),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'DAILY CHALLENGE',
-                  style: SciFiTokens.bodySmall.copyWith(
-                    color: SciFiTokens.warning,
+                  style: GameTokens.bodySmall.copyWith(
+                    color: GameTokens.warning,
                     letterSpacing: 1.5,
                   ),
                 ),
                 Text(
-                  'A new case every day. +2× XP.',
-                  style: SciFiTokens.bodyMedium,
+                  'A new case every day. +2Ãƒâ€” XP.',
+                  style: GameTokens.bodyMedium,
                 ),
               ],
             ),
           ),
           const Icon(Icons.chevron_right,
-              color: SciFiTokens.accent),
+              color: GameTokens.accent),
         ],
       ),
     ).animate().fadeIn(delay: 300.ms, duration: 400.ms);
@@ -408,8 +407,8 @@ class _NavGrid extends StatelessWidget {
 
     return GridView.count(
       crossAxisCount: 3,
-      crossAxisSpacing: SciFiTokens.spaceSm,
-      mainAxisSpacing: SciFiTokens.spaceSm,
+      crossAxisSpacing: GameTokens.spaceSm,
+      mainAxisSpacing: GameTokens.spaceSm,
       childAspectRatio: 1.1,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -434,18 +433,18 @@ class _NavItem {
   const _NavItem(this.icon, this.label, this.route);
 
   Widget buildCard(BuildContext context) {
-    return HoloButton(
+    return ActionButton(
       onPressed: () => Navigator.of(context).pushNamed(route),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: SciFiTokens.accent, size: 24),
+            Icon(icon, color: GameTokens.accent, size: 24),
             const SizedBox(height: 6),
             Text(
               label,
-              style: SciFiTokens.bodySmall.copyWith(
+              style: GameTokens.bodySmall.copyWith(
                 fontSize: 9,
                 letterSpacing: 0.8,
               ),
@@ -463,13 +462,13 @@ class _LoadingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TerminalCard(
+    return SlantedPanel(
       child: const SizedBox(
         height: 60,
         child: Center(
           child: CircularProgressIndicator(
             strokeWidth: 1,
-            valueColor: AlwaysStoppedAnimation(SciFiTokens.accent),
+            valueColor: AlwaysStoppedAnimation(GameTokens.accent),
           ),
         ),
       ),

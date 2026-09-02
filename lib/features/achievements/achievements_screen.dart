@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_panel.dart';
+import '../../theming/tokens/game_tokens.dart';
+import '../../theming/components/slanted_panel.dart';
 import '../gameplay/widgets/parallax_background.dart';
-import '../../shared/widgets/terminal_widgets.dart';
+import '../../shared/widgets/game_widgets.dart';
 import '../../core/providers.dart';
 
 class AchievementDef {
@@ -40,8 +40,8 @@ class AchievementsScreen extends ConsumerWidget {
     final achievementsAsync = ref.watch(allAchievementsProvider);
 
     return Scaffold(
-      backgroundColor: SciFiTokens.background,
-      appBar: TerminalAppBar(
+      backgroundColor: GameTokens.background,
+      appBar: GameAppBar(
         title: 'ACHIEVEMENTS',
         onBack: () => Navigator.of(context).pop(),
       ),
@@ -51,17 +51,16 @@ class AchievementsScreen extends ConsumerWidget {
             final earnedIds = earnedList.map((e) => e.achievementId).toSet();
             
             return ListView.separated(
-              padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+              padding: const EdgeInsets.all(GameTokens.spaceMd),
               itemCount: _kAchievements.length,
-              separatorBuilder: (context, index) => const SizedBox(height: SciFiTokens.spaceMd),
+              separatorBuilder: (context, index) => const SizedBox(height: GameTokens.spaceMd),
               itemBuilder: (context, index) {
                 final def = _kAchievements[index];
                 final isEarned = earnedIds.contains(def.id);
 
-                return HoloPanel(
-                  emissionIntensity: isEarned ? 0.3 : 0.05,
-                  borderColorOverride: isEarned ? SciFiTokens.accent : SciFiTokens.accentDim,
-                  padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                return SlantedPanel(
+                  borderColorOverride: isEarned ? GameTokens.accent : GameTokens.accentDim,
+                  padding: const EdgeInsets.all(GameTokens.spaceMd),
                   child: Row(
                     children: [
                     Container(
@@ -69,35 +68,35 @@ class AchievementsScreen extends ConsumerWidget {
                       height: 56,
                       decoration: BoxDecoration(
                         color: isEarned 
-                          ? SciFiTokens.accent.withValues(alpha: 0.1)
-                          : SciFiTokens.background,
+                          ? GameTokens.accent.withValues(alpha: 0.1)
+                          : GameTokens.background,
                         border: Border.all(
-                          color: isEarned ? SciFiTokens.accent : SciFiTokens.accentDim,
+                          color: isEarned ? GameTokens.accent : GameTokens.accentDim,
                         ),
-                        borderRadius: SciFiTokens.borderRadiusSm,
+                        borderRadius: GameTokens.borderRadiusSm,
                       ),
                       child: Icon(
                         isEarned ? def.icon : Icons.lock_outline,
-                        color: isEarned ? SciFiTokens.accent : SciFiTokens.accentDim,
+                        color: isEarned ? GameTokens.accent : GameTokens.accentDim,
                         size: 28,
                       ),
                     ),
-                    const SizedBox(width: SciFiTokens.spaceMd),
+                    const SizedBox(width: GameTokens.spaceMd),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             def.title,
-                            style: SciFiTokens.headlineMedium.copyWith(
-                              color: isEarned ? SciFiTokens.primaryText : SciFiTokens.accentDim,
+                            style: GameTokens.headlineMedium.copyWith(
+                              color: isEarned ? GameTokens.primaryText : GameTokens.accentDim,
                             ),
                           ),
-                          const SizedBox(height: SciFiTokens.spaceXs),
+                          const SizedBox(height: GameTokens.spaceXs),
                           Text(
                             isEarned ? def.description : '???',
-                            style: SciFiTokens.bodyMedium.copyWith(
-                              color: isEarned ? SciFiTokens.secondaryText : SciFiTokens.accentDim,
+                            style: GameTokens.bodyMedium.copyWith(
+                              color: isEarned ? GameTokens.secondaryText : GameTokens.accentDim,
                             ),
                           ),
                         ],
@@ -106,7 +105,7 @@ class AchievementsScreen extends ConsumerWidget {
                     if (isEarned)
                       Icon(
                         Icons.check_circle_outline,
-                        color: SciFiTokens.accent,
+                        color: GameTokens.accent,
                       ),
                   ],
                 ),
@@ -116,12 +115,12 @@ class AchievementsScreen extends ConsumerWidget {
         },
         loading: () => const Center(
           child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation(SciFiTokens.accent),
+            valueColor: AlwaysStoppedAnimation(GameTokens.accent),
             strokeWidth: 2,
           ),
         ),
         error: (err, stack) => Center(
-            child: Text('ERROR: $err', style: SciFiTokens.bodyMedium.copyWith(color: SciFiTokens.error)),
+            child: Text('ERROR: $err', style: GameTokens.bodyMedium.copyWith(color: GameTokens.error)),
           ),
         ),
       ),

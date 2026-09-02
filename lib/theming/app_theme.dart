@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'tokens/sci_fi_tokens.dart';
+import 'tokens/game_tokens.dart';
 import 'tokens/cyberpunk_tokens.dart';
 import 'tokens/nature_tokens.dart';
 import 'tokens/space_tokens.dart';
@@ -27,7 +27,7 @@ enum AppTheme {
   }
 }
 
-/// Central theme provider — manages the active theme and returns
+/// Central theme provider â€” manages the active theme and returns
 /// the MaterialThemeData for the currently active theme.
 class ThemeNotifier extends StateNotifier<AppTheme> {
   ThemeNotifier() : super(AppTheme.terminalClassic);
@@ -45,7 +45,7 @@ final activeThemeDataProvider = Provider<ThemeData>((ref) {
   final theme = ref.watch(themeNotifierProvider);
   switch (theme) {
     case AppTheme.terminalClassic:
-      return SciFiTokens.themeData;
+      return GameTokens.themeData;
     case AppTheme.cyberpunk:
       return CyberpunkTokens.themeData;
     case AppTheme.nature:
@@ -92,18 +92,18 @@ abstract class AppThemeTokens {
 }
 
 class TerminalClassicAppThemeTokens implements AppThemeTokens {
-  @override Color get background => SciFiTokens.background;
-  @override Color get surface => SciFiTokens.surface;
-  @override Color get surfaceVariant => SciFiTokens.surfaceVariant;
-  @override Color get primaryText => SciFiTokens.primaryText;
-  @override Color get secondaryText => SciFiTokens.secondaryText;
-  @override Color get accent => SciFiTokens.accent;
-  @override Color get success => SciFiTokens.success;
-  @override Color get error => SciFiTokens.error;
-  @override Color get warning => SciFiTokens.warning;
-  @override Color get accentGlow => SciFiTokens.accentGlow;
-  @override Duration get durationNormal => SciFiTokens.durationNormal;
-  @override Duration get durationFast => SciFiTokens.durationFast;
+  @override Color get background => GameTokens.background;
+  @override Color get surface => GameTokens.surface;
+  @override Color get surfaceVariant => GameTokens.surfaceVariant;
+  @override Color get primaryText => GameTokens.primaryText;
+  @override Color get secondaryText => GameTokens.secondaryText;
+  @override Color get accent => GameTokens.accent;
+  @override Color get success => GameTokens.success;
+  @override Color get error => GameTokens.error;
+  @override Color get warning => GameTokens.warning;
+  @override Color get accentGlow => GameTokens.accentGlow;
+  @override Duration get durationNormal => GameTokens.durationNormal;
+  @override Duration get durationFast => GameTokens.durationFast;
 }
 
 class CyberpunkAppThemeTokens implements AppThemeTokens {

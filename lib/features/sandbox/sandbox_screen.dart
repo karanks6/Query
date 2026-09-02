@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
-import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_panel.dart';
-import '../../theming/components/holo_button.dart';
+import '../../theming/tokens/game_tokens.dart';
+import '../../theming/components/slanted_panel.dart';
+import '../../theming/components/action_button.dart';
 import '../gameplay/widgets/parallax_background.dart';
-import '../../shared/widgets/terminal_widgets.dart';
+import '../../shared/widgets/game_widgets.dart';
 
 class SandboxScreen extends StatefulWidget {
   const SandboxScreen({super.key});
@@ -87,25 +87,24 @@ class _SandboxScreenState extends State<SandboxScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SciFiTokens.background,
-      appBar: TerminalAppBar(
+      backgroundColor: GameTokens.background,
+      appBar: GameAppBar(
         title: 'SANDBOX TERMINAL',
         onBack: () => Navigator.of(context).pop(),
       ),
       body: ParallaxBackground(
         child: _isInitializing
-            ? const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(SciFiTokens.accent)))
+            ? const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(GameTokens.accent)))
             : Column(
                 children: [
                   // Info Banner
-                  HoloPanel(
-                    emissionIntensity: 0.2,
-                    padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                  SlantedPanel(
+                    padding: const EdgeInsets.all(GameTokens.spaceMd),
                     child: SizedBox(
                       width: double.infinity,
                       child: Text(
                         'Memory instance active. Available tables: departments, employees, projects, assignments.',
-                        style: SciFiTokens.bodySmall.copyWith(color: SciFiTokens.accent),
+                        style: GameTokens.bodySmall.copyWith(color: GameTokens.accent),
                       ),
                     ),
                   ),
@@ -114,40 +113,39 @@ class _SandboxScreenState extends State<SandboxScreen> {
                   Expanded(
                     flex: 2,
                     child: Padding(
-                      padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                      padding: const EdgeInsets.all(GameTokens.spaceMd),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Expanded(
-                            child: HoloPanel(
-                              emissionIntensity: 0.15,
+                            child: SlantedPanel(
                               padding: EdgeInsets.zero,
                               child: TextField(
                                 controller: _queryController,
                                 maxLines: null,
                                 expands: true,
-                                style: SciFiTokens.code.copyWith(
-                                  color: SciFiTokens.primaryText,
+                                style: GameTokens.code.copyWith(
+                                  color: GameTokens.primaryText,
                                   height: 1.5,
                                 ),
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                                  contentPadding: const EdgeInsets.all(GameTokens.spaceMd),
                                   hintText: 'Enter SQL query...',
-                                  hintStyle: SciFiTokens.bodyMedium.copyWith(color: SciFiTokens.secondaryText),
+                                  hintStyle: GameTokens.bodyMedium.copyWith(color: GameTokens.secondaryText),
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: SciFiTokens.spaceMd),
-                          HoloButton(
+                          const SizedBox(height: GameTokens.spaceMd),
+                          ActionButton(
                             isPrimary: true,
                             onPressed: _runQuery,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Icon(Icons.play_arrow, size: 16),
-                                const SizedBox(width: SciFiTokens.spaceSm),
+                                const SizedBox(width: GameTokens.spaceSm),
                                 const Text('EXECUTE QUERY'),
                               ],
                             ),
@@ -160,10 +158,8 @@ class _SandboxScreenState extends State<SandboxScreen> {
                   // Results
                   Expanded(
                     flex: 3,
-                    child: HoloPanel(
-                      emissionIntensity: 0.1,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                      padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+                    child: SlantedPanel(
+                      padding: const EdgeInsets.all(GameTokens.spaceMd),
                       child: SizedBox(
                         width: double.infinity,
                         child: _buildResultsArea(),
@@ -181,7 +177,7 @@ class _SandboxScreenState extends State<SandboxScreen> {
       return SingleChildScrollView(
         child: Text(
           'ERROR: $_error',
-          style: SciFiTokens.bodyMedium.copyWith(color: SciFiTokens.error),
+          style: GameTokens.bodyMedium.copyWith(color: GameTokens.error),
         ),
       );
     }
@@ -190,7 +186,7 @@ class _SandboxScreenState extends State<SandboxScreen> {
       return Center(
         child: Text(
           'READY FOR INPUT',
-          style: SciFiTokens.bodySmall.copyWith(color: SciFiTokens.secondaryText),
+          style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText),
         ),
       );
     }
@@ -199,7 +195,7 @@ class _SandboxScreenState extends State<SandboxScreen> {
       return Center(
         child: Text(
           '0 ROWS RETURNED',
-          style: SciFiTokens.bodySmall.copyWith(color: SciFiTokens.secondaryText),
+          style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText),
         ),
       );
     }
@@ -209,16 +205,16 @@ class _SandboxScreenState extends State<SandboxScreen> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
-          headingTextStyle: SciFiTokens.bodySmall.copyWith(
-            color: SciFiTokens.accent,
+          headingTextStyle: GameTokens.bodySmall.copyWith(
+            color: GameTokens.accent,
             fontWeight: FontWeight.bold,
           ),
-          dataTextStyle: SciFiTokens.bodyMedium.copyWith(
-            color: SciFiTokens.primaryText,
+          dataTextStyle: GameTokens.bodyMedium.copyWith(
+            color: GameTokens.primaryText,
           ),
           dividerThickness: 1,
           border: TableBorder(
-            horizontalInside: BorderSide(color: SciFiTokens.accentDim, width: 1),
+            horizontalInside: BorderSide(color: GameTokens.accentDim, width: 1),
           ),
           columns: _result!.columnNames
               .map((col) => DataColumn(label: Text(col)))

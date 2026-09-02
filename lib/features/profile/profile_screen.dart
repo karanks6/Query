@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_panel.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../theming/tokens/game_tokens.dart';
+import '../../theming/components/slanted_panel.dart';
 import '../gameplay/widgets/parallax_background.dart';
-import '../../shared/widgets/terminal_widgets.dart';
+import '../../shared/widgets/game_widgets.dart';
 import '../../core/providers.dart';
 import '../../data/local/app_database.dart';
 
@@ -15,29 +16,29 @@ class ProfileScreen extends ConsumerWidget {
     final profileAsync = ref.watch(playerProfileProvider);
 
     return Scaffold(
-      backgroundColor: SciFiTokens.background,
-      appBar: TerminalAppBar(
+      backgroundColor: GameTokens.background,
+      appBar: GameAppBar(
         title: 'DETECTIVE PROFILE',
         onBack: () => Navigator.of(context).pop(),
       ),
       body: ParallaxBackground(
         child: profileAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator(color: SciFiTokens.accent)),
-          error: (err, stack) => Center(child: Text('Error loading profile: $err', style: const TextStyle(color: SciFiTokens.error))),
+          loading: () => const Center(child: CircularProgressIndicator(color: GameTokens.accent)),
+          error: (err, stack) => Center(child: Text('Error loading profile: $err', style: const TextStyle(color: GameTokens.error))),
           data: (profile) {
             if (profile == null) {
-              return const Center(child: Text('Profile not found', style: TextStyle(color: SciFiTokens.error)));
+              return const Center(child: Text('Profile not found', style: TextStyle(color: GameTokens.error)));
             }
 
             return ListView(
-              padding: const EdgeInsets.all(SciFiTokens.spaceLg),
+              padding: const EdgeInsets.all(GameTokens.spaceLg),
               children: [
                 _buildHeader(profile),
-                const SizedBox(height: SciFiTokens.spaceXl),
+                const SizedBox(height: GameTokens.spaceXl),
                 _buildStatsGrid(profile),
-                const SizedBox(height: SciFiTokens.spaceXl),
+                const SizedBox(height: GameTokens.spaceXl),
                 _buildMasteryTracker(ref),
-              ],
+              ].animate(interval: 50.ms).fadeIn(duration: 400.ms).slideY(begin: 0.05, end: 0),
             );
           },
         ),
@@ -46,29 +47,36 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildHeader(PlayerProfile profile) {
-    return HoloPanel(
-      emissionIntensity: 0.2,
-      padding: const EdgeInsets.all(SciFiTokens.spaceLg),
+    return SlantedPanel(
+      padding: const EdgeInsets.all(GameTokens.spaceLg),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundColor: SciFiTokens.accent.withValues(alpha: 0.2),
-            child: const Icon(Icons.person, size: 40, color: SciFiTokens.accent),
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: GameTokens.accent.withValues(alpha: 0.1),
+              border: Border.all(color: GameTokens.accent, width: 2),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16),
+                bottomRight: Radius.circular(16),
+              ),
+            ),
+            child: const Icon(Icons.person, size: 48, color: GameTokens.accent),
           ),
-          const SizedBox(width: SciFiTokens.spaceLg),
+          const SizedBox(width: GameTokens.spaceLg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   profile.displayName,
-                  style: SciFiTokens.headlineLarge.copyWith(color: SciFiTokens.primaryText),
+                  style: GameTokens.headlineLarge.copyWith(color: GameTokens.primaryText),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   profile.rankTitle,
-                  style: SciFiTokens.bodyMedium.copyWith(color: SciFiTokens.secondaryText),
+                  style: GameTokens.bodyMedium.copyWith(color: GameTokens.secondaryText),
                 ),
               ],
             ),
@@ -82,23 +90,22 @@ class ProfileScreen extends ConsumerWidget {
     return Row(
       children: [
         Expanded(child: _buildStatCard('TOTAL XP', profile.totalXp.toString())),
-        const SizedBox(width: SciFiTokens.spaceMd),
+        const SizedBox(width: GameTokens.spaceMd),
         Expanded(child: _buildStatCard('STREAK', '${profile.streakCount} DAYS')),
-        const SizedBox(width: SciFiTokens.spaceMd),
+        const SizedBox(width: GameTokens.spaceMd),
         Expanded(child: _buildStatCard('INSIGHT', profile.insightPoints.toString())),
       ],
     );
   }
 
   Widget _buildStatCard(String label, String value) {
-    return HoloPanel(
-      emissionIntensity: 0.1,
-      padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+    return SlantedPanel(
+      padding: const EdgeInsets.all(GameTokens.spaceMd),
       child: Column(
         children: [
-          Text(label, style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.secondaryText)),
-          const SizedBox(height: SciFiTokens.spaceSm),
-          Text(value, style: SciFiTokens.headlineMedium.copyWith(color: SciFiTokens.primaryText)),
+          Text(label, style: GameTokens.labelLarge.copyWith(color: GameTokens.secondaryText)),
+          const SizedBox(height: GameTokens.spaceSm),
+          Text(value, style: GameTokens.headlineMedium.copyWith(color: GameTokens.primaryText)),
         ],
       ),
     );
@@ -110,17 +117,16 @@ class ProfileScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('CONCEPT MASTERY', style: SciFiTokens.labelLarge.copyWith(color: SciFiTokens.secondaryText)),
-        const SizedBox(height: SciFiTokens.spaceMd),
-        HoloPanel(
-          emissionIntensity: 0.1,
-          padding: const EdgeInsets.all(SciFiTokens.spaceLg),
+        Text('CONCEPT MASTERY', style: GameTokens.labelLarge.copyWith(color: GameTokens.secondaryText)),
+        const SizedBox(height: GameTokens.spaceMd),
+        SlantedPanel(
+          padding: const EdgeInsets.all(GameTokens.spaceLg),
           child: masteryAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator(color: SciFiTokens.accent)),
-            error: (e, st) => Text('Failed to load mastery.', style: const TextStyle(color: SciFiTokens.error)),
+            loading: () => const Center(child: CircularProgressIndicator(color: GameTokens.accent)),
+            error: (e, st) => Text('Failed to load mastery.', style: const TextStyle(color: GameTokens.error)),
             data: (masteries) {
               if (masteries.isEmpty) {
-                return Text('No data yet.', style: SciFiTokens.bodyMedium.copyWith(color: SciFiTokens.secondaryText));
+                return Text('No data yet.', style: GameTokens.bodyMedium.copyWith(color: GameTokens.secondaryText));
               }
               return Column(
                 children: masteries.map((m) => _buildMasteryBar(m['concept'] as String, m['progress'] as double)).toList(),
@@ -134,19 +140,19 @@ class ProfileScreen extends ConsumerWidget {
 
   Widget _buildMasteryBar(String concept, double progress) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: SciFiTokens.spaceMd),
+      padding: const EdgeInsets.only(bottom: GameTokens.spaceMd),
       child: Row(
         children: [
           Expanded(
             flex: 2,
-            child: Text(concept, style: SciFiTokens.bodyMedium),
+            child: Text(concept, style: GameTokens.bodyMedium),
           ),
           Expanded(
             flex: 3,
             child: LinearProgressIndicator(
               value: progress,
-              backgroundColor: SciFiTokens.background,
-              color: progress >= 1.0 ? SciFiTokens.success : (progress > 0.5 ? SciFiTokens.warning : SciFiTokens.error),
+              backgroundColor: GameTokens.background,
+              color: progress >= 1.0 ? GameTokens.success : (progress > 0.5 ? GameTokens.warning : GameTokens.error),
               minHeight: 8,
               borderRadius: BorderRadius.circular(4),
             ),

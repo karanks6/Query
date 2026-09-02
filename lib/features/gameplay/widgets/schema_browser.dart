@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../theming/tokens/sci_fi_tokens.dart';
-import '../../../theming/components/holo_panel.dart';
+import '../../../theming/tokens/game_tokens.dart';
+import '../../../theming/components/slanted_panel.dart';
 import '../../../core/sandbox_engine/level_schema.dart';
 
 /// Schema Browser panel (Section 5.5).
@@ -32,8 +32,7 @@ class _SchemaBrowserState extends State<SchemaBrowser> {
 
   @override
   Widget build(BuildContext context) {
-    return HoloPanel(
-      emissionIntensity: 0.1,
+    return SlantedPanel(
       padding: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,23 +40,23 @@ class _SchemaBrowserState extends State<SchemaBrowser> {
           // Header
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: SciFiTokens.spaceMd,
-              vertical: SciFiTokens.spaceSm,
+              horizontal: GameTokens.spaceMd,
+              vertical: GameTokens.spaceSm,
             ),
             decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: SciFiTokens.accentDim, width: 1),
+                bottom: BorderSide(color: GameTokens.accentDim, width: 1),
               ),
             ),
             child: Row(
               children: [
                 const Icon(Icons.table_chart_outlined,
-                    color: SciFiTokens.accent, size: 14),
-                const SizedBox(width: SciFiTokens.spaceSm),
+                    color: GameTokens.accent, size: 14),
+                const SizedBox(width: GameTokens.spaceSm),
                 Text(
                   'SCHEMA',
-                  style: SciFiTokens.bodySmall.copyWith(
-                    color: SciFiTokens.accent,
+                  style: GameTokens.bodySmall.copyWith(
+                    color: GameTokens.accent,
                     letterSpacing: 1.5,
                   ),
                 ),
@@ -70,7 +69,7 @@ class _SchemaBrowserState extends State<SchemaBrowser> {
             child: ListView(
               controller: widget.scrollController,
               padding: const EdgeInsets.symmetric(
-                  vertical: SciFiTokens.spaceSm),
+                  vertical: GameTokens.spaceSm),
               children: widget.schema.tables
                   .map((table) => _TableItem(
                         table: table,
@@ -115,23 +114,23 @@ class _TableItem extends StatelessWidget {
           onTap: onToggle,
           child: Padding(
             padding: const EdgeInsets.symmetric(
-              horizontal: SciFiTokens.spaceMd,
+              horizontal: GameTokens.spaceMd,
               vertical: 6,
             ),
             child: Row(
               children: [
                 Icon(
                   isExpanded ? Icons.arrow_drop_down : Icons.arrow_right,
-                  color: SciFiTokens.accent,
+                  color: GameTokens.accent,
                   size: 16,
                 ),
                 const Icon(Icons.table_rows_outlined,
-                    color: SciFiTokens.accent, size: 12),
+                    color: GameTokens.accent, size: 12),
                 const SizedBox(width: 4),
                 Text(
                   table.name,
-                  style: SciFiTokens.code.copyWith(
-                    color: SciFiTokens.accent,
+                  style: GameTokens.code.copyWith(
+                    color: GameTokens.accent,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -167,28 +166,28 @@ class _ColumnItem extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            col.primaryKey ? '🔑 ' : '  ',
+            col.primaryKey ? 'Ã°Å¸â€â€˜ ' : '  ',
             style: const TextStyle(fontSize: 9),
           ),
           Text(
             col.name,
-            style: SciFiTokens.codeSmall.copyWith(
-              color: SciFiTokens.primaryText,
+            style: GameTokens.codeSmall.copyWith(
+              color: GameTokens.primaryText,
             ),
           ),
           const SizedBox(width: 4),
           Text(
             col.type,
-            style: SciFiTokens.codeSmall.copyWith(
-              color: SciFiTokens.secondaryText,
+            style: GameTokens.codeSmall.copyWith(
+              color: GameTokens.secondaryText,
               fontSize: 10,
             ),
           ),
           if (col.notNull)
             Text(
               ' NOT NULL',
-              style: SciFiTokens.codeSmall.copyWith(
-                color: SciFiTokens.disabledText,
+              style: GameTokens.codeSmall.copyWith(
+                color: GameTokens.disabledText,
                 fontSize: 9,
               ),
             ),

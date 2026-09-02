@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../theming/tokens/sci_fi_tokens.dart';
+import '../../../theming/tokens/game_tokens.dart';
 
-/// Results pane — displays query result rows with color-coded diff.
+/// Results pane â€” displays query result rows with color-coded diff.
 ///
 /// Row states:
 ///   - Match (default): neutral background
@@ -23,17 +23,17 @@ class ResultPane extends StatelessWidget {
   Widget build(BuildContext context) {
     if (rows.isEmpty) {
       return Container(
-        padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+        padding: const EdgeInsets.all(GameTokens.spaceMd),
         decoration: BoxDecoration(
-          color: SciFiTokens.surface,
+          color: GameTokens.surface,
           border: Border(
-            top: BorderSide(color: SciFiTokens.accentDim, width: 1),
+            top: BorderSide(color: GameTokens.accentDim, width: 1),
           ),
         ),
         child: Text(
           '// No rows returned.',
-          style: SciFiTokens.bodySmall.copyWith(
-            color: SciFiTokens.secondaryText,
+          style: GameTokens.bodySmall.copyWith(
+            color: GameTokens.secondaryText,
           ),
         ),
       );
@@ -43,9 +43,9 @@ class ResultPane extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: SciFiTokens.surface,
+        color: GameTokens.surface,
         border: Border(
-          top: BorderSide(color: SciFiTokens.accentDim, width: 1),
+          top: BorderSide(color: GameTokens.accentDim, width: 1),
         ),
       ),
       child: Column(
@@ -54,24 +54,24 @@ class ResultPane extends StatelessWidget {
           // Result header bar
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: SciFiTokens.spaceMd,
+              horizontal: GameTokens.spaceMd,
               vertical: 6,
             ),
             decoration: BoxDecoration(
-              color: SciFiTokens.surfaceVariant,
+              color: GameTokens.surfaceVariant,
               border: Border(
-                bottom: BorderSide(color: SciFiTokens.accentDim, width: 1),
+                bottom: BorderSide(color: GameTokens.accentDim, width: 1),
               ),
             ),
             child: Row(
               children: [
                 const Icon(Icons.table_rows_outlined,
-                    color: SciFiTokens.accent, size: 12),
+                    color: GameTokens.accent, size: 12),
                 const SizedBox(width: 4),
                 Text(
-                  'RESULTS  —  ${rows.length} row${rows.length == 1 ? '' : 's'}',
-                  style: SciFiTokens.bodySmall.copyWith(
-                    color: SciFiTokens.accent,
+                  'RESULTS  â€”  ${rows.length} row${rows.length == 1 ? '' : 's'}',
+                  style: GameTokens.bodySmall.copyWith(
+                    color: GameTokens.accent,
                     letterSpacing: 1,
                   ),
                 ),
@@ -89,12 +89,12 @@ class ResultPane extends StatelessWidget {
                   dataRowMinHeight: 28,
                   dataRowMaxHeight: 36,
                   dividerThickness: 0.5,
-                  headingTextStyle: SciFiTokens.codeSmall.copyWith(
-                    color: SciFiTokens.accent,
+                  headingTextStyle: GameTokens.codeSmall.copyWith(
+                    color: GameTokens.accent,
                     fontWeight: FontWeight.bold,
                     fontSize: 11,
                   ),
-                  dataTextStyle: SciFiTokens.codeSmall,
+                  dataTextStyle: GameTokens.codeSmall,
                   columns: columns
                       .map((col) => DataColumn(
                             label: Text(col),
@@ -105,9 +105,9 @@ class ResultPane extends StatelessWidget {
                     final row = entry.value;
                     Color? rowColor;
                     if (extraRowIndices.contains(i)) {
-                      rowColor = SciFiTokens.resultExtra;
+                      rowColor = GameTokens.resultExtra;
                     } else if (missingRowIndices.contains(i)) {
-                      rowColor = SciFiTokens.resultMissing;
+                      rowColor = GameTokens.resultMissing;
                     }
 
                     return DataRow(
@@ -118,10 +118,10 @@ class ResultPane extends StatelessWidget {
                           .map((col) => DataCell(
                                 Text(
                                   _formatValue(row[col]),
-                                  style: SciFiTokens.codeSmall.copyWith(
+                                  style: GameTokens.codeSmall.copyWith(
                                     color: row[col] == null
-                                        ? SciFiTokens.disabledText
-                                        : SciFiTokens.primaryText,
+                                        ? GameTokens.disabledText
+                                        : GameTokens.primaryText,
                                     fontStyle: row[col] == null
                                         ? FontStyle.italic
                                         : FontStyle.normal,

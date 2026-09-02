@@ -2,10 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_panel.dart';
+import '../../theming/tokens/game_tokens.dart';
+import '../../theming/components/slanted_panel.dart';
 import '../gameplay/widgets/parallax_background.dart';
-import '../../shared/widgets/terminal_widgets.dart';
+
 import '../../core/providers.dart';
 import '../../data/content/level_loader.dart';
 import '../../data/content/content_updater_service.dart';
@@ -32,7 +32,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     'WHERE filters rows before they\'re returned.',
     'JOIN combines data from two or more tables.',
     'GROUP BY collapses rows with the same value.',
-    'NULL means unknown â€” use IS NULL, not = NULL.',
+    'NULL means unknown ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â use IS NULL, not = NULL.',
     'ORDER BY sorts your result. ASC is default.',
     'DISTINCT removes duplicate rows from results.',
     'LIMIT caps how many rows are returned.',
@@ -105,7 +105,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Widget build(BuildContext context) {
     if (_initError != null) {
       return Scaffold(
-        backgroundColor: SciFiTokens.background,
+        backgroundColor: GameTokens.background,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -117,7 +117,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 Text(
                   'INITIALIZATION ERROR',
                   style: TextStyle(
-                    color: SciFiTokens.accent,
+                    color: GameTokens.accent,
                     fontFamily: 'JetBrainsMono',
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
@@ -141,7 +141,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     }
 
     return Scaffold(
-      backgroundColor: SciFiTokens.background,
+      backgroundColor: GameTokens.background,
       body: ParallaxBackground(
         child: SafeArea(
           child: Column(
@@ -152,18 +152,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(SciFiTokens.spaceXl),
+                        padding: const EdgeInsets.all(GameTokens.spaceXl),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             // Logo / wordmark
                             _QueryWordmark(),
-                            const SizedBox(height: SciFiTokens.spaceLg),
+                            const SizedBox(height: GameTokens.spaceLg),
                             Text(
                               'THE QUERY BUREAU',
-                              style: SciFiTokens.bodySmall.copyWith(
+                              style: GameTokens.bodySmall.copyWith(
                                 letterSpacing: 4.0,
-                                color: SciFiTokens.secondaryText,
+                                color: GameTokens.secondaryText,
                               ),
                             )
                                 .animate()
@@ -178,42 +178,41 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
               // Loading area + tips
               Padding(
-                padding: const EdgeInsets.all(SciFiTokens.spaceLg),
-                child: HoloPanel(
-                  emissionIntensity: 0.3,
+                padding: const EdgeInsets.all(GameTokens.spaceLg),
+                child: SlantedPanel(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: SciFiTokens.spaceLg,
-                    vertical: SciFiTokens.spaceMd,
+                    horizontal: GameTokens.spaceLg,
+                    vertical: GameTokens.spaceMd,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // Tip rotator
                       AnimatedSwitcher(
-                        duration: SciFiTokens.durationSlow,
+                        duration: GameTokens.durationSlow,
                         child: Text(
                           '> ${_tips[_tipIndex]}',
                           key: ValueKey(_tipIndex),
-                          style: SciFiTokens.bodySmall.copyWith(
-                            color: SciFiTokens.secondaryText,
+                          style: GameTokens.bodySmall.copyWith(
+                            color: GameTokens.secondaryText,
                           ),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      const SizedBox(height: SciFiTokens.spaceMd),
+                      const SizedBox(height: GameTokens.spaceMd),
 
                       // Loading bar
                       SizedBox(
                         width: 160,
                         child: LinearProgressIndicator(
-                          backgroundColor: SciFiTokens.surfaceVariant,
-                          valueColor: const AlwaysStoppedAnimation(SciFiTokens.accent),
+                          backgroundColor: GameTokens.surfaceVariant,
+                          valueColor: const AlwaysStoppedAnimation(GameTokens.accent),
                           minHeight: 2,
                         )
                             .animate(onPlay: (c) => c.repeat())
                             .shimmer(
                               duration: 1500.ms,
-                              color: SciFiTokens.accentGlow,
+                              color: GameTokens.accentGlow,
                             ),
                       ),
                     ],
@@ -241,29 +240,28 @@ class _QueryWordmark extends StatelessWidget {
           children: [
             Text(
               'QUERY',
-              style: SciFiTokens.displayLarge.copyWith(
-                fontSize: 52,
-                letterSpacing: 8,
+              style: GameTokens.displayLarge.copyWith(
+                fontSize: 64, // Larger, more imposing
+                letterSpacing: 12, // More spaced out
+                fontWeight: FontWeight.w900,
+                fontStyle: FontStyle.italic, // Slanted/action feel
+                color: GameTokens.primaryText,
                 shadows: [
                   Shadow(
-                    color: SciFiTokens.accentGlow,
-                    blurRadius: 20,
+                    color: GameTokens.accent.withValues(alpha: 0.5),
+                    offset: const Offset(4, 4), // Hard drop shadow for stylized look
                   ),
                 ],
               ),
             )
                 .animate()
+                .scale(begin: const Offset(0.8, 0.8), curve: Curves.easeOutBack, duration: 800.ms)
                 .fadeIn(duration: 600.ms)
                 .then()
                 .shimmer(
                   duration: 800.ms,
-                  color: SciFiTokens.accent.withValues(alpha: 0.6),
+                  color: GameTokens.accent,
                 ),
-            const SizedBox(width: 4),
-            BlinkingCursor(
-              width: 10,
-              height: 42,
-            ),
           ],
         ),
       ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../theming/tokens/sci_fi_tokens.dart';
+import '../../../theming/tokens/game_tokens.dart';
 import '../../../core/sandbox_engine/level_schema.dart';
 
 /// Code Mode workspace (Section 3.1).
@@ -132,28 +132,28 @@ class _CodeModeWorkspaceState extends State<CodeModeWorkspace> {
         // Code header bar
         Container(
           padding: const EdgeInsets.symmetric(
-            horizontal: SciFiTokens.spaceMd,
+            horizontal: GameTokens.spaceMd,
             vertical: 6,
           ),
           decoration: BoxDecoration(
-            color: SciFiTokens.surfaceVariant,
+            color: GameTokens.surfaceVariant,
             border: Border(
-              bottom: BorderSide(color: SciFiTokens.accentDim, width: 1),
+              bottom: BorderSide(color: GameTokens.accentDim, width: 1),
             ),
           ),
           child: Row(
             children: [
               Text(
                 'query.sql',
-                style: SciFiTokens.bodySmall.copyWith(
-                  color: SciFiTokens.accent,
+                style: GameTokens.bodySmall.copyWith(
+                  color: GameTokens.accent,
                 ),
               ),
               const Spacer(),
               Text(
                 '${_controller.text.split('\n').length} lines',
-                style: SciFiTokens.bodySmall.copyWith(
-                  color: SciFiTokens.secondaryText,
+                style: GameTokens.bodySmall.copyWith(
+                  color: GameTokens.secondaryText,
                   fontSize: 10,
                 ),
               ),
@@ -180,13 +180,13 @@ class _CodeModeWorkspaceState extends State<CodeModeWorkspace> {
                       maxLines: null,
                       expands: true,
                       textAlignVertical: TextAlignVertical.top,
-                      style: SciFiTokens.code,
-                      cursorColor: SciFiTokens.accent,
+                      style: GameTokens.code,
+                      cursorColor: GameTokens.accent,
                       cursorWidth: 8,
                       cursorHeight: 16,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.all(SciFiTokens.spaceSm),
+                        contentPadding: EdgeInsets.all(GameTokens.spaceSm),
                         isDense: true,
                       ),
                     ),
@@ -223,16 +223,16 @@ class _LineNumbers extends StatelessWidget {
     final lineCount = '\n'.allMatches(text).length + 1;
     return Container(
       width: 36,
-      color: SciFiTokens.surfaceVariant,
-      padding: const EdgeInsets.all(SciFiTokens.spaceSm),
+      color: GameTokens.surfaceVariant,
+      padding: const EdgeInsets.all(GameTokens.spaceSm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: List.generate(
           lineCount,
           (i) => Text(
             '${i + 1}',
-            style: SciFiTokens.codeSmall.copyWith(
-              color: SciFiTokens.disabledText,
+            style: GameTokens.codeSmall.copyWith(
+              color: GameTokens.disabledText,
               fontSize: 10,
               height: 1.6,
             ),
@@ -255,10 +255,10 @@ class _AutocompleteSuggestions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: SciFiTokens.surfaceVariant,
+      color: GameTokens.surfaceVariant,
       decoration: BoxDecoration(
         border: Border(
-          top: BorderSide(color: SciFiTokens.accent, width: 1),
+          top: BorderSide(color: GameTokens.accent, width: 1),
         ),
       ),
       child: Column(
@@ -267,18 +267,18 @@ class _AutocompleteSuggestions extends StatelessWidget {
             onTap: () => onSelect(s),
             child: Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: SciFiTokens.spaceMd,
+                horizontal: GameTokens.spaceMd,
                 vertical: 8,
               ),
               child: Row(
                 children: [
                   const Icon(Icons.arrow_forward,
-                      color: SciFiTokens.accent, size: 12),
+                      color: GameTokens.accent, size: 12),
                   const SizedBox(width: 8),
                   Text(
                     s,
-                    style: SciFiTokens.codeSmall.copyWith(
-                      color: SciFiTokens.primaryText,
+                    style: GameTokens.codeSmall.copyWith(
+                      color: GameTokens.primaryText,
                     ),
                   ),
                 ],

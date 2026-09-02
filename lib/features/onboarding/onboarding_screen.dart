@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_panel.dart';
-import '../../theming/components/holo_button.dart';
+import '../../theming/tokens/game_tokens.dart';
+import '../../theming/components/slanted_panel.dart';
+import '../../theming/components/action_button.dart';
 import '../gameplay/widgets/parallax_background.dart';
 import '../../core/providers.dart';
 
@@ -40,7 +40,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       title: 'SQL is your interrogation tool.',
       body:
           'SELECT the truth. JOIN the evidence. WHERE the facts lead. '
-          'Each case gives you a new database â€” and only the right query '
+          'Each case gives you a new database ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â and only the right query '
           'will crack it open.',
       icon: Icons.terminal_outlined,
     ),
@@ -65,7 +65,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   void _nextPage() {
     if (_currentPage < _storyCards.length) {
       _pageController.nextPage(
-        duration: SciFiTokens.durationNormal,
+        duration: GameTokens.durationNormal,
         curve: Curves.easeInOut,
       );
     }
@@ -78,7 +78,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       return;
     }
     if (name.length < 2 || name.length > 30) {
-      setState(() => _nameError = 'Name must be 2â€“30 characters.');
+      setState(() => _nameError = 'Name must be 2ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“30 characters.');
       return;
     }
 
@@ -101,7 +101,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SciFiTokens.background,
+      backgroundColor: GameTokens.background,
       body: ParallaxBackground(
         child: SafeArea(
           child: Column(
@@ -109,16 +109,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             // Top bar with skip
             Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: SciFiTokens.spaceMd,
-                vertical: SciFiTokens.spaceSm,
+                horizontal: GameTokens.spaceMd,
+                vertical: GameTokens.spaceSm,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'THE QUERY BUREAU',
-                    style: SciFiTokens.bodySmall.copyWith(
-                      color: SciFiTokens.secondaryText,
+                    style: GameTokens.bodySmall.copyWith(
+                      color: GameTokens.secondaryText,
                       letterSpacing: 2,
                     ),
                   ),
@@ -127,14 +127,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       onPressed: () {
                         _pageController.animateToPage(
                           _storyCards.length,
-                          duration: SciFiTokens.durationNormal,
+                          duration: GameTokens.durationNormal,
                           curve: Curves.easeInOut,
                         );
                       },
                       child: Text(
                         'SKIP',
-                        style: SciFiTokens.bodySmall.copyWith(
-                          color: SciFiTokens.secondaryText,
+                        style: GameTokens.bodySmall.copyWith(
+                          color: GameTokens.secondaryText,
                         ),
                       ),
                     ),
@@ -148,20 +148,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               children: [
                 for (int i = 0; i <= _storyCards.length; i++)
                   AnimatedContainer(
-                    duration: SciFiTokens.durationFast,
+                    duration: GameTokens.durationFast,
                     margin: const EdgeInsets.symmetric(horizontal: 3),
                     width: _currentPage == i ? 20 : 6,
                     height: 2,
                     decoration: BoxDecoration(
                       color: _currentPage == i
-                          ? SciFiTokens.accent
-                          : SciFiTokens.accentDim,
+                          ? GameTokens.accent
+                          : GameTokens.accentDim,
                       borderRadius: BorderRadius.circular(1),
                     ),
                   ),
               ],
             ),
-            const SizedBox(height: SciFiTokens.spaceMd),
+            const SizedBox(height: GameTokens.spaceMd),
 
             // Pages
             Expanded(
@@ -183,9 +183,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
             // CTA button
             Padding(
-              padding: const EdgeInsets.all(SciFiTokens.spaceLg),
+              padding: const EdgeInsets.all(GameTokens.spaceLg),
               child: _currentPage < _storyCards.length
-                  ? HoloButton(
+                  ? ActionButton(
                       isPrimary: true,
                       onPressed: _nextPage,
                       child: Text(
@@ -194,7 +194,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             : 'NEXT',
                       ),
                     )
-                  : HoloButton(
+                  : ActionButton(
                       isPrimary: true,
                       onPressed: _isSaving ? null : _createProfile,
                       child: Row(
@@ -206,7 +206,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                               child: SizedBox(
                                 width: 16,
                                 height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: SciFiTokens.background),
+                                child: CircularProgressIndicator(strokeWidth: 2, color: GameTokens.background),
                               ),
                             ),
                           const Text('BEGIN CASE #001'),
@@ -244,62 +244,60 @@ class _StoryCardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: SciFiTokens.spaceLg),
+      padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceLg),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // Icon
-          HoloPanel(
-            emissionIntensity: 0.5,
-            borderRadius: SciFiTokens.borderRadiusMd,
+          SlantedPanel(
             child: SizedBox(
               width: 80,
               height: 80,
               child: Icon(
                 card.icon,
-                color: SciFiTokens.accent,
+                color: GameTokens.accent,
                 size: 36,
               ),
             ),
           ).animate().fadeIn(duration: 400.ms).scale(begin: const Offset(0.8, 0.8)),
 
-          const SizedBox(height: SciFiTokens.spaceLg),
+          const SizedBox(height: GameTokens.spaceLg),
 
           // Badge
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: SciFiTokens.spaceSm,
+              horizontal: GameTokens.spaceSm,
               vertical: 3,
             ),
             decoration: BoxDecoration(
-              border: Border.all(color: SciFiTokens.accentDim, width: 1),
-              borderRadius: SciFiTokens.borderRadiusSm,
+              border: Border.all(color: GameTokens.accentDim, width: 1),
+              borderRadius: GameTokens.borderRadiusSm,
             ),
             child: Text(
               card.badge,
-              style: SciFiTokens.bodySmall.copyWith(
-                color: SciFiTokens.secondaryText,
+              style: GameTokens.bodySmall.copyWith(
+                color: GameTokens.secondaryText,
                 letterSpacing: 1.5,
               ),
             ),
           ).animate().fadeIn(delay: 100.ms, duration: 300.ms),
 
-          const SizedBox(height: SciFiTokens.spaceMd),
+          const SizedBox(height: GameTokens.spaceMd),
 
           // Title
           Text(
             card.title,
-            style: SciFiTokens.headlineLarge,
+            style: GameTokens.headlineLarge,
             textAlign: TextAlign.center,
           ).animate().fadeIn(delay: 200.ms, duration: 400.ms),
 
-          const SizedBox(height: SciFiTokens.spaceMd),
+          const SizedBox(height: GameTokens.spaceMd),
 
           // Body
           Text(
             card.body,
-            style: SciFiTokens.bodyLarge.copyWith(
-              color: SciFiTokens.secondaryText,
+            style: GameTokens.bodyLarge.copyWith(
+              color: GameTokens.secondaryText,
             ),
             textAlign: TextAlign.center,
           ).animate().fadeIn(delay: 300.ms, duration: 400.ms),
@@ -323,46 +321,46 @@ class _NameEntryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: SciFiTokens.spaceLg),
+      padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceLg),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             '// AGENT REGISTRATION',
-            style: SciFiTokens.bodySmall.copyWith(
-              color: SciFiTokens.secondaryText,
+            style: GameTokens.bodySmall.copyWith(
+              color: GameTokens.secondaryText,
               letterSpacing: 2,
             ),
           ),
-          const SizedBox(height: SciFiTokens.spaceSm),
+          const SizedBox(height: GameTokens.spaceSm),
           Text(
             'What do we call you?',
-            style: SciFiTokens.headlineLarge,
+            style: GameTokens.headlineLarge,
           ),
-          const SizedBox(height: SciFiTokens.spaceSm),
+          const SizedBox(height: GameTokens.spaceSm),
           Text(
             'This name will appear on your detective file and the leaderboards.',
-            style: SciFiTokens.bodyMedium.copyWith(
-              color: SciFiTokens.secondaryText,
+            style: GameTokens.bodyMedium.copyWith(
+              color: GameTokens.secondaryText,
             ),
           ),
-          const SizedBox(height: SciFiTokens.spaceLg),
+          const SizedBox(height: GameTokens.spaceLg),
           TextField(
             controller: controller,
             onChanged: onChanged,
             autofocus: true,
-            style: SciFiTokens.code,
-            cursorColor: SciFiTokens.accent,
+            style: GameTokens.code,
+            cursorColor: GameTokens.accent,
             decoration: InputDecoration(
               hintText: 'Agent Name',
               errorText: error,
               prefixText: '> ',
-              prefixStyle: SciFiTokens.code.copyWith(
-                color: SciFiTokens.accent,
+              prefixStyle: GameTokens.code.copyWith(
+                color: GameTokens.accent,
               ),
-              errorStyle: SciFiTokens.bodySmall.copyWith(
-                color: SciFiTokens.error,
+              errorStyle: GameTokens.bodySmall.copyWith(
+                color: GameTokens.error,
               ),
             ),
           ),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../theming/tokens/sci_fi_tokens.dart';
-import '../../theming/components/holo_button.dart';
+import '../../theming/tokens/game_tokens.dart';
+import '../../theming/components/action_button.dart';
 import '../gameplay/widgets/parallax_background.dart';
-import '../../shared/widgets/terminal_widgets.dart';
+import '../../shared/widgets/game_widgets.dart';
 import '../../core/providers.dart';
 
 class WorldSelectScreen extends ConsumerWidget {
@@ -15,8 +15,8 @@ class WorldSelectScreen extends ConsumerWidget {
     final worldsAsync = ref.watch(allWorldProgressProvider);
 
     return Scaffold(
-      backgroundColor: SciFiTokens.background,
-      appBar: TerminalAppBar(
+      backgroundColor: GameTokens.background,
+      appBar: GameAppBar(
         title: 'WORLD SELECT',
         onBack: () => Navigator.of(context).pop(),
       ),
@@ -24,13 +24,13 @@ class WorldSelectScreen extends ConsumerWidget {
         child: worldsAsync.when(
           data: (worlds) {
             if (worlds.isEmpty) {
-              return Center(child: Text('NO DATA', style: SciFiTokens.bodyMedium));
+              return Center(child: Text('NO DATA', style: GameTokens.bodyMedium));
             }
 
           return ListView.separated(
-            padding: const EdgeInsets.all(SciFiTokens.spaceMd),
+            padding: const EdgeInsets.all(GameTokens.spaceMd),
             itemCount: worlds.length,
-            separatorBuilder: (context, index) => const SizedBox(height: SciFiTokens.spaceMd),
+            separatorBuilder: (context, index) => const SizedBox(height: GameTokens.spaceMd),
             itemBuilder: (context, index) {
               final world = worlds[index];
               final isUnlocked = world.unlocked;
@@ -51,14 +51,14 @@ class WorldSelectScreen extends ConsumerWidget {
               final title = worldTitles[world.worldId] ?? world.worldId;
               final progress = world.totalLevels > 0 ? world.levelsCompleted / world.totalLevels : 0.0;
 
-              return HoloButton(
+              return ActionButton(
                 onPressed: isUnlocked
                     ? () {
                         Navigator.of(context).pushNamed('/level_map', arguments: world.worldId);
                       }
                     : null,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: SciFiTokens.spaceSm),
+                  padding: const EdgeInsets.symmetric(vertical: GameTokens.spaceSm),
                   child: Row(
                     children: [
                       Container(
@@ -66,42 +66,42 @@ class WorldSelectScreen extends ConsumerWidget {
                         height: 48,
                         decoration: BoxDecoration(
                           color: isUnlocked 
-                            ? SciFiTokens.accent.withValues(alpha: 0.1)
-                            : SciFiTokens.background,
+                            ? GameTokens.accent.withValues(alpha: 0.1)
+                            : GameTokens.background,
                           border: Border.all(
-                            color: isUnlocked ? SciFiTokens.accent : SciFiTokens.accentDim,
+                            color: isUnlocked ? GameTokens.accent : GameTokens.accentDim,
                           ),
-                          borderRadius: SciFiTokens.borderRadiusSm,
+                          borderRadius: GameTokens.borderRadiusSm,
                         ),
                         child: Icon(
                           isUnlocked ? Icons.explore_outlined : Icons.lock_outline,
-                          color: isUnlocked ? SciFiTokens.accent : SciFiTokens.accentDim,
+                          color: isUnlocked ? GameTokens.accent : GameTokens.accentDim,
                           size: 24,
                         ),
                       ),
-                      const SizedBox(width: SciFiTokens.spaceMd),
+                      const SizedBox(width: GameTokens.spaceMd),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               title,
-                              style: SciFiTokens.headlineMedium.copyWith(
-                                color: isUnlocked ? SciFiTokens.accent : SciFiTokens.accentDim,
+                              style: GameTokens.headlineMedium.copyWith(
+                                color: isUnlocked ? GameTokens.accent : GameTokens.accentDim,
                               ),
                             ),
-                            const SizedBox(height: SciFiTokens.spaceXs),
+                            const SizedBox(height: GameTokens.spaceXs),
                             if (isUnlocked)
                               LinearProgressIndicator(
                                 value: progress,
-                                backgroundColor: SciFiTokens.background.withValues(alpha: 0.3),
-                                valueColor: const AlwaysStoppedAnimation(SciFiTokens.accent),
+                                backgroundColor: GameTokens.background.withValues(alpha: 0.3),
+                                valueColor: const AlwaysStoppedAnimation(GameTokens.accent),
                               )
                             else
                               Text(
                                 'ENCRYPTED - COMPLETE PREVIOUS SECTOR',
-                                style: SciFiTokens.bodySmall.copyWith(
-                                  color: SciFiTokens.accentDim,
+                                style: GameTokens.bodySmall.copyWith(
+                                  color: GameTokens.accentDim,
                                   letterSpacing: 1.0,
                                 ),
                               ),
@@ -111,7 +111,7 @@ class WorldSelectScreen extends ConsumerWidget {
                       if (isUnlocked)
                         const Icon(
                           Icons.chevron_right,
-                          color: SciFiTokens.accent,
+                          color: GameTokens.accent,
                         ),
                     ],
                   ),
@@ -122,12 +122,12 @@ class WorldSelectScreen extends ConsumerWidget {
         },
         loading: () => const Center(
           child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation(SciFiTokens.accent),
+            valueColor: AlwaysStoppedAnimation(GameTokens.accent),
             strokeWidth: 2,
           ),
         ),
           error: (err, stack) => Center(
-            child: Text('ERROR: $err', style: SciFiTokens.bodyMedium.copyWith(color: SciFiTokens.error)),
+            child: Text('ERROR: $err', style: GameTokens.bodyMedium.copyWith(color: GameTokens.error)),
           ),
         ),
       ),
