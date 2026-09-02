@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import '../app_database.dart';
+import '../../remote/leaderboard_service.dart';
 
 part 'player_dao.g.dart';
 
@@ -35,6 +36,16 @@ class PlayerDao extends DatabaseAccessor<AppDatabase> with _$PlayerDaoMixin {
       totalXp: Value(newXp),
       rankTitle: Value(newRank),
     ));
+    
+    // Sync to global leaderboard (fire-and-forget)
+    try {
+      final lbService = LeaderboardService();
+      lbService.syncPlayerXp(
+        displayName: profile.displayName,
+        totalXp: newXp,
+        rankTitle: newRank,
+      );
+    } catch (_) {}
   }
 
   /// Spends Insight Points for hints.
