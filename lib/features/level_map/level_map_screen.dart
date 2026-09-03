@@ -255,28 +255,32 @@ class _LevelNode extends StatelessWidget {
     return ActionButton(
       onPressed: onTap,
       isPrimary: isCompleted,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (!isUnlocked)
-            const Icon(Icons.lock_outline,
-                color: GameTokens.disabledText, size: 14)
-          else
-            _LevelTypeIcon(type: level.type),
-          const SizedBox(height: 3),
-          Text(
-            '${level.levelNumber}',
-            style: GameTokens.bodySmall.copyWith(
-              color: textColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!isUnlocked)
+              const Icon(Icons.lock_outline,
+                  color: GameTokens.disabledText, size: 14)
+            else
+              _LevelTypeIcon(type: level.type),
+            const SizedBox(height: 3),
+            Text(
+              '${level.levelNumber}',
+              style: GameTokens.bodySmall.copyWith(
+                color: textColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
             ),
-          ),
-          if (isCompleted) ...[
-            const SizedBox(height: 2),
-            StarRow(starCount: stars),
+            if (isCompleted) ...[
+              const SizedBox(height: 2),
+              StarRow(starCount: stars),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
