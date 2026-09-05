@@ -11,7 +11,7 @@ import '../../shared/widgets/game_widgets.dart';
 import '../../data/content/models/level_model.dart';
 import '../../core/scoring/level_scorer.dart';
 import 'gameplay_provider.dart';
-import 'widgets/schema_browser.dart';
+import 'widgets/data_browser.dart';
 import 'widgets/block_mode_workspace.dart';
 import 'widgets/code_mode_workspace.dart';
 import 'widgets/result_pane.dart';
@@ -642,7 +642,7 @@ class _LevelNarrative extends StatelessWidget {
                   border: Border.all(color: GameTokens.accentDim, width: 1),
                   borderRadius: GameTokens.borderRadiusSm,
                 ),
-                child: SchemaBrowser(schema: level.schema),
+                child: DataBrowser(level: level),
               ),
             ],
           ),
