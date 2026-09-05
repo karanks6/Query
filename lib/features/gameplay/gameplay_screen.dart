@@ -385,7 +385,7 @@ class _TabletLayout extends ConsumerWidget {
         if (state.schemaExpanded)
           SizedBox(
             width: 220,
-            child: SchemaBrowser(schema: level.schema),
+            child: DataBrowser(level: level),
           ),
 
         Container(width: 1, color: GameTokens.accentDim),
@@ -576,8 +576,8 @@ class _ActionBar extends ConsumerWidget {
         expand: false,
         initialChildSize: 0.6,
         maxChildSize: 0.9,
-        builder: (_, controller) => SchemaBrowser(
-          schema: level.schema,
+        builder: (_, controller) => DataBrowser(
+          level: level,
           scrollController: controller,
         ),
       ),

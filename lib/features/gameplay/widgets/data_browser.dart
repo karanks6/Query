@@ -193,7 +193,7 @@ class _TableItem extends StatelessWidget {
         // Data Table
         if (isExpanded)
           Container(
-            color: GameTokens.backgroundDark,
+            color: GameTokens.background,
             width: double.infinity,
             child: data.isEmpty
                 ? Padding(
