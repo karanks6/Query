@@ -7,6 +7,7 @@ import '../../theming/components/action_button.dart';
 import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/game_widgets.dart';
 import '../../core/providers.dart';
+import '../../core/settings/settings_service.dart';
 
 /// Main Menu / Dashboard (Section 5.3).
 ///
@@ -14,11 +15,25 @@ import '../../core/providers.dart';
 /// - XP/Rank summary + streak flame
 /// - Daily challenge card
 /// - Quick links: World Map, Sandbox, Achievements, Leaderboard
-class DashboardScreen extends ConsumerWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final prefs = ref.read(sharedPreferencesProvider);
+      ref.read(playerDaoProvider).checkDailyStreak(prefs);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final profileAsync = ref.watch(playerProfileProvider);
     final worldsAsync = ref.watch(allWorldProgressProvider);
 

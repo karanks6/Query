@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../app_database.dart';
 import '../../remote/leaderboard_service.dart';
 
@@ -78,22 +79,36 @@ class PlayerDao extends DatabaseAccessor<AppDatabase> with _$PlayerDaoMixin {
         .write(PlayerProfilesCompanion(activeTheme: Value(themeId)));
   }
 
-  /// Increments streak. Returns new count.
-  Future<int> incrementStreak() async {
-    final profile = await getProfile();
-    if (profile == null) return 0;
-    final newStreak = profile.streakCount + 1;
-    await (update(playerProfiles)..where((p) => p.id.equals(profile.id)))
-        .write(PlayerProfilesCompanion(streakCount: Value(newStreak)));
-    return newStreak;
-  }
-
-  /// Resets streak (broken).
-  Future<void> resetStreak() async {
+  /// Checks and updates the daily streak using SharedPreferences.
+  Future<void> checkDailyStreak(SharedPreferences prefs) async {
     final profile = await getProfile();
     if (profile == null) return;
-    await (update(playerProfiles)..where((p) => p.id.equals(profile.id)))
-        .write(const PlayerProfilesCompanion(streakCount: Value(0)));
+
+    final todayStr = DateTime.now().toIso8601String().substring(0, 10);
+    final yesterday = DateTime.now().subtract(const Duration(days: 1));
+    final yesterdayStr = yesterday.toIso8601String().substring(0, 10);
+
+    final lastUpdate = prefs.getString('last_streak_update');
+
+    if (lastUpdate == null) {
+      // First time playing / starting new streak
+      final newStreak = profile.streakCount + 1;
+      await (update(playerProfiles)..where((p) => p.id.equals(profile.id)))
+          .write(PlayerProfilesCompanion(streakCount: Value(newStreak)));
+      await prefs.setString('last_streak_update', todayStr);
+    } else if (lastUpdate == yesterdayStr) {
+      // Kept streak alive
+      final newStreak = profile.streakCount + 1;
+      await (update(playerProfiles)..where((p) => p.id.equals(profile.id)))
+          .write(PlayerProfilesCompanion(streakCount: Value(newStreak)));
+      await prefs.setString('last_streak_update', todayStr);
+    } else if (lastUpdate != todayStr) {
+      // Streak broken (played before yesterday)
+      // Reset streak and increment to 1 for today
+      await (update(playerProfiles)..where((p) => p.id.equals(profile.id)))
+          .write(const PlayerProfilesCompanion(streakCount: Value(1)));
+      await prefs.setString('last_streak_update', todayStr);
+    }
   }
 
   String _rankForXp(int xp) {
