@@ -10,12 +10,14 @@ class ActionButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final Widget child;
   final bool isPrimary; 
+  final EdgeInsetsGeometry padding;
 
   const ActionButton({
     super.key,
     required this.onPressed,
     required this.child,
     this.isPrimary = false,
+    this.padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
   });
 
   @override
@@ -89,7 +91,7 @@ class _ActionButtonState extends State<ActionButton> {
                 child: AnimatedContainer(
                   duration: GameTokens.durationFast,
                   color: baseColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  padding: widget.padding,
                   child: DefaultTextStyle(
                     style: GameTokens.labelLarge.copyWith(color: textColor),
                     child: widget.child,

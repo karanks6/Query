@@ -190,6 +190,7 @@ class StarRow extends StatelessWidget {
   final String? medalLabel;
   final Color? filledColor;
   final Color? unfilledColor;
+  final double starSize;
 
   const StarRow({
     super.key,
@@ -198,6 +199,7 @@ class StarRow extends StatelessWidget {
     this.medalLabel,
     this.filledColor,
     this.unfilledColor,
+    this.starSize = 24.0,
   });
 
   @override
@@ -213,7 +215,7 @@ class StarRow extends StatelessWidget {
               color: i < starCount
                   ? (filledColor ?? GameTokens.accent)
                   : (unfilledColor ?? GameTokens.surfaceHighlight),
-              size: 24,
+              size: starSize,
             ),
           ),
         if (showTimeMedal && medalLabel != null) ...[

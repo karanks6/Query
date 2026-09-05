@@ -248,13 +248,16 @@ class _LevelNode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = isUnlocked
-        ? GameTokens.primaryText
-        : GameTokens.disabledText;
+    final textColor = isCompleted 
+        ? GameTokens.background
+        : isUnlocked
+            ? GameTokens.primaryText
+            : GameTokens.disabledText;
 
     return ActionButton(
       onPressed: onTap,
       isPrimary: isCompleted,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: FittedBox(
         fit: BoxFit.scaleDown,
         child: Column(
@@ -265,14 +268,14 @@ class _LevelNode extends StatelessWidget {
               const Icon(Icons.lock_outline,
                   color: GameTokens.disabledText, size: 14)
             else
-              _LevelTypeIcon(type: level.type),
+              _LevelTypeIcon(type: level.type, color: textColor),
             const SizedBox(height: 3),
             Text(
               '${level.levelNumber}',
               style: GameTokens.bodySmall.copyWith(
                 color: textColor,
                 fontWeight: FontWeight.bold,
-                fontSize: 12,
+                fontSize: 16, // increased text size for better visibility
               ),
             ),
             if (isCompleted) ...[
@@ -281,6 +284,7 @@ class _LevelNode extends StatelessWidget {
                 starCount: stars,
                 filledColor: GameTokens.background,
                 unfilledColor: GameTokens.background.withOpacity(0.3),
+                starSize: 16.0,
               ),
             ],
           ],
@@ -292,27 +296,28 @@ class _LevelNode extends StatelessWidget {
 
 class _LevelTypeIcon extends StatelessWidget {
   final LevelType type;
+  final Color? color;
 
-  const _LevelTypeIcon({required this.type});
+  const _LevelTypeIcon({required this.type, this.color});
 
   @override
   Widget build(BuildContext context) {
     switch (type) {
       case LevelType.tutorial:
-        return const Icon(Icons.school_outlined,
-            color: GameTokens.info, size: 14);
+        return Icon(Icons.school_outlined,
+            color: color ?? GameTokens.info, size: 14);
       case LevelType.debugging:
-        return const Icon(Icons.bug_report_outlined,
-            color: GameTokens.error, size: 14);
+        return Icon(Icons.bug_report_outlined,
+            color: color ?? GameTokens.error, size: 14);
       case LevelType.optimizationChallenge:
-        return const Icon(Icons.speed_outlined,
-            color: GameTokens.warning, size: 14);
+        return Icon(Icons.speed_outlined,
+            color: color ?? GameTokens.warning, size: 14);
       case LevelType.boss:
-        return const Icon(Icons.gavel_outlined,
-            color: GameTokens.accent, size: 14);
+        return Icon(Icons.gavel_outlined,
+            color: color ?? GameTokens.accent, size: 14);
       default:
-        return const Icon(Icons.search_outlined,
-            color: GameTokens.accent, size: 14);
+        return Icon(Icons.search_outlined,
+            color: color ?? GameTokens.accent, size: 14);
     }
   }
 }
