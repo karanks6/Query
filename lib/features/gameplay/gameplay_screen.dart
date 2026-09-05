@@ -62,14 +62,11 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
     final state = ref.watch(gameplayProvider);
     final isTablet = MediaQuery.of(context).size.width > 720;
 
-    // Show feedback overlay when triggered
-    if (state.showFeedback) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && state.showFeedback) {
-          _showFeedback(context, state);
-        }
-      });
-    }
+    ref.listen<GameplayState>(gameplayProvider, (previous, next) {
+      if ((previous == null || !previous.showFeedback) && next.showFeedback) {
+        _showFeedback(context, next);
+      }
+    });
 
     return Scaffold(
       backgroundColor: GameTokens.background,

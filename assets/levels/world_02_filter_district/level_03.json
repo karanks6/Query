@@ -49,51 +49,21 @@
   "expected_result": [
     {
       "value": [
-        {
-          "description": "AirPods case"
-        },
-        {
-          "description": "Blue umbrella"
-        },
-        {
-          "description": "Brown leather wallet"
-        },
-        {
-          "description": "Child rain jacket"
-        },
-        {
-          "description": "Glasses (reading)"
-        },
-        {
-          "description": "Gold ring"
-        },
-        {
-          "description": "House keys"
-        },
-        {
-          "description": "iPad (cracked screen)"
-        },
-        {
-          "description": "Keys (3 keys, keychain)"
-        },
-        {
-          "description": "Laptop bag"
-        },
-        {
-          "description": "Mountain bike"
-        },
-        {
-          "description": "Purple scarf"
-        },
-        {
-          "description": "Red bicycle"
-        },
-        {
-          "description": "Smartphone Samsung"
-        },
-        {
-          "description": "Tennis racket"
-        }
+        { "description": "AirPods case" },
+        { "description": "Blue umbrella" },
+        { "description": "Brown leather wallet" },
+        { "description": "Child rain jacket" },
+        { "description": "Glasses (reading)" },
+        { "description": "Gold ring" },
+        { "description": "House keys" },
+        { "description": "Keys (3 keys, keychain)" },
+        { "description": "Laptop bag" },
+        { "description": "Mountain bike" },
+        { "description": "Purple scarf" },
+        { "description": "Red bicycle" },
+        { "description": "Smartphone Samsung" },
+        { "description": "Tennis racket" },
+        { "description": "iPad (cracked screen)" }
       ],
       "Count": 15
     }
