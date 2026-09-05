@@ -8,6 +8,8 @@ import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/game_widgets.dart';
 import '../../core/providers.dart';
 import '../../core/settings/settings_service.dart';
+import 'widgets/streak_calendar_modal.dart';
+import 'widgets/rank_progress_modal.dart';
 
 /// Main Menu / Dashboard (Section 5.3).
 ///
@@ -273,27 +275,37 @@ class _StatsRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: SlantedPanel(
-            padding: const EdgeInsets.all(GameTokens.spaceSm),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.local_fire_department,
-                        color: GameTokens.warning, size: 16),
-                    const SizedBox(width: 4),
-                    Text('STREAK', style: GameTokens.bodySmall),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${profile.streakCount} days',
-                  style: GameTokens.headlineMedium.copyWith(
-                    color: GameTokens.warning,
+          child: GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: Colors.transparent,
+                isScrollControlled: true,
+                builder: (context) => const StreakCalendarModal(),
+              );
+            },
+            child: SlantedPanel(
+              padding: const EdgeInsets.all(GameTokens.spaceSm),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.local_fire_department,
+                          color: GameTokens.warning, size: 16),
+                      const SizedBox(width: 4),
+                      Text('STREAK', style: GameTokens.bodySmall),
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    '${profile.streakCount} days',
+                    style: GameTokens.headlineMedium.copyWith(
+                      color: GameTokens.warning,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -323,29 +335,44 @@ class _StatsRow extends StatelessWidget {
         ),
         const SizedBox(width: GameTokens.spaceSm),
         Expanded(
-          child: SlantedPanel(
-            padding: const EdgeInsets.all(GameTokens.spaceSm),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.workspace_premium_outlined,
-                        color: GameTokens.accent, size: 16),
-                    const SizedBox(width: 4),
-                    Text('RANK', style: GameTokens.bodySmall),
-                  ],
+          child: GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: Colors.transparent,
+                isScrollControlled: true,
+                builder: (context) => DraggableScrollableSheet(
+                  initialChildSize: 0.9,
+                  maxChildSize: 0.95,
+                  minChildSize: 0.5,
+                  builder: (_, controller) => const RankProgressModal(),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  profile.rankTitle,
-                  style: GameTokens.bodySmall.copyWith(
-                    color: GameTokens.accent,
+              );
+            },
+            child: SlantedPanel(
+              padding: const EdgeInsets.all(GameTokens.spaceSm),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.workspace_premium_outlined,
+                          color: GameTokens.accent, size: 16),
+                      const SizedBox(width: 4),
+                      Text('RANK', style: GameTokens.bodySmall),
+                    ],
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    profile.rankTitle,
+                    style: GameTokens.bodySmall.copyWith(
+                      color: GameTokens.accent,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

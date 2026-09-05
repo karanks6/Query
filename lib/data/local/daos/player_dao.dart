@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../app_database.dart';
 import '../../remote/leaderboard_service.dart';
+import '../../content/models/rank_system.dart';
 
 part 'player_dao.g.dart';
 
@@ -89,6 +90,19 @@ class PlayerDao extends DatabaseAccessor<AppDatabase> with _$PlayerDaoMixin {
     final yesterdayStr = yesterday.toIso8601String().substring(0, 10);
 
     final lastUpdate = prefs.getString('last_streak_update');
+    List<String> history = prefs.getStringList('streak_history') ?? [];
+    int longestStreak = prefs.getInt('longest_streak') ?? 0;
+
+    Future<void> updateHistoryAndLongest(int currentStreak) async {
+      if (!history.contains(todayStr)) {
+        history.add(todayStr);
+        await prefs.setStringList('streak_history', history);
+      }
+      if (currentStreak > longestStreak) {
+        longestStreak = currentStreak;
+        await prefs.setInt('longest_streak', longestStreak);
+      }
+    }
 
     if (lastUpdate == null) {
       // First time playing / starting new streak
@@ -96,30 +110,28 @@ class PlayerDao extends DatabaseAccessor<AppDatabase> with _$PlayerDaoMixin {
       await (update(playerProfiles)..where((p) => p.id.equals(profile.id)))
           .write(PlayerProfilesCompanion(streakCount: Value(newStreak)));
       await prefs.setString('last_streak_update', todayStr);
+      await updateHistoryAndLongest(newStreak);
     } else if (lastUpdate == yesterdayStr) {
       // Kept streak alive
       final newStreak = profile.streakCount + 1;
       await (update(playerProfiles)..where((p) => p.id.equals(profile.id)))
           .write(PlayerProfilesCompanion(streakCount: Value(newStreak)));
       await prefs.setString('last_streak_update', todayStr);
+      await updateHistoryAndLongest(newStreak);
     } else if (lastUpdate != todayStr) {
       // Streak broken (played before yesterday)
       // Reset streak and increment to 1 for today
       await (update(playerProfiles)..where((p) => p.id.equals(profile.id)))
           .write(const PlayerProfilesCompanion(streakCount: Value(1)));
       await prefs.setString('last_streak_update', todayStr);
+      await updateHistoryAndLongest(1);
+    } else {
+      // Played multiple times today. Just ensure history has today.
+      await updateHistoryAndLongest(profile.streakCount);
     }
   }
 
   String _rankForXp(int xp) {
-    if (xp >= 50000) return 'The Oracle';
-    if (xp >= 20000) return 'Master Architect';
-    if (xp >= 10000) return 'Bureau Chief';
-    if (xp >= 7500) return 'Cyber Operative';
-    if (xp >= 5000) return 'Senior Investigator';
-    if (xp >= 2500) return 'Query Specialist';
-    if (xp >= 1000) return 'Field Detective';
-    if (xp >= 500) return 'Data Sleuth';
-    return 'Junior Analyst';
+    return RankSystem.getRankForXp(xp).title;
   }
 }
