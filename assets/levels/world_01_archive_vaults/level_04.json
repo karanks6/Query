@@ -45,49 +45,44 @@
   "seed_sql": "INSERT INTO catalog VALUES (1,'Kind of Blue','Miles Davis','Jazz',1959,24.99),(2,'Thriller','Michael Jackson','Pop',1982,19.99),(3,'Led Zeppelin IV','Led Zeppelin','Rock',1971,22.50),(4,'Purple Rain','Prince','Funk',1984,18.99),(5,'Nevermind','Nirvana','Rock',1991,21.00),(6,'Dark Side of the Moon','Pink Floyd','Rock',1973,25.99),(7,'Born to Run','Bruce Springsteen','Rock',1975,20.00),(8,'Rumours','Fleetwood Mac','Pop',1977,21.99),(9,'Blue','Joni Mitchell','Folk',1971,19.50),(10,'Whats Going On','Marvin Gaye','Soul',1971,22.00);",
   "expected_result": [
     {
-      "value": [
-        {
-          "id": 1,
-          "title": "Kind of Blue",
-          "artist": "Miles Davis",
-          "genre": "Jazz",
-          "year": 1959,
-          "price": 24.99
-        },
-        {
-          "id": 2,
-          "title": "Thriller",
-          "artist": "Michael Jackson",
-          "genre": "Pop",
-          "year": 1982,
-          "price": 19.99
-        },
-        {
-          "id": 3,
-          "title": "Led Zeppelin IV",
-          "artist": "Led Zeppelin",
-          "genre": "Rock",
-          "year": 1971,
-          "price": 22.5
-        },
-        {
-          "id": 4,
-          "title": "Purple Rain",
-          "artist": "Prince",
-          "genre": "Funk",
-          "year": 1984,
-          "price": 18.99
-        },
-        {
-          "id": 5,
-          "title": "Nevermind",
-          "artist": "Nirvana",
-          "genre": "Rock",
-          "year": 1991,
-          "price": 21.0
-        }
-      ],
-      "Count": 5
+      "id": 1,
+      "title": "Kind of Blue",
+      "artist": "Miles Davis",
+      "genre": "Jazz",
+      "year": 1959,
+      "price": 24.99
+    },
+    {
+      "id": 2,
+      "title": "Thriller",
+      "artist": "Michael Jackson",
+      "genre": "Pop",
+      "year": 1982,
+      "price": 19.99
+    },
+    {
+      "id": 3,
+      "title": "Led Zeppelin IV",
+      "artist": "Led Zeppelin",
+      "genre": "Rock",
+      "year": 1971,
+      "price": 22.5
+    },
+    {
+      "id": 4,
+      "title": "Purple Rain",
+      "artist": "Prince",
+      "genre": "Funk",
+      "year": 1984,
+      "price": 18.99
+    },
+    {
+      "id": 5,
+      "title": "Nevermind",
+      "artist": "Nirvana",
+      "genre": "Rock",
+      "year": 1991,
+      "price": 21.0
     }
   ],
   "order_sensitive": false,
@@ -102,7 +97,7 @@
     },
     {
       "content": "Try: SELECT * FROM catalog LIMIT 5",
-      "code_snippet": "SELECT * FROM catalog LIMIT 5",
+      "code_snippet": "SELECT * FROM ...",
       "tier": "partial_reveal"
     },
     {

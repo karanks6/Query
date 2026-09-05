@@ -7,24 +7,63 @@
   "type": "puzzle",
   "schema": {
     "tables": [
-      { "name": "catalog", "columns": [
-        { "name": "id", "type": "INTEGER", "primary_key": true },
-        { "name": "title", "type": "TEXT", "not_null": true },
-        { "name": "artist", "type": "TEXT", "not_null": true },
-        { "name": "genre", "type": "TEXT" },
-        { "name": "year", "type": "INTEGER" },
-        { "name": "price", "type": "REAL" }
-      ]}
+      {
+        "name": "catalog",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "primary_key": true
+          },
+          {
+            "name": "title",
+            "type": "TEXT",
+            "not_null": true
+          },
+          {
+            "name": "artist",
+            "type": "TEXT",
+            "not_null": true
+          },
+          {
+            "name": "genre",
+            "type": "TEXT"
+          },
+          {
+            "name": "year",
+            "type": "INTEGER"
+          },
+          {
+            "name": "price",
+            "type": "REAL"
+          }
+        ]
+      }
     ]
   },
   "schema_sql": "CREATE TABLE catalog (id INTEGER PRIMARY KEY, title TEXT NOT NULL, artist TEXT NOT NULL, genre TEXT, year INTEGER, price REAL);",
   "seed_sql": "INSERT INTO catalog VALUES (1,'Kind of Blue','Miles Davis','Jazz',1959,24.99),(2,'Thriller','Michael Jackson','Pop',1982,19.99),(3,'Led Zeppelin IV','Led Zeppelin','Rock',1971,22.50),(4,'Purple Rain','Prince','Funk',1984,18.99),(5,'Nevermind','Nirvana','Rock',1991,21.00);",
   "expected_result": [
-    {"title":"Kind of Blue","artist":"Miles Davis"},
-    {"title":"Thriller","artist":"Michael Jackson"},
-    {"title":"Led Zeppelin IV","artist":"Led Zeppelin"},
-    {"title":"Purple Rain","artist":"Prince"},
-    {"title":"Nevermind","artist":"Nirvana"}
+    {
+      "title": "Kind of Blue",
+      "artist": "Miles Davis"
+    },
+    {
+      "title": "Thriller",
+      "artist": "Michael Jackson"
+    },
+    {
+      "title": "Led Zeppelin IV",
+      "artist": "Led Zeppelin"
+    },
+    {
+      "title": "Purple Rain",
+      "artist": "Prince"
+    },
+    {
+      "title": "Nevermind",
+      "artist": "Nirvana"
+    }
   ],
   "order_sensitive": false,
   "performance_active": false,
@@ -32,8 +71,19 @@
   "xp_reward": 40,
   "allowed_world_number": 1,
   "hints": [
-    { "tier": "nudge", "content": "Instead of SELECT *, list exactly the column names you want, separated by commas." },
-    { "tier": "partial_reveal", "content": "SELECT title, artist FROM ...", "code_snippet": "SELECT title, artist FROM catalog" },
-    { "tier": "full_solution", "content": "Full solution:", "code_snippet": "SELECT title, artist FROM catalog" }
+    {
+      "tier": "nudge",
+      "content": "Instead of SELECT *, list exactly the column names you want, separated by commas."
+    },
+    {
+      "tier": "partial_reveal",
+      "content": "SELECT title, artist FROM ...",
+      "code_snippet": "SELECT title, artist FROM ..."
+    },
+    {
+      "tier": "full_solution",
+      "content": "Full solution:",
+      "code_snippet": "SELECT title, artist FROM catalog"
+    }
   ]
 }

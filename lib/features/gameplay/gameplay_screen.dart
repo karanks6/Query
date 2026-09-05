@@ -100,7 +100,6 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
         sandboxError: state.sandboxError,
         score: state.levelScore,
         onDismiss: () {
-          ref.read(gameplayProvider.notifier).dismissFeedback();
           Navigator.of(ctx).pop();
         },
         onNextLevel: state.levelCompleted
@@ -124,11 +123,14 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
               }
             : null,
         onRetry: () {
-          ref.read(gameplayProvider.notifier).dismissFeedback();
           Navigator.of(ctx).pop();
         },
       ),
-    );
+    ).whenComplete(() {
+      if (mounted) {
+        ref.read(gameplayProvider.notifier).dismissFeedback();
+      }
+    });
   }
 }
 

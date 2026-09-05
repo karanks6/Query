@@ -48,36 +48,31 @@
   "seed_sql": "INSERT INTO items VALUES (1,'Blue umbrella','Accessories','2026-01-10','Central Station',1,'Alice Wong'),(2,'Brown leather wallet','Accessories','2026-01-12','Park East',0,NULL),(3,'Red bicycle','Vehicles','2026-01-15','Market Square',0,NULL),(4,'Smartphone Samsung','Electronics','2026-01-16','Library',1,'Bob Mehta'),(5,'Keys (3 keys, keychain)','Keys','2026-01-18','Coffee Alley',0,NULL),(6,'Laptop bag','Bags','2026-01-20','Bus Terminal',0,NULL),(7,'Gold ring','Jewelry','2026-01-21','River Walk',1,'Carla Singh'),(8,'Child rain jacket','Clothing','2026-01-22','School Street',0,NULL),(9,'Glasses (reading)','Accessories','2026-01-23','Hospital Lobby',0,NULL),(10,'Tennis racket','Sports','2026-01-25','Sports Center',1,'Dave Lim'),(11,'iPad (cracked screen)','Electronics','2026-01-26','Cafe Norte',0,NULL),(12,'Purple scarf','Clothing','2026-01-28','Museum',0,NULL),(13,'House keys','Keys','2026-02-01','Train Platform 3',0,NULL),(14,'AirPods case','Electronics','2026-02-02','Cinema Foyer',1,'Eve Park'),(15,'Mountain bike','Vehicles','2026-02-03','Riverside',0,NULL);",
   "expected_result": [
     {
-      "value": [
-        {
-          "id": 5,
-          "description": "Keys (3 keys, keychain)",
-          "category": "Keys",
-          "found_date": "2026-01-18",
-          "location": "Coffee Alley",
-          "claimed": 0,
-          "claimant_name": null
-        },
-        {
-          "id": 7,
-          "description": "Gold ring",
-          "category": "Jewelry",
-          "found_date": "2026-01-21",
-          "location": "River Walk",
-          "claimed": 1,
-          "claimant_name": "Carla Singh"
-        },
-        {
-          "id": 13,
-          "description": "House keys",
-          "category": "Keys",
-          "found_date": "2026-02-01",
-          "location": "Train Platform 3",
-          "claimed": 0,
-          "claimant_name": null
-        }
-      ],
-      "Count": 3
+      "id": 5,
+      "description": "Keys (3 keys, keychain)",
+      "category": "Keys",
+      "found_date": "2026-01-18",
+      "location": "Coffee Alley",
+      "claimed": 0,
+      "claimant_name": null
+    },
+    {
+      "id": 7,
+      "description": "Gold ring",
+      "category": "Jewelry",
+      "found_date": "2026-01-21",
+      "location": "River Walk",
+      "claimed": 1,
+      "claimant_name": "Carla Singh"
+    },
+    {
+      "id": 13,
+      "description": "House keys",
+      "category": "Keys",
+      "found_date": "2026-02-01",
+      "location": "Train Platform 3",
+      "claimed": 0,
+      "claimant_name": null
     }
   ],
   "order_sensitive": false,
@@ -92,7 +87,7 @@
     },
     {
       "content": "Try: SELECT * FROM items WHERE category = 'Keys' OR category = 'Jewelry'",
-      "code_snippet": "SELECT * FROM items WHERE category = 'Keys' OR category = 'Jewelry'",
+      "code_snippet": "SELECT * FROM ...",
       "tier": "partial_reveal"
     },
     {

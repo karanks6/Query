@@ -48,99 +48,94 @@
   "seed_sql": "INSERT INTO items VALUES (1,'Blue umbrella','Accessories','2026-01-10','Central Station',1,'Alice Wong'),(2,'Brown leather wallet','Accessories','2026-01-12','Park East',0,NULL),(3,'Red bicycle','Vehicles','2026-01-15','Market Square',0,NULL),(4,'Smartphone Samsung','Electronics','2026-01-16','Library',1,'Bob Mehta'),(5,'Keys (3 keys, keychain)','Keys','2026-01-18','Coffee Alley',0,NULL),(6,'Laptop bag','Bags','2026-01-20','Bus Terminal',0,NULL),(7,'Gold ring','Jewelry','2026-01-21','River Walk',1,'Carla Singh'),(8,'Child rain jacket','Clothing','2026-01-22','School Street',0,NULL),(9,'Glasses (reading)','Accessories','2026-01-23','Hospital Lobby',0,NULL),(10,'Tennis racket','Sports','2026-01-25','Sports Center',1,'Dave Lim'),(11,'iPad (cracked screen)','Electronics','2026-01-26','Cafe Norte',0,NULL),(12,'Purple scarf','Clothing','2026-01-28','Museum',0,NULL),(13,'House keys','Keys','2026-02-01','Train Platform 3',0,NULL),(14,'AirPods case','Electronics','2026-02-02','Cinema Foyer',1,'Eve Park'),(15,'Mountain bike','Vehicles','2026-02-03','Riverside',0,NULL);",
   "expected_result": [
     {
-      "value": [
-        {
-          "id": 2,
-          "description": "Brown leather wallet",
-          "category": "Accessories",
-          "found_date": "2026-01-12",
-          "location": "Park East",
-          "claimed": 0,
-          "claimant_name": null
-        },
-        {
-          "id": 3,
-          "description": "Red bicycle",
-          "category": "Vehicles",
-          "found_date": "2026-01-15",
-          "location": "Market Square",
-          "claimed": 0,
-          "claimant_name": null
-        },
-        {
-          "id": 5,
-          "description": "Keys (3 keys, keychain)",
-          "category": "Keys",
-          "found_date": "2026-01-18",
-          "location": "Coffee Alley",
-          "claimed": 0,
-          "claimant_name": null
-        },
-        {
-          "id": 6,
-          "description": "Laptop bag",
-          "category": "Bags",
-          "found_date": "2026-01-20",
-          "location": "Bus Terminal",
-          "claimed": 0,
-          "claimant_name": null
-        },
-        {
-          "id": 8,
-          "description": "Child rain jacket",
-          "category": "Clothing",
-          "found_date": "2026-01-22",
-          "location": "School Street",
-          "claimed": 0,
-          "claimant_name": null
-        },
-        {
-          "id": 9,
-          "description": "Glasses (reading)",
-          "category": "Accessories",
-          "found_date": "2026-01-23",
-          "location": "Hospital Lobby",
-          "claimed": 0,
-          "claimant_name": null
-        },
-        {
-          "id": 11,
-          "description": "iPad (cracked screen)",
-          "category": "Electronics",
-          "found_date": "2026-01-26",
-          "location": "Cafe Norte",
-          "claimed": 0,
-          "claimant_name": null
-        },
-        {
-          "id": 12,
-          "description": "Purple scarf",
-          "category": "Clothing",
-          "found_date": "2026-01-28",
-          "location": "Museum",
-          "claimed": 0,
-          "claimant_name": null
-        },
-        {
-          "id": 13,
-          "description": "House keys",
-          "category": "Keys",
-          "found_date": "2026-02-01",
-          "location": "Train Platform 3",
-          "claimed": 0,
-          "claimant_name": null
-        },
-        {
-          "id": 15,
-          "description": "Mountain bike",
-          "category": "Vehicles",
-          "found_date": "2026-02-03",
-          "location": "Riverside",
-          "claimed": 0,
-          "claimant_name": null
-        }
-      ],
-      "Count": 10
+      "id": 2,
+      "description": "Brown leather wallet",
+      "category": "Accessories",
+      "found_date": "2026-01-12",
+      "location": "Park East",
+      "claimed": 0,
+      "claimant_name": null
+    },
+    {
+      "id": 3,
+      "description": "Red bicycle",
+      "category": "Vehicles",
+      "found_date": "2026-01-15",
+      "location": "Market Square",
+      "claimed": 0,
+      "claimant_name": null
+    },
+    {
+      "id": 5,
+      "description": "Keys (3 keys, keychain)",
+      "category": "Keys",
+      "found_date": "2026-01-18",
+      "location": "Coffee Alley",
+      "claimed": 0,
+      "claimant_name": null
+    },
+    {
+      "id": 6,
+      "description": "Laptop bag",
+      "category": "Bags",
+      "found_date": "2026-01-20",
+      "location": "Bus Terminal",
+      "claimed": 0,
+      "claimant_name": null
+    },
+    {
+      "id": 8,
+      "description": "Child rain jacket",
+      "category": "Clothing",
+      "found_date": "2026-01-22",
+      "location": "School Street",
+      "claimed": 0,
+      "claimant_name": null
+    },
+    {
+      "id": 9,
+      "description": "Glasses (reading)",
+      "category": "Accessories",
+      "found_date": "2026-01-23",
+      "location": "Hospital Lobby",
+      "claimed": 0,
+      "claimant_name": null
+    },
+    {
+      "id": 11,
+      "description": "iPad (cracked screen)",
+      "category": "Electronics",
+      "found_date": "2026-01-26",
+      "location": "Cafe Norte",
+      "claimed": 0,
+      "claimant_name": null
+    },
+    {
+      "id": 12,
+      "description": "Purple scarf",
+      "category": "Clothing",
+      "found_date": "2026-01-28",
+      "location": "Museum",
+      "claimed": 0,
+      "claimant_name": null
+    },
+    {
+      "id": 13,
+      "description": "House keys",
+      "category": "Keys",
+      "found_date": "2026-02-01",
+      "location": "Train Platform 3",
+      "claimed": 0,
+      "claimant_name": null
+    },
+    {
+      "id": 15,
+      "description": "Mountain bike",
+      "category": "Vehicles",
+      "found_date": "2026-02-03",
+      "location": "Riverside",
+      "claimed": 0,
+      "claimant_name": null
     }
   ],
   "order_sensitive": false,
@@ -155,7 +150,7 @@
     },
     {
       "content": "Try: SELECT * FROM items WHERE claimant_name IS NULL",
-      "code_snippet": "SELECT * FROM items WHERE claimant_name IS NULL",
+      "code_snippet": "SELECT * FROM ...",
       "tier": "partial_reveal"
     },
     {
