@@ -112,9 +112,14 @@ class PlayerDao extends DatabaseAccessor<AppDatabase> with _$PlayerDaoMixin {
   }
 
   String _rankForXp(int xp) {
+    if (xp >= 50000) return 'The Oracle';
+    if (xp >= 20000) return 'Master Architect';
     if (xp >= 10000) return 'Bureau Chief';
+    if (xp >= 7500) return 'Cyber Operative';
     if (xp >= 5000) return 'Senior Investigator';
-    if (xp >= 2000) return 'Field Detective';
+    if (xp >= 2500) return 'Query Specialist';
+    if (xp >= 1000) return 'Field Detective';
+    if (xp >= 500) return 'Data Sleuth';
     return 'Junior Analyst';
   }
 }

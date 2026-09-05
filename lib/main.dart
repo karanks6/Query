@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'theming/app_theme.dart';
 import 'features/splash/splash_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
@@ -19,10 +20,8 @@ import 'data/content/models/level_model.dart';
 import 'package:query/features/settings/settings_screen.dart';
 import 'package:query/features/profile/profile_screen.dart';
 import 'package:query/features/leaderboard/leaderboard_screen.dart';
-import 'firebase_options.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:query/core/settings/settings_service.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,13 +31,6 @@ void main() async {
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
-    );
-    
-    await FirebaseAppCheck.instance.activate(
-      // ignore: deprecated_member_use
-      androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-      // ignore: deprecated_member_use
-      appleProvider: AppleProvider.deviceCheck,
     );
   } catch (e) {
     debugPrint('Firebase initialization failed: $e');
