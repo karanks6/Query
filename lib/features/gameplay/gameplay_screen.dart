@@ -445,7 +445,7 @@ class _WorkspaceArea extends ConsumerWidget {
       child: state.queryMode == QueryMode.block
           ? BlockModeWorkspace(
               key: const ValueKey('block'),
-              schema: level.schema,
+              level: level,
               currentQuery: state.currentQuery,
               onQueryChanged: (q) =>
                   ref.read(gameplayProvider.notifier).updateQuery(q),

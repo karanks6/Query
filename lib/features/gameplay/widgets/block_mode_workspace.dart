@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../theming/tokens/game_tokens.dart';
-import '../../../core/sandbox_engine/level_schema.dart';
+import '../../../data/content/models/level_model.dart';
 
 /// Block Mode workspace (Section 3.1).
 ///
@@ -10,13 +10,13 @@ import '../../../core/sandbox_engine/level_schema.dart';
 /// Each block accepts typed values via inline text fields.
 /// Produces valid SQL string via [onQueryChanged].
 class BlockModeWorkspace extends StatefulWidget {
-  final LevelSchema schema;
+  final LevelModel level;
   final String currentQuery;
   final ValueChanged<String> onQueryChanged;
 
   const BlockModeWorkspace({
     super.key,
-    required this.schema,
+    required this.level,
     required this.currentQuery,
     required this.onQueryChanged,
   });
@@ -86,13 +86,31 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
   }
 
   void _triggerAssistMode() {
-    // Simple heuristic: suggest the next logical block that isn't present
-    if (!_blocks.any((b) => b.type == ClauseType.where)) {
-      _addBlock(ClauseType.where);
-    } else if (!_blocks.any((b) => b.type == ClauseType.groupBy)) {
-      _addBlock(ClauseType.groupBy);
-    } else if (!_blocks.any((b) => b.type == ClauseType.orderBy)) {
-      _addBlock(ClauseType.orderBy);
+    // Smart heuristic: suggest the next logical block required by the full solution
+    final hints = widget.level.hints;
+    if (hints.isEmpty) return;
+    
+    // Find the full solution snippet
+    final fullSolutionHint = hints.firstWhere(
+      (h) => h.tier == 'full_solution' || h.tier == '3',
+      orElse: () => hints.last,
+    );
+    final solutionSql = fullSolutionHint.codeSnippet?.toUpperCase() ?? '';
+
+    // Determine which clause blocks the solution actually uses
+    final requiredClauses = <ClauseType>[];
+    for (final type in ClauseType.values) {
+      if (solutionSql.contains(type.keyword)) {
+        requiredClauses.add(type);
+      }
+    }
+
+    // Add the first missing block
+    for (final type in requiredClauses) {
+      if (!_blocks.any((b) => b.type == type)) {
+        _addBlock(type);
+        return;
+      }
     }
   }
 
