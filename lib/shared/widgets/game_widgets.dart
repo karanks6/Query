@@ -188,12 +188,16 @@ class StarRow extends StatelessWidget {
   final int starCount;
   final bool showTimeMedal;
   final String? medalLabel;
+  final Color? filledColor;
+  final Color? unfilledColor;
 
   const StarRow({
     super.key,
     required this.starCount,
     this.showTimeMedal = false,
     this.medalLabel,
+    this.filledColor,
+    this.unfilledColor,
   });
 
   @override
@@ -207,8 +211,8 @@ class StarRow extends StatelessWidget {
             child: Icon(
               i < starCount ? Icons.star_rounded : Icons.star_border_rounded,
               color: i < starCount
-                  ? GameTokens.accent
-                  : GameTokens.surfaceHighlight,
+                  ? (filledColor ?? GameTokens.accent)
+                  : (unfilledColor ?? GameTokens.surfaceHighlight),
               size: 24,
             ),
           ),

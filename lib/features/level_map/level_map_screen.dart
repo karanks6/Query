@@ -277,7 +277,11 @@ class _LevelNode extends StatelessWidget {
             ),
             if (isCompleted) ...[
               const SizedBox(height: 2),
-              StarRow(starCount: stars),
+              StarRow(
+                starCount: stars,
+                filledColor: GameTokens.background,
+                unfilledColor: GameTokens.background.withOpacity(0.3),
+              ),
             ],
           ],
         ),
