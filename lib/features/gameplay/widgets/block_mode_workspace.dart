@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../theming/tokens/game_tokens.dart';
 import '../../../data/content/models/level_model.dart';
+import '../../../core/sandbox_engine/level_schema.dart';
 
 /// Block Mode workspace (Section 3.1).
 ///
@@ -161,7 +162,7 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
                 ...List.generate(_blocks.length, (i) {
                   return _ClauseBlockWidget(
                     block: _blocks[i],
-                    schema: widget.schema,
+                    schema: widget.level.schema,
                     onValueChanged: (v) => _updateBlockValue(i, v),
                     onRemove: _blocks[i].type.isRemovable
                         ? () => _removeBlock(i)
