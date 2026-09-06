@@ -345,7 +345,7 @@ class _StatsRow extends StatelessWidget {
                   initialChildSize: 0.9,
                   maxChildSize: 0.95,
                   minChildSize: 0.5,
-                  builder: (_, controller) => const RankProgressModal(),
+                  builder: (_, controller) => RankProgressModal(scrollController: controller),
                 ),
               );
             },

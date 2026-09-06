@@ -17,7 +17,7 @@ class StreakCalendarModal extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(GameTokens.spaceLg),
       decoration: const BoxDecoration(
-        color: GameTokens.panelBackground,
+        color: GameTokens.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: profileAsync.when(
@@ -83,7 +83,7 @@ class StreakCalendarModal extends ConsumerWidget {
               const SizedBox(height: GameTokens.spaceXl),
               Text(
                 'LAST 30 DAYS',
-                style: GameTokens.labelLarge,
+                style: GameTokens.labelLarge.copyWith(color: GameTokens.secondaryText),
               ),
               const SizedBox(height: GameTokens.spaceMd),
               
@@ -107,7 +107,7 @@ class StreakCalendarModal extends ConsumerWidget {
       padding: const EdgeInsets.all(GameTokens.spaceMd),
       decoration: BoxDecoration(
         color: GameTokens.background,
-        border: Border.all(color: GameTokens.border),
+        border: Border.all(color: GameTokens.surfaceHighlight),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -163,7 +163,7 @@ class StreakCalendarModal extends ConsumerWidget {
               border: Border.all(
                 color: isToday 
                     ? GameTokens.primaryText 
-                    : (isActive ? GameTokens.warning : GameTokens.border),
+                    : (isActive ? GameTokens.warning : GameTokens.surfaceHighlight),
                 width: isToday ? 2 : 1,
               ),
               borderRadius: BorderRadius.circular(4),
