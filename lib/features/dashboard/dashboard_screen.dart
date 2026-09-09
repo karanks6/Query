@@ -95,8 +95,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     const GameDivider(label: '// BUREAU TOOLS'),
                     const SizedBox(height: GameTokens.spaceMd),
 
-                    // Nav grid
-                    _NavGrid(context: context),
+                    // Bureau Tools List
+                    _BureauToolsList(context: context),
 
                     const SizedBox(height: GameTokens.spaceLg),
                   ]),
@@ -446,29 +446,21 @@ class _DailyChallengeCard extends StatelessWidget {
   }
 }
 
-class _NavGrid extends StatelessWidget {
+class _BureauToolsList extends StatelessWidget {
   final BuildContext context;
 
-  const _NavGrid({required this.context});
+  const _BureauToolsList({required this.context});
 
   @override
   Widget build(BuildContext context) {
     final items = [
-      _NavItem(Icons.map_outlined, 'WORLD MAP', '/world_select'),
-      _NavItem(Icons.code_outlined, 'SANDBOX', '/sandbox'),
-      _NavItem(Icons.emoji_events_outlined, 'ACHIEVEMENTS', '/achievements'),
-      _NavItem(Icons.leaderboard_outlined, 'LEADERBOARD', '/leaderboard'),
-      _NavItem(Icons.menu_book_outlined, 'SQL REFERENCE', '/reference'),
-      _NavItem(Icons.settings_outlined, 'SETTINGS', '/settings'),
+      _BureauToolItem(Icons.map_outlined, 'WORLD MAP', 'Access the global case map', '/world_select'),
+      _BureauToolItem(Icons.emoji_events_outlined, 'ACHIEVEMENTS', 'View unlocked commendations', '/achievements'),
+      _BureauToolItem(Icons.menu_book_outlined, 'SQL REFERENCE', 'Consult the query manual', '/reference'),
     ];
 
-    return GridView.extent(
-      maxCrossAxisExtent: 150,
-      crossAxisSpacing: GameTokens.spaceSm,
-      mainAxisSpacing: GameTokens.spaceSm,
-      childAspectRatio: 1.1,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: items
           .asMap()
           .entries
@@ -476,38 +468,64 @@ class _NavGrid extends StatelessWidget {
               .buildCard(context)
               .animate()
               .fadeIn(delay: (400 + e.key * 60).ms, duration: 300.ms)
-              .scale(begin: const Offset(0.9, 0.9)))
+              .slideX(begin: 0.1, end: 0))
           .toList(),
     );
   }
 }
 
-class _NavItem {
+class _BureauToolItem {
   final IconData icon;
-  final String label;
+  final String title;
+  final String description;
   final String route;
 
-  const _NavItem(this.icon, this.label, this.route);
+  const _BureauToolItem(this.icon, this.title, this.description, this.route);
 
   Widget buildCard(BuildContext context) {
-    return ActionButton(
-      onPressed: () => Navigator.of(context).pushNamed(route),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: GameTokens.accent, size: 24),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              style: GameTokens.bodySmall.copyWith(
-                fontSize: 9,
-                letterSpacing: 0.8,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: GameTokens.spaceMd),
+      child: ActionButton(
+        onPressed: () => Navigator.of(context).pushNamed(route),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(GameTokens.spaceMd),
+                decoration: BoxDecoration(
+                  color: GameTokens.accent.withValues(alpha: 0.1),
+                  borderRadius: GameTokens.borderRadiusSm,
+                  border: Border.all(color: GameTokens.accentDim, width: 1),
+                ),
+                child: Icon(icon, color: GameTokens.accent, size: 24),
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+              const SizedBox(width: GameTokens.spaceLg),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GameTokens.bodyMedium.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                        color: GameTokens.primaryText,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      description,
+                      style: GameTokens.bodySmall.copyWith(
+                        color: GameTokens.secondaryText,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: GameTokens.accentDim),
+            ],
+          ),
         ),
       ),
     );
