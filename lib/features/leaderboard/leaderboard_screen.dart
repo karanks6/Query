@@ -47,10 +47,13 @@ class LeaderboardScreen extends ConsumerWidget {
   }
 
   Widget _buildLeaderboardList(List<LeaderboardEntry> players) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(GameTokens.spaceLg),
-      itemCount: players.length,
-      itemBuilder: (context, index) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 600),
+        child: ListView.builder(
+          padding: const EdgeInsets.all(GameTokens.spaceLg),
+          itemCount: players.length,
+          itemBuilder: (context, index) {
                 final player = players[index];
                 final isTopThree = index < 3;
                 return Padding(
@@ -105,6 +108,8 @@ class LeaderboardScreen extends ConsumerWidget {
                   ).animate().fadeIn(delay: (50 + index * 30).ms, duration: 400.ms).slideX(begin: 0.1, end: 0),
                 );
               },
-            );
+            ),
+          ),
+        );
   }
 }
