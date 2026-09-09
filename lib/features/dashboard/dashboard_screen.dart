@@ -43,8 +43,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       backgroundColor: GameTokens.background,
       body: ParallaxBackground(
         child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: CustomScrollView(
+                slivers: [
               // Ã¢â€â‚¬Ã¢â€â‚¬ App bar Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
               SliverToBoxAdapter(
                 child: _DashboardAppBar(profileAsync: profileAsync),
@@ -103,7 +106,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
         ),
       ),
-    );
+    ),
+  ),
+);
   }
 
   void _navigateToCurrentWorld(BuildContext context, List<dynamic> worlds) {
@@ -281,7 +286,12 @@ class _StatsRow extends StatelessWidget {
                 context: context,
                 backgroundColor: Colors.transparent,
                 isScrollControlled: true,
-                builder: (context) => const StreakCalendarModal(),
+                builder: (context) => Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 500),
+                    child: const StreakCalendarModal(),
+                  ),
+                ),
               );
             },
             child: SlantedPanel(
@@ -341,11 +351,16 @@ class _StatsRow extends StatelessWidget {
                 context: context,
                 backgroundColor: Colors.transparent,
                 isScrollControlled: true,
-                builder: (context) => DraggableScrollableSheet(
-                  initialChildSize: 0.9,
-                  maxChildSize: 0.95,
-                  minChildSize: 0.5,
-                  builder: (_, controller) => RankProgressModal(scrollController: controller),
+                builder: (context) => Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 500),
+                    child: DraggableScrollableSheet(
+                      initialChildSize: 0.9,
+                      maxChildSize: 0.95,
+                      minChildSize: 0.5,
+                      builder: (_, controller) => RankProgressModal(scrollController: controller),
+                    ),
+                  ),
                 ),
               );
             },
@@ -447,8 +462,8 @@ class _NavGrid extends StatelessWidget {
       _NavItem(Icons.settings_outlined, 'SETTINGS', '/settings'),
     ];
 
-    return GridView.count(
-      crossAxisCount: 3,
+    return GridView.extent(
+      maxCrossAxisExtent: 150,
       crossAxisSpacing: GameTokens.spaceSm,
       mainAxisSpacing: GameTokens.spaceSm,
       childAspectRatio: 1.1,
