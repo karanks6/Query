@@ -97,90 +97,107 @@ class _SandboxScreenState extends State<SandboxScreen> {
             ? const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(GameTokens.accent)))
             : LayoutBuilder(
                 builder: (context, constraints) {
+                  final isDesktop = constraints.maxWidth > 720;
                   return SingleChildScrollView(
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
                         minHeight: constraints.maxHeight,
                       ),
                       child: IntrinsicHeight(
-                        child: Column(
-                          children: [
-                            // Info Banner
-                            SlantedPanel(
-                              padding: const EdgeInsets.all(GameTokens.spaceMd),
-                              child: SizedBox(
-                                width: double.infinity,
+                        child: Padding(
+                          padding: const EdgeInsets.all(GameTokens.spaceMd),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // Info Banner
+                              SlantedPanel(
+                                padding: const EdgeInsets.all(GameTokens.spaceMd),
                                 child: Text(
                                   'Memory instance active. Available tables: departments, employees, projects, assignments.',
                                   style: GameTokens.bodySmall.copyWith(color: GameTokens.accent),
                                 ),
                               ),
-                            ),
-                            
-                            // Editor
-                            Expanded(
-                              flex: 2,
-                              child: Padding(
-                                padding: const EdgeInsets.all(GameTokens.spaceMd),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: [
-                                    Expanded(
-                                      child: SlantedPanel(
-                                        padding: EdgeInsets.zero,
-                                        child: TextField(
-                                          controller: _queryController,
-                                          maxLines: null,
-                                          expands: true,
-                                          style: GameTokens.code.copyWith(
-                                            color: GameTokens.primaryText,
-                                            height: 1.5,
-                                          ),
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            contentPadding: const EdgeInsets.all(GameTokens.spaceMd),
-                                            hintText: 'Enter SQL query...',
-                                            hintStyle: GameTokens.bodyMedium.copyWith(color: GameTokens.secondaryText),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: GameTokens.spaceMd),
-                                    ActionButton(
-                                      isPrimary: true,
-                                      onPressed: _runQuery,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                              const SizedBox(height: GameTokens.spaceMd),
+                              
+                              // Main content area (split or stacked)
+                              Expanded(
+                                child: isDesktop
+                                    ? Row(
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
                                         children: [
-                                          const Icon(Icons.play_arrow, size: 16),
-                                          const SizedBox(width: GameTokens.spaceSm),
-                                          const Text('EXECUTE QUERY'),
+                                          Expanded(flex: 1, child: _buildEditor()),
+                                          const SizedBox(width: GameTokens.spaceMd),
+                                          Expanded(flex: 1, child: _buildResultsPanel()),
+                                        ],
+                                      )
+                                    : Column(
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        children: [
+                                          Expanded(flex: 2, child: _buildEditor()),
+                                          const SizedBox(height: GameTokens.spaceMd),
+                                          Expanded(flex: 3, child: _buildResultsPanel()),
                                         ],
                                       ),
-                                    ),
-                                  ],
-                                ),
                               ),
-                            ),
-                            
-                            // Results
-                            Expanded(
-                              flex: 3,
-                              child: SlantedPanel(
-                                padding: const EdgeInsets.all(GameTokens.spaceMd),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  child: _buildResultsArea(),
-                                ),
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   );
                 },
               ),
+      ),
+    );
+  }
+
+  Widget _buildEditor() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: SlantedPanel(
+            padding: EdgeInsets.zero,
+            child: TextField(
+              controller: _queryController,
+              maxLines: null,
+              expands: true,
+              style: GameTokens.code.copyWith(
+                color: GameTokens.primaryText,
+                height: 1.5,
+              ),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.all(GameTokens.spaceMd),
+                hintText: 'Enter SQL query...',
+                hintStyle: GameTokens.bodyMedium.copyWith(color: GameTokens.secondaryText),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: GameTokens.spaceMd),
+        ActionButton(
+          isPrimary: true,
+          onPressed: _runQuery,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.play_arrow, size: 16),
+              const SizedBox(width: GameTokens.spaceSm),
+              const Text('EXECUTE QUERY'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResultsPanel() {
+    return SlantedPanel(
+      padding: const EdgeInsets.all(GameTokens.spaceMd),
+      child: SizedBox(
+        width: double.infinity,
+        child: _buildResultsArea(),
       ),
     );
   }
