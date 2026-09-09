@@ -147,8 +147,11 @@ class _LevelGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1000),
+        child: CustomScrollView(
+          slivers: [
         // World narrative header
         SliverToBoxAdapter(
           child: Padding(
@@ -191,8 +194,8 @@ class _LevelGrid extends StatelessWidget {
             horizontal: GameTokens.spaceMd,
           ),
           sliver: SliverGrid(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 5,
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 80,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
               childAspectRatio: 0.9,
@@ -227,7 +230,9 @@ class _LevelGrid extends StatelessWidget {
           child: SizedBox(height: GameTokens.spaceXl),
         ),
       ],
-    );
+    ),
+  ),
+);
   }
 }
 
