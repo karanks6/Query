@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers.dart';
@@ -136,14 +137,50 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
 
 // Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ HUD Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
-class _GameplayHUD extends ConsumerWidget {
+class _GameplayHUD extends ConsumerStatefulWidget {
   final LevelModel level;
   final GameplayState state;
 
   const _GameplayHUD({required this.level, required this.state});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_GameplayHUD> createState() => _GameplayHUDState();
+}
+
+class _GameplayHUDState extends ConsumerState<_GameplayHUD> {
+  Timer? _ticker;
+  Duration _elapsed = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      final startTime = widget.state.levelStartTime;
+      if (startTime != null && !widget.state.levelCompleted) {
+        setState(() {
+          _elapsed = DateTime.now().difference(startTime);
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
+
+  String _formatDuration(Duration d) {
+    final mm = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final ss = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$mm:$ss';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = widget.state;
+    final level = widget.level;
     return Container(
       height: 48,
       padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceSm),
@@ -172,14 +209,39 @@ class _GameplayHUD extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  level.title,
-                  style: GameTokens.bodySmall.copyWith(
-                    color: GameTokens.accent,
-                    fontSize: 10,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        level.title,
+                        style: GameTokens.bodySmall.copyWith(
+                          color: GameTokens.accent,
+                          fontSize: 10,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (state.isDailyChallenge) ...[  
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: GameTokens.warning.withValues(alpha: 0.2),
+                          borderRadius: GameTokens.borderRadiusSm,
+                          border: Border.all(color: GameTokens.warning, width: 1),
+                        ),
+                        child: Text(
+                          '2× XP',
+                          style: GameTokens.bodySmall.copyWith(
+                            color: GameTokens.warning,
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 if (level.type == LevelType.debugging)
                   Text(
@@ -209,8 +271,8 @@ class _GameplayHUD extends ConsumerWidget {
 
           const SizedBox(width: GameTokens.spaceSm),
 
-          // Star preview
-          if (level.type.hasStarRating) StarRow(starCount: 0),
+          // Star preview (best earned so far for this level)
+          if (level.type.hasStarRating) StarRow(starCount: state.existingStars),
 
           // Attempts indicator
           const SizedBox(width: GameTokens.spaceSm),
@@ -221,13 +283,13 @@ class _GameplayHUD extends ConsumerWidget {
               fontSize: 10,
             ),
           ),
-          
-          // Speed Timer (Mock)
+
+          // Live elapsed timer
           const SizedBox(width: GameTokens.spaceSm),
           Icon(Icons.timer_outlined, color: GameTokens.accent, size: 12),
           const SizedBox(width: 2),
           Text(
-            '00:00',
+            _formatDuration(_elapsed),
             style: GameTokens.codeSmall.copyWith(
               color: GameTokens.accent,
               fontSize: 10,
@@ -558,7 +620,8 @@ class _ActionBar extends ConsumerWidget {
         hints: level.hints,
         highestUsed: state.highestHintUsed,
         attemptCount: state.attemptCount,
-        onHintUsed: (HintTier tier) => ref.read(gameplayProvider.notifier).useHint(tier),
+        onHintUsed: (HintTier tier) async =>
+            await ref.read(gameplayProvider.notifier).useHint(tier),
       ),
     );
   }
