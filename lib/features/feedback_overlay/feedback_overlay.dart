@@ -63,6 +63,7 @@ class FeedbackOverlay extends StatelessWidget {
                   report: report,
                   sandboxError: sandboxError,
                   isSuccess: isSuccess,
+                  score: score,
                 ),
 
                 // Common mistake explainer
@@ -152,12 +153,34 @@ class _FeedbackMessage extends StatelessWidget {
   final QueryValidationReport? report;
   final SandboxException? sandboxError;
   final bool isSuccess;
+  final LevelScore? score;
 
   const _FeedbackMessage({
     this.report,
     this.sandboxError,
     required this.isSuccess,
+    this.score,
   });
+
+  static const _successMessages = [
+    'Your query returned the correct result. Well done, Agent.',
+    'Case closed. Impeccable work, Detective.',
+    'Query executed flawlessly. The Bureau is impressed.',
+    'Target data extracted. Another case in the books.',
+    'Textbook execution. The Archive is updated.',
+  ];
+
+  static const _successMessages3Stars = [
+    'Perfect execution. You\'re a senior analyst in the making.',
+    'Flawless. Not a single clause out of place.',
+    'Outstanding. You handled that like a field veteran.',
+  ];
+
+  static const _successMessagesHint = [
+    'Case closed — but your methods raised some eyebrows at the Bureau.',
+    'Query solved, though the hint logs will be reviewed.',
+    'Result correct. The full solution hint won\'t appear in your official record.',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +192,14 @@ class _FeedbackMessage extends StatelessWidget {
     } else if (report == null) {
       message = 'No result yet.';
     } else if (isSuccess) {
-      message = 'Your query returned the correct result. Well done, Agent.';
+      final hintUsed = score?.hintCapApplied ?? false;
+      final perfect = (score?.starCount ?? 0) == 3;
+      final pool = perfect && !hintUsed
+          ? _successMessages3Stars
+          : hintUsed
+              ? _successMessagesHint
+              : _successMessages;
+      message = pool[(pool.length * DateTime.now().millisecond ~/ 1000).clamp(0, pool.length - 1)];
       if (report!.efficiencyScore != null) {
         final pct = (report!.efficiencyScore! * 100).toStringAsFixed(0);
         message += '\nEfficiency: $pct%';
@@ -184,29 +214,89 @@ class _FeedbackMessage extends StatelessWidget {
       message = report!.resultDiff!.plainEnglishSummary;
     }
 
-    return SlantedPanel(
-      borderColorOverride: isSuccess ? GameTokens.success : GameTokens.error,
-      colorOverride: isSuccess ? GameTokens.successSurface : GameTokens.errorSurface,
-      padding: const EdgeInsets.all(GameTokens.spaceMd),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '> ',
-            style: GameTokens.code.copyWith(
-              color: isSuccess
-                  ? GameTokens.success
-                  : GameTokens.error,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SlantedPanel(
+          borderColorOverride: isSuccess ? GameTokens.success : GameTokens.error,
+          colorOverride: isSuccess ? GameTokens.successSurface : GameTokens.errorSurface,
+          padding: const EdgeInsets.all(GameTokens.spaceMd),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '> ',
+                style: GameTokens.code.copyWith(
+                  color: isSuccess ? GameTokens.success : GameTokens.error,
+                ),
+              ),
+              Expanded(
+                child: Text(message, style: GameTokens.bodyMedium),
+              ),
+            ],
           ),
-          Expanded(
-            child: Text(
-              message,
-              style: GameTokens.bodyMedium,
-            ),
+        ),
+
+        // Side-by-side diff view on failure
+        if (!isSuccess && report?.resultDiff != null && report!.resultDiff!.missingRows.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: GameTokens.spaceMd),
+            child: _DiffTable(diff: report!.resultDiff!),
           ),
-        ],
-      ),
+      ],
+    );
+  }
+}
+
+class _DiffTable extends StatelessWidget {
+  final ResultDiff diff;
+  const _DiffTable({required this.diff});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('EXPECTED RESULT', style: GameTokens.bodySmall.copyWith(
+          color: GameTokens.secondaryText,
+          letterSpacing: 1.5,
+        )),
+        const SizedBox(height: GameTokens.spaceSm),
+        SlantedPanel(
+          borderColorOverride: GameTokens.info,
+          colorOverride: GameTokens.surfaceVariant,
+          padding: EdgeInsets.zero,
+          child: diff.missingRows.isEmpty
+              ? const Padding(
+                  padding: EdgeInsets.all(GameTokens.spaceMd),
+                  child: Text('(no missing rows)', style: TextStyle(color: GameTokens.secondaryText)),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    headingRowHeight: 28,
+                    dataRowMinHeight: 24,
+                    dataRowMaxHeight: 32,
+                    headingTextStyle: GameTokens.codeSmall.copyWith(
+                      color: GameTokens.info,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                    ),
+                    dataTextStyle: GameTokens.codeSmall.copyWith(fontSize: 11),
+                    dividerThickness: 0.5,
+                    columns: diff.missingRows.first.keys
+                        .map((col) => DataColumn(label: Text(col)))
+                        .toList(),
+                    rows: diff.missingRows.map((row) => DataRow(
+                      color: WidgetStateProperty.all(GameTokens.info.withValues(alpha: 0.08)),
+                      cells: row.values.map((val) => DataCell(
+                        Text(val?.toString() ?? 'NULL'),
+                      )).toList(),
+                    )).toList(),
+                  ),
+                ),
+        ),
+      ],
     );
   }
 }
@@ -283,18 +373,37 @@ class _StarBreakdown extends StatelessWidget {
         _StarItem('Optimal Query', score.optimalStar),
         _StarItem('First Attempt', score.firstAttemptStar),
         const SizedBox(height: 4),
-        Text(
-          '+${score.xpEarned} XP earned',
-          style: GameTokens.bodySmall.copyWith(
-            color: GameTokens.accent,
-          ),
+        Row(
+          children: [
+            Text(
+              '+${score.xpEarned} XP earned',
+              style: GameTokens.bodySmall.copyWith(color: GameTokens.accent),
+            ),
+            if (score.dailyBonusApplied) ...[  
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: GameTokens.warning.withValues(alpha: 0.15),
+                  borderRadius: GameTokens.borderRadiusSm,
+                  border: Border.all(color: GameTokens.warning, width: 1),
+                ),
+                child: Text(
+                  'DAILY 2× BONUS',
+                  style: GameTokens.bodySmall.copyWith(
+                    color: GameTokens.warning,
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
         if (score.hintCapApplied)
           Text(
             '(Full solution hint used — capped at 1 star)',
-            style: GameTokens.bodySmall.copyWith(
-              color: GameTokens.warning,
-            ),
+            style: GameTokens.bodySmall.copyWith(color: GameTokens.warning),
           ),
       ],
     ).animate().fadeIn(duration: 600.ms);
