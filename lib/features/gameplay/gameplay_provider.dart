@@ -26,6 +26,9 @@ class GameplayState {
   final DateTime? levelStartTime;
   final bool showFeedback;
   final bool schemaExpanded;
+  final int existingStars;        // Stars earned on a previous attempt
+  final bool isDailyChallenge;    // Whether 2× XP multiplier applies
+  final String? hintError;        // Set when IP balance is too low
 
   const GameplayState({
     this.level,
@@ -41,6 +44,9 @@ class GameplayState {
     this.levelStartTime,
     this.showFeedback = false,
     this.schemaExpanded = true,
+    this.existingStars = 0,
+    this.isDailyChallenge = false,
+    this.hintError,
   });
 
   bool get isFirstAttempt => attemptCount == 0;
@@ -59,8 +65,12 @@ class GameplayState {
     DateTime? levelStartTime,
     bool? showFeedback,
     bool? schemaExpanded,
+    int? existingStars,
+    bool? isDailyChallenge,
+    String? hintError,
     bool clearSandboxError = false,
     bool clearReport = false,
+    bool clearHintError = false,
   }) {
     return GameplayState(
       level: level ?? this.level,
@@ -76,6 +86,9 @@ class GameplayState {
       levelStartTime: levelStartTime ?? this.levelStartTime,
       showFeedback: showFeedback ?? this.showFeedback,
       schemaExpanded: schemaExpanded ?? this.schemaExpanded,
+      existingStars: existingStars ?? this.existingStars,
+      isDailyChallenge: isDailyChallenge ?? this.isDailyChallenge,
+      hintError: clearHintError ? null : (hintError ?? this.hintError),
     );
   }
 }
@@ -93,14 +106,27 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
         super(const GameplayState());
 
   /// Called when entering a level.
-  void loadLevel(LevelModel level) {
+  void loadLevel(LevelModel level, {bool isDailyChallenge = false}) {
+    // Load existing completion stars asynchronously
+    _loadExistingStars(level.id);
     state = GameplayState(
       level: level,
       queryMode: level.type.requiresCodeMode ? QueryMode.code : QueryMode.block,
       currentQuery: level.brokenQuery ?? '',
       levelStartTime: DateTime.now(),
       schemaExpanded: true,
+      isDailyChallenge: isDailyChallenge,
     );
+  }
+
+  Future<void> _loadExistingStars(String levelId) async {
+    try {
+      final progressDao = _ref.read(progressDaoProvider);
+      final completion = await progressDao.getLevelCompletion(levelId);
+      if (completion != null && mounted) {
+        state = state.copyWith(existingStars: completion.starsEarned);
+      }
+    } catch (_) {}
   }
 
   void updateQuery(String query) {
@@ -201,6 +227,7 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
       timingThresholds: level.timingThresholds,
       baseXpReward: level.xpReward,
       performanceActive: level.performanceActive,
+      dailyMultiplier: state.isDailyChallenge ? 2.0 : 1.0,
     );
 
     // Persist completion
@@ -211,27 +238,37 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
       durationMs: durationMs,
     );
 
-    // Award XP
+    // Award XP and Insight Points
     final playerDao = _ref.read(playerDaoProvider);
     await playerDao.addXp(score.xpEarned);
     await playerDao.earnInsightPoints(score.xpEarned ~/ 5);
 
-    // Check world unlock and achievements
+    // Check world unlock
     await progressDao.checkAndUnlockNextWorld(level.worldId);
     final currentWorldProg = await progressDao.getWorldProgress(level.worldId);
-    
+
+    // Achievement engine
     final achievementsDao = _ref.read(achievementsDaoProvider);
     await achievementsDao.awardAchievement('first_query');
-    
+
     if (level.performanceActive && (report.efficiencyScore ?? 0.0) >= 1.0) {
       await achievementsDao.awardAchievement('perfect_optimization');
     }
-    
-    if (currentWorldProg != null && currentWorldProg.levelsCompleted >= currentWorldProg.totalLevels) {
-      if (level.worldId == 'world_01') await achievementsDao.awardAchievement('world_1_complete');
-      if (level.worldId == 'world_02') await achievementsDao.awardAchievement('world_2_complete');
-      if (level.worldId == 'world_03') await achievementsDao.awardAchievement('world_3_complete');
-      if (level.worldId == 'world_04') await achievementsDao.awardAchievement('world_4_complete');
+    if (score.starCount == 3) {
+      await achievementsDao.awardAchievement('three_stars');
+    }
+    if (state.highestHintUsed == HintTier.none) {
+      await achievementsDao.awardAchievement('no_hints');
+    }
+    if (score.timeMedal == TimeMedal.gold) {
+      await achievementsDao.awardAchievement('speedrun');
+    }
+    if (attemptCount >= 5) {
+      await achievementsDao.awardAchievement('comeback');
+    }
+    if (currentWorldProg != null &&
+        currentWorldProg.levelsCompleted >= currentWorldProg.totalLevels) {
+      await achievementsDao.awardAchievement('${level.worldId}_complete');
     }
 
     state = state.copyWith(
@@ -240,10 +277,29 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
     );
   }
 
-  void useHint(HintTier tier) {
-    if (tier.index > state.highestHintUsed.index) {
-      state = state.copyWith(highestHintUsed: tier);
+  /// Attempts to use a hint. Deducts Insight Points (free after 3 failures).
+  /// Returns false if the player cannot afford the hint.
+  Future<bool> useHint(HintTier tier) async {
+    final isGrace = state.attemptCount >= 3 && tier == HintTier.nudge;
+    if (!isGrace) {
+      final playerDao = _ref.read(playerDaoProvider);
+      final success = await playerDao.spendInsightPoints(tier.cost);
+      if (!success) {
+        state = state.copyWith(
+          hintError: 'Not enough Insight Points. You need ${tier.cost} IP.',
+        );
+        return false;
+      }
     }
+    state = state.copyWith(
+      highestHintUsed: tier.index > state.highestHintUsed.index ? tier : null,
+      clearHintError: true,
+    );
+    return true;
+  }
+
+  void clearHintError() {
+    state = state.copyWith(clearHintError: true);
   }
 
   HintTier _mapHintTier(HintTier tier) => tier;

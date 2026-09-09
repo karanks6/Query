@@ -16,7 +16,7 @@ class HintsModal extends StatefulWidget {
   final List<HintModel> hints;
   final HintTier highestUsed;
   final int attemptCount;
-  final ValueChanged<HintTier> onHintUsed;
+  final Future<bool> Function(HintTier) onHintUsed;
 
   const HintsModal({
     super.key,
@@ -56,11 +56,20 @@ class _HintsModalState extends State<HintsModal> {
     }
   }
 
-  void _revealHint(HintTierType tier, HintModel hint) {
-    setState(() => _revealedTier = _hintTierFromType(tier));
-
-    // Notify parent (for scoring / insight point tracking)
-    widget.onHintUsed(_hintTierFromType(tier));
+  void _revealHint(HintTierType tier, HintModel hint) async {
+    final hintTier = _hintTierFromType(tier);
+    final success = await widget.onHintUsed(hintTier);
+    if (success && mounted) {
+      setState(() => _revealedTier = hintTier);
+    } else if (!success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Not enough Insight Points to reveal this hint.'),
+          backgroundColor: Color(0xFF3A1A1A),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   HintTier _hintTierFromType(HintTierType type) {

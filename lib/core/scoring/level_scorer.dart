@@ -22,6 +22,7 @@ class LevelScorer {
     required LevelTimingThresholds? timingThresholds,
     required int baseXpReward,
     required bool performanceActive,
+    double dailyMultiplier = 1.0,
   }) {
     // Full solution hint caps at 1 star
     final hintCapApplied = highestHintUsed == HintTier.fullSolution;
@@ -49,6 +50,11 @@ class LevelScorer {
       }
     }
 
+    // Apply daily challenge multiplier (2× = double XP)
+    if (dailyMultiplier > 1.0) {
+      xpEarned = (xpEarned * dailyMultiplier).round();
+    }
+
     return LevelScore(
       completionStar: completionStar,
       optimalStar: optimalStar,
@@ -57,6 +63,7 @@ class LevelScorer {
       timeMedal: timeMedal,
       xpEarned: xpEarned,
       hintCapApplied: hintCapApplied,
+      dailyBonusApplied: dailyMultiplier > 1.0,
     );
   }
 
@@ -76,6 +83,7 @@ class LevelScore {
   final TimeMedal? timeMedal;
   final int xpEarned;
   final bool hintCapApplied;
+  final bool dailyBonusApplied;
 
   const LevelScore({
     required this.completionStar,
@@ -85,6 +93,7 @@ class LevelScore {
     this.timeMedal,
     required this.xpEarned,
     required this.hintCapApplied,
+    this.dailyBonusApplied = false,
   });
 
   bool get isPerfect => starCount == 3;
