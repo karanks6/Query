@@ -87,31 +87,59 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
   }
 
   void _triggerAssistMode() {
-    // Smart heuristic: suggest the next logical block required by the full solution
     final hints = widget.level.hints;
     if (hints.isEmpty) return;
-    
-    // Find the full solution snippet
-    final fullSolutionHint = hints.firstWhere(
-      (h) => h.tier == 'full_solution' || h.tier == '3',
-      orElse: () => hints.last,
-    );
-    final solutionSql = fullSolutionHint.codeSnippet?.toUpperCase() ?? '';
+
+    // Find the full solution hint using proper enum comparison
+    HintModel? fullSolutionHint;
+    try {
+      fullSolutionHint = hints.firstWhere(
+        (h) => h.tier == HintTierType.fullSolution,
+      );
+    } catch (_) {
+      fullSolutionHint = hints.isNotEmpty ? hints.last : null;
+    }
+    if (fullSolutionHint == null) return;
+
+    final solutionSql = (fullSolutionHint.codeSnippet ?? '').toUpperCase();
+    if (solutionSql.isEmpty) return;
 
     // Determine which clause blocks the solution actually uses
-    final requiredClauses = <ClauseType>[];
     for (final type in ClauseType.values) {
-      if (solutionSql.contains(type.keyword)) {
-        requiredClauses.add(type);
+      if (solutionSql.contains(type.keyword) &&
+          !_blocks.any((b) => b.type == type)) {
+        _addBlock(type);
+        // Notify the user which block was added
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Assist: Added "${type.keyword}" block — your query needs this clause.',
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: const Color(0xFF1A2435),
+              duration: const Duration(seconds: 3),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+        return;
       }
     }
 
-    // Add the first missing block
-    for (final type in requiredClauses) {
-      if (!_blocks.any((b) => b.type == type)) {
-        _addBlock(type);
-        return;
-      }
+    // All required blocks are already present — give a message
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Assist: All required clauses are in place. Check the values in each block.',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Color(0xFF1A2435),
+          duration: Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
   }
 
@@ -335,10 +363,16 @@ class _ClauseBlockWidgetState extends State<_ClauseBlockWidget> {
               onChanged: widget.onValueChanged,
               style: GameTokens.code.copyWith(fontSize: 13),
               cursorColor: GameTokens.accent,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 isDense: true,
+                hintText: widget.block.type.placeholder,
+                hintStyle: GameTokens.code.copyWith(
+                  fontSize: 13,
+                  color: GameTokens.hintText,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
             ),
           ),
@@ -384,6 +418,27 @@ enum ClauseType {
 
   bool get isRemovable =>
       this != ClauseType.select && this != ClauseType.from;
+
+  String get placeholder {
+    switch (this) {
+      case ClauseType.select:
+        return 'e.g.  name, salary';
+      case ClauseType.from:
+        return 'e.g.  employees';
+      case ClauseType.join:
+        return 'e.g.  departments ON employees.dept_id = departments.id';
+      case ClauseType.where:
+        return 'e.g.  salary > 50000';
+      case ClauseType.groupBy:
+        return 'e.g.  department';
+      case ClauseType.having:
+        return 'e.g.  COUNT(*) > 5';
+      case ClauseType.orderBy:
+        return 'e.g.  name ASC';
+      case ClauseType.limit:
+        return 'e.g.  10';
+    }
+  }
 
   Color get color {
     switch (this) {
