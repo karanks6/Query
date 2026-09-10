@@ -29,6 +29,7 @@ class GameplayState {
   final int existingStars;        // Stars earned on a previous attempt
   final bool isDailyChallenge;    // Whether 2× XP multiplier applies
   final String? hintError;        // Set when IP balance is too low
+  final List<String> newlyEarnedAchievements; // IDs earned this session
 
   const GameplayState({
     this.level,
@@ -47,6 +48,7 @@ class GameplayState {
     this.existingStars = 0,
     this.isDailyChallenge = false,
     this.hintError,
+    this.newlyEarnedAchievements = const [],
   });
 
   bool get isFirstAttempt => attemptCount == 0;
@@ -68,6 +70,7 @@ class GameplayState {
     int? existingStars,
     bool? isDailyChallenge,
     String? hintError,
+    List<String>? newlyEarnedAchievements,
     bool clearSandboxError = false,
     bool clearReport = false,
     bool clearHintError = false,
@@ -89,6 +92,8 @@ class GameplayState {
       existingStars: existingStars ?? this.existingStars,
       isDailyChallenge: isDailyChallenge ?? this.isDailyChallenge,
       hintError: clearHintError ? null : (hintError ?? this.hintError),
+      newlyEarnedAchievements:
+          newlyEarnedAchievements ?? this.newlyEarnedAchievements,
     );
   }
 }
@@ -247,33 +252,42 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
     await progressDao.checkAndUnlockNextWorld(level.worldId);
     final currentWorldProg = await progressDao.getWorldProgress(level.worldId);
 
-    // Achievement engine
+    // Achievement engine — collect newly unlocked IDs
     final achievementsDao = _ref.read(achievementsDaoProvider);
-    await achievementsDao.awardAchievement('first_query');
+    final newAchievements = <String>[];
+
+    Future<void> maybeAward(String id) async {
+      final hadBefore = await achievementsDao.hasAchievement(id);
+      await achievementsDao.awardAchievement(id);
+      if (!hadBefore) newAchievements.add(id);
+    }
+
+    await maybeAward('first_query');
 
     if (level.performanceActive && (report.efficiencyScore ?? 0.0) >= 1.0) {
-      await achievementsDao.awardAchievement('perfect_optimization');
+      await maybeAward('perfect_optimization');
     }
     if (score.starCount == 3) {
-      await achievementsDao.awardAchievement('three_stars');
+      await maybeAward('three_stars');
     }
     if (state.highestHintUsed == HintTier.none) {
-      await achievementsDao.awardAchievement('no_hints');
+      await maybeAward('no_hints');
     }
     if (score.timeMedal == TimeMedal.gold) {
-      await achievementsDao.awardAchievement('speedrun');
+      await maybeAward('speedrun');
     }
     if (attemptCount >= 5) {
-      await achievementsDao.awardAchievement('comeback');
+      await maybeAward('comeback');
     }
     if (currentWorldProg != null &&
         currentWorldProg.levelsCompleted >= currentWorldProg.totalLevels) {
-      await achievementsDao.awardAchievement('${level.worldId}_complete');
+      await maybeAward('${level.worldId}_complete');
     }
 
     state = state.copyWith(
       levelCompleted: true,
       levelScore: score,
+      newlyEarnedAchievements: newAchievements,
     );
   }
 
