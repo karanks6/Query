@@ -46,8 +46,15 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
     super.initState();
     // Load level into gameplay notifier
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(gameplayProvider.notifier).loadLevel(widget.level);
-      
+      // Check if we were launched from the daily challenge route
+      final route = ModalRoute.of(context);
+      final isDailyChallenge =
+          route?.settings.name == '/daily_challenge_gameplay';
+      ref.read(gameplayProvider.notifier).loadLevel(
+            widget.level,
+            isDailyChallenge: isDailyChallenge,
+          );
+
       if (widget.level.type == LevelType.tutorial || widget.level.levelNumber == 1) {
         showDialog(
           context: context,

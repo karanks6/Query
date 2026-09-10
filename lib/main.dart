@@ -79,6 +79,7 @@ class QueryApp extends ConsumerWidget {
             final worldId = settings.arguments as String? ?? 'world_01';
             return _fadeRoute(LevelMapScreen(worldId: worldId), settings);
           case '/gameplay':
+          case '/daily_challenge_gameplay':
             final level = settings.arguments as LevelModel;
             return _slideRoute(GameplayScreen(level: level), settings);
           case '/world_select':

@@ -130,7 +130,10 @@ class _DailyChallengeScreenState extends ConsumerState<DailyChallengeScreen> {
                               isPrimary: true,
                               child: const Text('START CHALLENGE'),
                               onPressed: () {
-                                Navigator.of(context).pushNamed('/gameplay', arguments: _todayChallenge);
+                                Navigator.of(context).pushNamed(
+                                  '/daily_challenge_gameplay',
+                                  arguments: _todayChallenge,
+                                );
                               },
                             ),
                           ],
