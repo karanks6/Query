@@ -30,6 +30,9 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
   // Active clause blocks in order
   final List<ClauseBlock> _blocks = [];
 
+  // True when this is a guided tutorial level (guidedAnswer is set)
+  bool get _isGuided => widget.level.guidedAnswer?.isNotEmpty ?? false;
+
   // Available clause blocks to drag in
   static const _availableClauses = [
     ClauseType.select,
@@ -45,12 +48,54 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
   @override
   void initState() {
     super.initState();
-    // Start with SELECT and FROM pre-placed (tutorial default)
-    _blocks.add(ClauseBlock(type: ClauseType.select, value: ''));
-    _blocks.add(ClauseBlock(type: ClauseType.from, value: ''));
+    if (_isGuided) {
+      _initGuidedBlocks();
+    } else {
+      // Standard: start with SELECT and FROM pre-placed
+      _blocks.add(ClauseBlock(type: ClauseType.select, value: ''));
+      _blocks.add(ClauseBlock(type: ClauseType.from, value: ''));
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _rebuildQuery();
     });
+  }
+
+  /// Parses the guidedAnswer SQL and pre-fills blocks.
+  /// Blocks that are present in the answer get value from guidedAnswer (locked).
+  /// Blocks where the value should be filled by the player stay empty.
+  void _initGuidedBlocks() {
+    final sql = widget.level.guidedAnswer!.trim();
+    for (final type in ClauseType.values) {
+      final kw = type.keyword;
+      final upperSql = sql.toUpperCase();
+      if (upperSql.contains(kw)) {
+        // Extract value after this keyword up to the next keyword
+        final kwIdx = upperSql.indexOf(kw);
+        final start = kwIdx + kw.length;
+        int end = upperSql.length;
+        for (final other in ClauseType.values) {
+          if (other == type) continue;
+          final otherIdx = upperSql.indexOf(other.keyword, start);
+          if (otherIdx != -1 && otherIdx < end) end = otherIdx;
+        }
+        final rawValue = sql.substring(start, end).trim();
+        // Mark with a placeholder sentinel '___' for player-fill slots
+        final isPlayerFill = rawValue == '___' || rawValue.isEmpty;
+        _blocks.add(ClauseBlock(
+          type: type,
+          value: isPlayerFill ? '' : rawValue,
+          isGuided: !isPlayerFill,
+        ));
+      }
+    }
+    _sortBlocks();
+    // Ensure SELECT and FROM are always present
+    if (!_blocks.any((b) => b.type == ClauseType.select)) {
+      _blocks.insert(0, ClauseBlock(type: ClauseType.select, value: ''));
+    }
+    if (!_blocks.any((b) => b.type == ClauseType.from)) {
+      _blocks.insert(1, ClauseBlock(type: ClauseType.from, value: ''));
+    }
   }
 
   void _addBlock(ClauseType type) {
@@ -186,15 +231,49 @@ class _BlockModeWorkspaceState extends State<BlockModeWorkspace> {
                 ),
                 const SizedBox(height: GameTokens.spaceSm),
 
+                // Guided tutorial banner
+                if (_isGuided)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: GameTokens.spaceSm),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: GameTokens.spaceSm,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: GameTokens.accent.withValues(alpha: 0.1),
+                      borderRadius: GameTokens.borderRadiusSm,
+                      border: Border.all(
+                        color: GameTokens.accent.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.school_outlined,
+                            color: GameTokens.accent, size: 12),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            'GUIDED MODE — Fill in the highlighted blocks to complete the query.',
+                            style: GameTokens.bodySmall.copyWith(
+                              color: GameTokens.accent,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                 // Blocks
                 ...List.generate(_blocks.length, (i) {
                   return _ClauseBlockWidget(
                     block: _blocks[i],
                     schema: widget.level.schema,
                     onValueChanged: (v) => _updateBlockValue(i, v),
-                    onRemove: _blocks[i].type.isRemovable
-                        ? () => _removeBlock(i)
-                        : null,
+                    onRemove: (!_blocks[i].type.isRemovable || _blocks[i].isGuided)
+                        ? null
+                        : () => _removeBlock(i),
+                    isGuided: _isGuided,
                   );
                 }),
 
@@ -287,12 +366,14 @@ class _ClauseBlockWidget extends StatefulWidget {
   final LevelSchema schema;
   final ValueChanged<String> onValueChanged;
   final VoidCallback? onRemove;
+  final bool isGuided;
 
   const _ClauseBlockWidget({
     required this.block,
     required this.schema,
     required this.onValueChanged,
     this.onRemove,
+    this.isGuided = false,
   });
 
   @override
@@ -325,60 +406,103 @@ class _ClauseBlockWidgetState extends State<_ClauseBlockWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final isLockedGuided = widget.isGuided && widget.block.isGuided;
+    final isPlayerFill = widget.isGuided && !widget.block.isGuided;
+    final borderColor = isPlayerFill
+        ? GameTokens.warning
+        : widget.block.type.color;
+    final bgColor = isPlayerFill
+        ? GameTokens.warning.withValues(alpha: 0.08)
+        : GameTokens.surfaceVariant;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       decoration: BoxDecoration(
-        color: GameTokens.surfaceVariant,
+        color: bgColor,
         borderRadius: GameTokens.borderRadiusSm,
-        border: Border.all(color: widget.block.type.color, width: 1),
+        border: Border.all(
+          color: borderColor,
+          width: isPlayerFill ? 1.5 : 1,
+        ),
       ),
       child: Row(
         children: [
           // Keyword badge
           Container(
             width: 84,
-            padding: const EdgeInsets.symmetric(
-                horizontal: 8, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
             decoration: BoxDecoration(
               color: widget.block.type.color.withValues(alpha: 0.15),
-              border: Border(right: BorderSide(color: widget.block.type.color, width: 1)),
+              border: Border(right: BorderSide(color: borderColor, width: 1)),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(2),
                 bottomLeft: Radius.circular(2),
               ),
             ),
-            child: Text(
-              widget.block.type.keyword,
-              style: GameTokens.codeSmall.copyWith(
-                color: widget.block.type.color,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Row(
+              children: [
+                Text(
+                  widget.block.type.keyword,
+                  style: GameTokens.codeSmall.copyWith(
+                    color: widget.block.type.color,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (isLockedGuided) ...[  
+                  const SizedBox(width: 4),
+                  const Icon(Icons.lock_outline,
+                      color: GameTokens.secondaryText, size: 10),
+                ],
+                if (isPlayerFill) ...[  
+                  const SizedBox(width: 4),
+                  const Icon(Icons.edit_outlined,
+                      color: GameTokens.warning, size: 10),
+                ],
+              ],
             ),
           ),
 
           // Value field
           Expanded(
-            child: TextField(
-              controller: _controller,
-              onChanged: widget.onValueChanged,
-              style: GameTokens.code.copyWith(fontSize: 13),
-              cursorColor: GameTokens.accent,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                isDense: true,
-                hintText: widget.block.type.placeholder,
-                hintStyle: GameTokens.code.copyWith(
-                  fontSize: 13,
-                  color: GameTokens.hintText,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
+            child: isLockedGuided
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
+                    child: Text(
+                      widget.block.value,
+                      style: GameTokens.code.copyWith(
+                        fontSize: 13,
+                        color: GameTokens.secondaryText,
+                      ),
+                    ),
+                  )
+                : TextField(
+                    controller: _controller,
+                    onChanged: widget.onValueChanged,
+                    style: GameTokens.code.copyWith(fontSize: 13),
+                    cursorColor:
+                        isPlayerFill ? GameTokens.warning : GameTokens.accent,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
+                      isDense: true,
+                      hintText: isPlayerFill
+                          ? 'Fill this in…'
+                          : widget.block.type.placeholder,
+                      hintStyle: GameTokens.code.copyWith(
+                        fontSize: 13,
+                        color: isPlayerFill
+                            ? GameTokens.warning.withValues(alpha: 0.6)
+                            : GameTokens.hintText,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
           ),
 
-          // Remove button
-          if (widget.onRemove != null)
+          // Remove button (only for non-guided blocks)
+          if (widget.onRemove != null && !isLockedGuided)
             IconButton(
               icon: const Icon(Icons.close,
                   color: GameTokens.disabledText, size: 14),
@@ -397,8 +521,13 @@ class _ClauseBlockWidgetState extends State<_ClauseBlockWidget> {
 class ClauseBlock {
   final ClauseType type;
   final String value;
+  final bool isGuided; // Pre-filled by guidedAnswer (locked/read-only)
 
-  const ClauseBlock({required this.type, required this.value});
+  const ClauseBlock({
+    required this.type,
+    required this.value,
+    this.isGuided = false,
+  });
 }
 
 enum ClauseType {
