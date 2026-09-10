@@ -21,6 +21,7 @@ class FeedbackOverlay extends StatelessWidget {
   final VoidCallback onDismiss;
   final VoidCallback? onNextLevel;
   final VoidCallback onRetry;
+  final List<String> newlyEarnedAchievements;
 
   const FeedbackOverlay({
     super.key,
@@ -30,6 +31,7 @@ class FeedbackOverlay extends StatelessWidget {
     required this.onDismiss,
     this.onNextLevel,
     required this.onRetry,
+    this.newlyEarnedAchievements = const [],
   });
 
   @override
@@ -71,6 +73,14 @@ class FeedbackOverlay extends StatelessWidget {
                   _CommonMistakeCard(
                     mistake: _getCommonMistake()!,
                   ),
+
+                // Achievement toasts
+                if (newlyEarnedAchievements.isNotEmpty) ...[  
+                  const SizedBox(height: GameTokens.spaceSm),
+                  _AchievementUnlockedRow(
+                    achievementIds: newlyEarnedAchievements,
+                  ),
+                ],
 
                 const SizedBox(height: GameTokens.spaceMd),
 
@@ -497,6 +507,81 @@ class _FeedbackActions extends StatelessWidget {
             },
           ),
         ],
+      ],
+    );
+  }
+}
+
+// ─── Achievement unlocked row ─────────────────────────────────────────────────
+
+class _AchievementUnlockedRow extends StatelessWidget {
+  final List<String> achievementIds;
+  const _AchievementUnlockedRow({required this.achievementIds});
+
+  static const _labels = <String, String>{
+    'first_query': '🔍 First Query',
+    'three_stars': '⭐ Three Stars',
+    'no_hints': '🧠 No Hints',
+    'speedrun': '⚡ Speedrun',
+    'comeback': '🔥 Comeback',
+    'perfect_optimization': '🏆 Perfect Optimizer',
+  };
+
+  static const _icons = <String, IconData>{
+    'first_query': Icons.search,
+    'three_stars': Icons.star,
+    'no_hints': Icons.psychology_outlined,
+    'speedrun': Icons.flash_on,
+    'comeback': Icons.local_fire_department,
+    'perfect_optimization': Icons.emoji_events,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'ACHIEVEMENT UNLOCKED',
+          style: GameTokens.bodySmall.copyWith(
+            color: GameTokens.warning,
+            letterSpacing: 1.5,
+            fontWeight: FontWeight.bold,
+            fontSize: 9,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Wrap(
+          spacing: 8,
+          runSpacing: 6,
+          children: achievementIds.map((id) {
+            final label = _labels[id] ?? id;
+            final icon = _icons[id] ?? Icons.emoji_events;
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: GameTokens.warning.withValues(alpha: 0.12),
+                borderRadius: GameTokens.borderRadiusSm,
+                border: Border.all(color: GameTokens.warning, width: 1),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, color: GameTokens.warning, size: 12),
+                  const SizedBox(width: 5),
+                  Text(
+                    label,
+                    style: GameTokens.bodySmall.copyWith(
+                      color: GameTokens.warning,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
+            ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.3);
+          }).toList(),
+        ),
       ],
     );
   }

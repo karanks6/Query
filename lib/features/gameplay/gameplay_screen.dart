@@ -107,6 +107,7 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
         report: state.lastReport,
         sandboxError: state.sandboxError,
         score: state.levelScore,
+        newlyEarnedAchievements: state.newlyEarnedAchievements,
         onDismiss: () {
           Navigator.of(ctx).pop();
         },
