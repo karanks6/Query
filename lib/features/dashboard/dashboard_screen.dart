@@ -61,6 +61,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      const SizedBox(height: GameTokens.spaceMd),
                       // Continue banner
                       profileAsync.when(
                         data: (profile) => worldsAsync.when(
@@ -244,8 +245,10 @@ class _ContinueBanner extends StatelessWidget {
     return ActionButton(
       isPrimary: true,
       onPressed: onContinue,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: GameTokens.spaceSm),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -269,6 +272,7 @@ class _ContinueBanner extends StatelessWidget {
             style: GameTokens.bodySmall.copyWith(color: GameTokens.background),
           ),
         ],
+      ),
       ),
     )
         .animate()
@@ -303,7 +307,7 @@ class _StatsRow extends StatelessWidget {
               );
             },
             child: SlantedPanel(
-              padding: const EdgeInsets.all(GameTokens.spaceSm),
+              padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceSm, vertical: GameTokens.spaceMd),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -330,7 +334,7 @@ class _StatsRow extends StatelessWidget {
         const SizedBox(width: GameTokens.spaceSm),
         Expanded(
           child: SlantedPanel(
-            padding: const EdgeInsets.all(GameTokens.spaceSm),
+            padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceSm, vertical: GameTokens.spaceMd),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -374,7 +378,7 @@ class _StatsRow extends StatelessWidget {
               );
             },
             child: SlantedPanel(
-              padding: const EdgeInsets.all(GameTokens.spaceSm),
+              padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceSm, vertical: GameTokens.spaceMd),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -401,7 +405,7 @@ class _StatsRow extends StatelessWidget {
           ),
         ),
       ],
-    ).animate().fadeIn(delay: 200.ms, duration: 400.ms);
+    ).animate().fadeIn(delay: 100.ms, duration: 400.ms);
   }
 }
 
@@ -414,7 +418,9 @@ class _DailyChallengeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return ActionButton(
       onPressed: onTap,
-      child: Row(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: GameTokens.spaceSm),
+        child: Row(
         children: [
           Container(
             width: 44,
@@ -451,7 +457,7 @@ class _DailyChallengeCard extends StatelessWidget {
               color: GameTokens.accent),
         ],
       ),
-    ).animate().fadeIn(delay: 300.ms, duration: 400.ms);
+    )).animate().fadeIn(delay: 300.ms, duration: 400.ms);
   }
 }
 
