@@ -288,8 +288,10 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
         Expanded(
           child: GestureDetector(
             onTap: () {
@@ -405,6 +407,7 @@ class _StatsRow extends StatelessWidget {
           ),
         ),
       ],
+      ),
     ).animate().fadeIn(delay: 100.ms, duration: 400.ms);
   }
 }
