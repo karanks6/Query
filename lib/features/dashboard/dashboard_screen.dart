@@ -286,7 +286,8 @@ class _StatsRow extends StatelessWidget {
                 context: context,
                 backgroundColor: Colors.transparent,
                 isScrollControlled: true,
-                builder: (context) => Center(
+                builder: (context) => Align(
+                  alignment: Alignment.bottomCenter,
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 500),
                     child: const StreakCalendarModal(),
@@ -351,7 +352,8 @@ class _StatsRow extends StatelessWidget {
                 context: context,
                 backgroundColor: Colors.transparent,
                 isScrollControlled: true,
-                builder: (context) => Center(
+                builder: (context) => Align(
+                  alignment: Alignment.bottomCenter,
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 500),
                     child: DraggableScrollableSheet(
