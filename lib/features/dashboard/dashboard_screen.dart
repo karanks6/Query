@@ -56,50 +56,57 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               // Ã¢â€â‚¬Ã¢â€â‚¬ Body Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
               SliverPadding(
                 padding: const EdgeInsets.all(GameTokens.spaceMd),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    // Continue banner
-                    profileAsync.when(
-                      data: (profile) => worldsAsync.when(
-                        data: (worlds) => _ContinueBanner(
-                          worlds: worlds,
-                          onContinue: () =>
-                              _navigateToCurrentWorld(context, worlds),
+                sliver: SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Continue banner
+                      profileAsync.when(
+                        data: (profile) => worldsAsync.when(
+                          data: (worlds) => _ContinueBanner(
+                            worlds: worlds,
+                            onContinue: () =>
+                                _navigateToCurrentWorld(context, worlds),
+                          ),
+                          loading: () => const _LoadingCard(),
+                          error: (_, __) => const SizedBox.shrink(),
                         ),
                         loading: () => const _LoadingCard(),
                         error: (_, __) => const SizedBox.shrink(),
                       ),
-                      loading: () => const _LoadingCard(),
-                      error: (_, __) => const SizedBox.shrink(),
-                    ),
 
-                    const SizedBox(height: GameTokens.spaceMd),
+                      const SizedBox(height: GameTokens.spaceMd),
+                      const Spacer(flex: 1),
 
-                    // Streak + XP row
-                    profileAsync.when(
-                      data: (profile) => profile != null
-                          ? _StatsRow(profile: profile)
-                          : const SizedBox.shrink(),
-                      loading: () => const _LoadingCard(),
-                      error: (_, __) => const SizedBox.shrink(),
-                    ),
+                      // Streak + XP row
+                      profileAsync.when(
+                        data: (profile) => profile != null
+                            ? _StatsRow(profile: profile)
+                            : const SizedBox.shrink(),
+                        loading: () => const _LoadingCard(),
+                        error: (_, __) => const SizedBox.shrink(),
+                      ),
 
-                    const SizedBox(height: GameTokens.spaceMd),
+                      const SizedBox(height: GameTokens.spaceMd),
+                      const Spacer(flex: 1),
 
-                    // Daily challenge card
-                    _DailyChallengeCard(
-                      onTap: () => Navigator.of(context).pushNamed('/daily_challenge'),
-                    ),
+                      // Daily challenge card
+                      _DailyChallengeCard(
+                        onTap: () => Navigator.of(context).pushNamed('/daily_challenge'),
+                      ),
 
-                    const SizedBox(height: GameTokens.spaceLg),
-                    const GameDivider(label: '// BUREAU TOOLS'),
-                    const SizedBox(height: GameTokens.spaceMd),
+                      const SizedBox(height: GameTokens.spaceLg),
+                      const Spacer(flex: 2),
+                      const GameDivider(label: '// BUREAU TOOLS'),
+                      const SizedBox(height: GameTokens.spaceMd),
 
-                    // Bureau Tools List
-                    _BureauToolsList(context: context),
+                      // Bureau Tools List
+                      _BureauToolsList(context: context),
 
-                    const SizedBox(height: GameTokens.spaceLg),
-                  ]),
+                      const Spacer(flex: 3),
+                    ],
+                  ),
                 ),
               ),
             ],
