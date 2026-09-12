@@ -19,6 +19,7 @@ import 'widgets/result_pane.dart';
 import 'widgets/concept_lesson_dialog.dart';
 import '../feedback_overlay/feedback_overlay.dart';
 import '../hints/hints_modal.dart';
+import 'widgets/query_history_sheet.dart';
 
 /// Core Gameplay Screen (Section 5.5).
 ///
@@ -116,6 +117,7 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
                 final loader = ref.read(levelLoaderProvider);
                 try {
                   final world = await loader.loadWorld(state.level!.worldId);
+                  if (!context.mounted) return;
                   final currentIndex = world.levels.indexWhere((l) => l.id == state.level!.id);
                   if (currentIndex >= 0 && currentIndex < world.levels.length - 1) {
                     final nextLevel = world.levels[currentIndex + 1];
@@ -126,6 +128,7 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
                     Navigator.of(context).pop();
                   }
                 } catch (e) {
+                  if (!context.mounted) return;
                   Navigator.of(ctx).pop();
                   Navigator.of(context).pop();
                 }
@@ -585,6 +588,23 @@ class _ActionBar extends ConsumerWidget {
               ),
             ),
 
+          const SizedBox(width: GameTokens.spaceSm),
+
+          // Query history
+          ActionButton(
+            onPressed: () => _showQueryHistory(context, level),
+            child: Row(
+              children: [
+                const Icon(Icons.history,
+                    color: GameTokens.secondaryText, size: 16),
+                if (MediaQuery.of(context).size.width > 500) ...[
+                  const SizedBox(width: 4),
+                  Text('HISTORY', style: GameTokens.labelLarge.copyWith(color: GameTokens.secondaryText)),
+                ],
+              ],
+            ),
+          ),
+
           const Spacer(),
 
           // Run button
@@ -650,6 +670,23 @@ class _ActionBar extends ConsumerWidget {
           level: level,
           scrollController: controller,
         ),
+      ),
+    );
+  }
+
+  void _showQueryHistory(BuildContext context, LevelModel level) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: GameTokens.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
+      ),
+      builder: (_) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: QueryHistorySheet(levelId: level.id),
       ),
     );
   }
