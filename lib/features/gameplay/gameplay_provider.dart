@@ -245,7 +245,8 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
 
     // Award XP and Insight Points
     final playerDao = _ref.read(playerDaoProvider);
-    await playerDao.addXp(score.xpEarned);
+    final achievementsDao = _ref.read(achievementsDaoProvider);
+    await playerDao.addXp(score.xpEarned, achievementsDao: achievementsDao);
     await playerDao.earnInsightPoints(score.xpEarned ~/ 5);
 
     // Check world unlock
@@ -253,7 +254,6 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
     final currentWorldProg = await progressDao.getWorldProgress(level.worldId);
 
     // Achievement engine — collect newly unlocked IDs
-    final achievementsDao = _ref.read(achievementsDaoProvider);
     final newAchievements = <String>[];
 
     Future<void> maybeAward(String id) async {
