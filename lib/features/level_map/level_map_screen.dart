@@ -209,12 +209,16 @@ class _LevelGrid extends StatelessWidget {
                     levelStars.containsKey(
                       world.levels[index - 1].id,
                     );
+                // The "next" level is the first unlocked and not yet completed
+                final isNextToPlay = isUnlocked && !isCompleted &&
+                    (index == 0 || levelStars.containsKey(world.levels[index - 1].id));
 
                 return _LevelNode(
                   level: level,
                   stars: stars,
                   isCompleted: isCompleted,
                   isUnlocked: isUnlocked,
+                  isNextToPlay: isNextToPlay,
                   onTap: isUnlocked ? () => onLevelTap(level) : null,
                 )
                     .animate()
@@ -241,6 +245,7 @@ class _LevelNode extends StatelessWidget {
   final int stars;
   final bool isCompleted;
   final bool isUnlocked;
+  final bool isNextToPlay;
   final VoidCallback? onTap;
 
   const _LevelNode({
@@ -248,18 +253,20 @@ class _LevelNode extends StatelessWidget {
     required this.stars,
     required this.isCompleted,
     required this.isUnlocked,
+    this.isNextToPlay = false,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final textColor = isCompleted 
+    final textColor = isCompleted
         ? GameTokens.background
         : isUnlocked
             ? GameTokens.primaryText
             : GameTokens.disabledText;
+    final isPerfect = stars == 3;
 
-    return ActionButton(
+    Widget node = ActionButton(
       onPressed: onTap,
       isPrimary: isCompleted,
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -269,18 +276,32 @@ class _LevelNode extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (!isUnlocked)
-              const Icon(Icons.lock_outline,
-                  color: GameTokens.disabledText, size: 14)
-            else
-              _LevelTypeIcon(type: level.type, color: textColor),
+            // Top icon area
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                if (!isUnlocked)
+                  const Icon(Icons.lock_outline,
+                      color: GameTokens.disabledText, size: 14)
+                else
+                  _LevelTypeIcon(type: level.type, color: textColor),
+                // Crown badge for 3-star perfect
+                if (isPerfect)
+                  Positioned(
+                    top: -6,
+                    right: -6,
+                    child: Icon(Icons.workspace_premium,
+                        color: GameTokens.warning, size: 11),
+                  ),
+              ],
+            ),
             const SizedBox(height: 3),
             Text(
               '${level.levelNumber}',
               style: GameTokens.bodySmall.copyWith(
                 color: textColor,
                 fontWeight: FontWeight.bold,
-                fontSize: 16, // increased text size for better visibility
+                fontSize: 16,
               ),
             ),
             if (isCompleted) ...[
@@ -288,7 +309,7 @@ class _LevelNode extends StatelessWidget {
               StarRow(
                 starCount: stars,
                 filledColor: GameTokens.background,
-                unfilledColor: GameTokens.background.withOpacity(0.3),
+                unfilledColor: GameTokens.background.withValues(alpha: 0.3),
                 starSize: 16.0,
               ),
             ],
@@ -296,6 +317,44 @@ class _LevelNode extends StatelessWidget {
         ),
       ),
     );
+
+    // Pulsing ring for the next level to play
+    if (isNextToPlay) {
+      node = Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: GameTokens.accent, width: 2),
+                borderRadius: GameTokens.borderRadiusSm,
+              ),
+            )
+                .animate(onPlay: (c) => c.repeat())
+                .scale(
+                  begin: const Offset(1.0, 1.0),
+                  end: const Offset(1.12, 1.12),
+                  duration: 1000.ms,
+                  curve: Curves.easeInOut,
+                )
+                .then()
+                .scale(
+                  begin: const Offset(1.12, 1.12),
+                  end: const Offset(1.0, 1.0),
+                  duration: 1000.ms,
+                  curve: Curves.easeInOut,
+                )
+                .fade(begin: 1.0, end: 0.3, duration: 1000.ms)
+                .then()
+                .fade(begin: 0.3, end: 1.0, duration: 1000.ms),
+          ),
+          node,
+        ],
+      );
+    }
+
+    return node;
   }
 }
 
