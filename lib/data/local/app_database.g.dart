@@ -2595,6 +2595,200 @@ class ContentCacheManifestCompanion
   }
 }
 
+class $BookmarkedConceptsTable extends BookmarkedConcepts
+    with TableInfo<$BookmarkedConceptsTable, BookmarkedConcept> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BookmarkedConceptsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _conceptIdMeta =
+      const VerificationMeta('conceptId');
+  @override
+  late final GeneratedColumn<String> conceptId = GeneratedColumn<String>(
+      'concept_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _savedAtMeta =
+      const VerificationMeta('savedAt');
+  @override
+  late final GeneratedColumn<int> savedAt = GeneratedColumn<int>(
+      'saved_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [conceptId, savedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'bookmarked_concepts';
+  @override
+  VerificationContext validateIntegrity(Insertable<BookmarkedConcept> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('concept_id')) {
+      context.handle(_conceptIdMeta,
+          conceptId.isAcceptableOrUnknown(data['concept_id']!, _conceptIdMeta));
+    } else if (isInserting) {
+      context.missing(_conceptIdMeta);
+    }
+    if (data.containsKey('saved_at')) {
+      context.handle(_savedAtMeta,
+          savedAt.isAcceptableOrUnknown(data['saved_at']!, _savedAtMeta));
+    } else if (isInserting) {
+      context.missing(_savedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {conceptId};
+  @override
+  BookmarkedConcept map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BookmarkedConcept(
+      conceptId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}concept_id'])!,
+      savedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}saved_at'])!,
+    );
+  }
+
+  @override
+  $BookmarkedConceptsTable createAlias(String alias) {
+    return $BookmarkedConceptsTable(attachedDatabase, alias);
+  }
+}
+
+class BookmarkedConcept extends DataClass
+    implements Insertable<BookmarkedConcept> {
+  final String conceptId;
+  final int savedAt;
+  const BookmarkedConcept({required this.conceptId, required this.savedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['concept_id'] = Variable<String>(conceptId);
+    map['saved_at'] = Variable<int>(savedAt);
+    return map;
+  }
+
+  BookmarkedConceptsCompanion toCompanion(bool nullToAbsent) {
+    return BookmarkedConceptsCompanion(
+      conceptId: Value(conceptId),
+      savedAt: Value(savedAt),
+    );
+  }
+
+  factory BookmarkedConcept.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BookmarkedConcept(
+      conceptId: serializer.fromJson<String>(json['conceptId']),
+      savedAt: serializer.fromJson<int>(json['savedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'conceptId': serializer.toJson<String>(conceptId),
+      'savedAt': serializer.toJson<int>(savedAt),
+    };
+  }
+
+  BookmarkedConcept copyWith({String? conceptId, int? savedAt}) =>
+      BookmarkedConcept(
+        conceptId: conceptId ?? this.conceptId,
+        savedAt: savedAt ?? this.savedAt,
+      );
+  BookmarkedConcept copyWithCompanion(BookmarkedConceptsCompanion data) {
+    return BookmarkedConcept(
+      conceptId: data.conceptId.present ? data.conceptId.value : this.conceptId,
+      savedAt: data.savedAt.present ? data.savedAt.value : this.savedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BookmarkedConcept(')
+          ..write('conceptId: $conceptId, ')
+          ..write('savedAt: $savedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(conceptId, savedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BookmarkedConcept &&
+          other.conceptId == this.conceptId &&
+          other.savedAt == this.savedAt);
+}
+
+class BookmarkedConceptsCompanion extends UpdateCompanion<BookmarkedConcept> {
+  final Value<String> conceptId;
+  final Value<int> savedAt;
+  final Value<int> rowid;
+  const BookmarkedConceptsCompanion({
+    this.conceptId = const Value.absent(),
+    this.savedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BookmarkedConceptsCompanion.insert({
+    required String conceptId,
+    required int savedAt,
+    this.rowid = const Value.absent(),
+  })  : conceptId = Value(conceptId),
+        savedAt = Value(savedAt);
+  static Insertable<BookmarkedConcept> custom({
+    Expression<String>? conceptId,
+    Expression<int>? savedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (conceptId != null) 'concept_id': conceptId,
+      if (savedAt != null) 'saved_at': savedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BookmarkedConceptsCompanion copyWith(
+      {Value<String>? conceptId, Value<int>? savedAt, Value<int>? rowid}) {
+    return BookmarkedConceptsCompanion(
+      conceptId: conceptId ?? this.conceptId,
+      savedAt: savedAt ?? this.savedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (conceptId.present) {
+      map['concept_id'] = Variable<String>(conceptId.value);
+    }
+    if (savedAt.present) {
+      map['saved_at'] = Variable<int>(savedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BookmarkedConceptsCompanion(')
+          ..write('conceptId: $conceptId, ')
+          ..write('savedAt: $savedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2609,11 +2803,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SettingsTable settings = $SettingsTable(this);
   late final $ContentCacheManifestTable contentCacheManifest =
       $ContentCacheManifestTable(this);
+  late final $BookmarkedConceptsTable bookmarkedConcepts =
+      $BookmarkedConceptsTable(this);
   late final PlayerDao playerDao = PlayerDao(this as AppDatabase);
   late final ProgressDao progressDao = ProgressDao(this as AppDatabase);
   late final AttemptsDao attemptsDao = AttemptsDao(this as AppDatabase);
   late final AchievementsDao achievementsDao =
       AchievementsDao(this as AppDatabase);
+  late final ConceptDao conceptDao = ConceptDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2626,7 +2823,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         achievementsEarned,
         themeUnlocks,
         settings,
-        contentCacheManifest
+        contentCacheManifest,
+        bookmarkedConcepts
       ];
 }
 
@@ -4026,6 +4224,136 @@ typedef $$ContentCacheManifestTableProcessedTableManager
         ),
         ContentCacheManifestData,
         PrefetchHooks Function()>;
+typedef $$BookmarkedConceptsTableCreateCompanionBuilder
+    = BookmarkedConceptsCompanion Function({
+  required String conceptId,
+  required int savedAt,
+  Value<int> rowid,
+});
+typedef $$BookmarkedConceptsTableUpdateCompanionBuilder
+    = BookmarkedConceptsCompanion Function({
+  Value<String> conceptId,
+  Value<int> savedAt,
+  Value<int> rowid,
+});
+
+class $$BookmarkedConceptsTableFilterComposer
+    extends Composer<_$AppDatabase, $BookmarkedConceptsTable> {
+  $$BookmarkedConceptsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get conceptId => $composableBuilder(
+      column: $table.conceptId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get savedAt => $composableBuilder(
+      column: $table.savedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$BookmarkedConceptsTableOrderingComposer
+    extends Composer<_$AppDatabase, $BookmarkedConceptsTable> {
+  $$BookmarkedConceptsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get conceptId => $composableBuilder(
+      column: $table.conceptId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get savedAt => $composableBuilder(
+      column: $table.savedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$BookmarkedConceptsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $BookmarkedConceptsTable> {
+  $$BookmarkedConceptsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get conceptId =>
+      $composableBuilder(column: $table.conceptId, builder: (column) => column);
+
+  GeneratedColumn<int> get savedAt =>
+      $composableBuilder(column: $table.savedAt, builder: (column) => column);
+}
+
+class $$BookmarkedConceptsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $BookmarkedConceptsTable,
+    BookmarkedConcept,
+    $$BookmarkedConceptsTableFilterComposer,
+    $$BookmarkedConceptsTableOrderingComposer,
+    $$BookmarkedConceptsTableAnnotationComposer,
+    $$BookmarkedConceptsTableCreateCompanionBuilder,
+    $$BookmarkedConceptsTableUpdateCompanionBuilder,
+    (
+      BookmarkedConcept,
+      BaseReferences<_$AppDatabase, $BookmarkedConceptsTable, BookmarkedConcept>
+    ),
+    BookmarkedConcept,
+    PrefetchHooks Function()> {
+  $$BookmarkedConceptsTableTableManager(
+      _$AppDatabase db, $BookmarkedConceptsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$BookmarkedConceptsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$BookmarkedConceptsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$BookmarkedConceptsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> conceptId = const Value.absent(),
+            Value<int> savedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              BookmarkedConceptsCompanion(
+            conceptId: conceptId,
+            savedAt: savedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String conceptId,
+            required int savedAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              BookmarkedConceptsCompanion.insert(
+            conceptId: conceptId,
+            savedAt: savedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$BookmarkedConceptsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $BookmarkedConceptsTable,
+    BookmarkedConcept,
+    $$BookmarkedConceptsTableFilterComposer,
+    $$BookmarkedConceptsTableOrderingComposer,
+    $$BookmarkedConceptsTableAnnotationComposer,
+    $$BookmarkedConceptsTableCreateCompanionBuilder,
+    $$BookmarkedConceptsTableUpdateCompanionBuilder,
+    (
+      BookmarkedConcept,
+      BaseReferences<_$AppDatabase, $BookmarkedConceptsTable, BookmarkedConcept>
+    ),
+    BookmarkedConcept,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4046,4 +4374,6 @@ class $AppDatabaseManager {
       $$SettingsTableTableManager(_db, _db.settings);
   $$ContentCacheManifestTableTableManager get contentCacheManifest =>
       $$ContentCacheManifestTableTableManager(_db, _db.contentCacheManifest);
+  $$BookmarkedConceptsTableTableManager get bookmarkedConcepts =>
+      $$BookmarkedConceptsTableTableManager(_db, _db.bookmarkedConcepts);
 }
