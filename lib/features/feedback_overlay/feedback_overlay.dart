@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../theming/tokens/game_tokens.dart';
@@ -130,32 +131,98 @@ class _FeedbackHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          isSuccess ? Icons.check_circle_outline : Icons.cancel_outlined,
-          color: isSuccess
-              ? GameTokens.success
-              : GameTokens.error,
-          size: 24,
-        )
-            .animate(target: isSuccess ? 1 : 0)
-            .scale(duration: 400.ms, curve: Curves.bounceOut),
-        const SizedBox(width: GameTokens.spaceSm),
-        Text(
-          isSuccess ? 'CASE CRACKED!' : 'NOT QUITE.',
-          style: GameTokens.headlineLarge.copyWith(
-            color: isSuccess
-                ? GameTokens.success
-                : GameTokens.error,
-          ),
+        Row(
+          children: [
+            Icon(
+              isSuccess ? Icons.check_circle_outline : Icons.cancel_outlined,
+              color: isSuccess ? GameTokens.success : GameTokens.error,
+              size: 24,
+            )
+                .animate(target: isSuccess ? 1 : 0)
+                .scale(duration: 400.ms, curve: Curves.bounceOut),
+            const SizedBox(width: GameTokens.spaceSm),
+            Text(
+              isSuccess ? 'CASE CRACKED!' : 'NOT QUITE.',
+              style: GameTokens.headlineLarge.copyWith(
+                color: isSuccess ? GameTokens.success : GameTokens.error,
+              ),
+            ),
+          ],
         ),
+        // Animated star pop-in on success
         if (isSuccess && score != null) ...[
-          const Spacer(),
-          StarRow(starCount: score!.starCount),
+          const SizedBox(height: GameTokens.spaceMd),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(3, (i) {
+              final earned = i < score!.starCount;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Icon(
+                  earned ? Icons.star_rounded : Icons.star_border_rounded,
+                  color: earned ? GameTokens.accent : GameTokens.disabledText,
+                  size: 40,
+                )
+                    .animate()
+                    .scale(
+                      begin: const Offset(0.0, 0.0),
+                      end: const Offset(1.0, 1.0),
+                      delay: (400 + i * 200).ms,
+                      duration: 350.ms,
+                      curve: Curves.bounceOut,
+                    )
+                    .fadeIn(delay: (400 + i * 200).ms, duration: 200.ms),
+              );
+            }),
+          ),
+          // Time medal row
+          if (score!.timeMedal != null)
+            Padding(
+              padding: const EdgeInsets.only(top: GameTokens.spaceSm),
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: _medalColor(score!.timeMedal!).withValues(alpha: 0.15),
+                    border: Border.all(color: _medalColor(score!.timeMedal!)),
+                    borderRadius: GameTokens.borderRadiusSm,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.timer_outlined,
+                          color: _medalColor(score!.timeMedal!), size: 14),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${score!.timeMedal!.name.toUpperCase()} TIME MEDAL  +${score!.timeMedal!.xpBonus} XP',
+                        style: GameTokens.bodySmall.copyWith(
+                          color: _medalColor(score!.timeMedal!),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                ).animate().fadeIn(delay: 1200.ms, duration: 400.ms),
+              ),
+            ),
         ],
       ],
     );
+  }
+
+  Color _medalColor(TimeMedal medal) {
+    switch (medal) {
+      case TimeMedal.gold:
+        return GameTokens.warning;
+      case TimeMedal.silver:
+        return const Color(0xFFB0BEC5);
+      case TimeMedal.bronze:
+        return const Color(0xFFBF8A60);
+    }
   }
 }
 
@@ -243,6 +310,18 @@ class _FeedbackMessage extends StatelessWidget {
               Expanded(
                 child: Text(message, style: GameTokens.bodyMedium),
               ),
+              // Copy error message to clipboard
+              if (!isSuccess)
+                GestureDetector(
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: message));
+                  },
+                  child: Tooltip(
+                    message: 'Copy error message',
+                    child: const Icon(Icons.copy_outlined,
+                        color: GameTokens.secondaryText, size: 14),
+                  ),
+                ),
             ],
           ),
         ),
@@ -382,38 +461,55 @@ class _StarBreakdown extends StatelessWidget {
         _StarItem('Completion', score.completionStar),
         _StarItem('Optimal Query', score.optimalStar),
         _StarItem('First Attempt', score.firstAttemptStar),
-        const SizedBox(height: 4),
-        Row(
-          children: [
-            Text(
-              '+${score.xpEarned} XP earned',
-              style: GameTokens.bodySmall.copyWith(color: GameTokens.accent),
-            ),
-            if (score.dailyBonusApplied) ...[  
+        const SizedBox(height: GameTokens.spaceSm),
+        // Big XP display
+        Container(
+          padding: const EdgeInsets.all(GameTokens.spaceMd),
+          decoration: BoxDecoration(
+            color: GameTokens.accent.withValues(alpha: 0.08),
+            border: Border.all(color: GameTokens.accent.withValues(alpha: 0.3)),
+            borderRadius: GameTokens.borderRadiusSm,
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.bolt, color: GameTokens.accent, size: 20),
               const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: GameTokens.warning.withValues(alpha: 0.15),
-                  borderRadius: GameTokens.borderRadiusSm,
-                  border: Border.all(color: GameTokens.warning, width: 1),
-                ),
-                child: Text(
-                  'DAILY 2× BONUS',
-                  style: GameTokens.bodySmall.copyWith(
-                    color: GameTokens.warning,
-                    fontSize: 9,
-                    fontWeight: FontWeight.bold,
-                  ),
+              Text(
+                '+${score.xpEarned} XP',
+                style: GameTokens.headlineMedium.copyWith(
+                  color: GameTokens.accent,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
+              if (score.dailyBonusApplied) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: GameTokens.warning.withValues(alpha: 0.15),
+                    borderRadius: GameTokens.borderRadiusSm,
+                    border: Border.all(color: GameTokens.warning, width: 1),
+                  ),
+                  child: Text(
+                    '2× DAILY',
+                    style: GameTokens.bodySmall.copyWith(
+                      color: GameTokens.warning,
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
         if (score.hintCapApplied)
-          Text(
-            '(Full solution hint used — capped at 1 star)',
-            style: GameTokens.bodySmall.copyWith(color: GameTokens.warning),
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(
+              '(Full solution hint used — capped at 1 star)',
+              style: GameTokens.bodySmall.copyWith(color: GameTokens.warning),
+            ),
           ),
       ],
     ).animate().fadeIn(duration: 600.ms);
