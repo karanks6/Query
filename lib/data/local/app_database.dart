@@ -7,6 +7,7 @@ import 'daos/player_dao.dart';
 import 'daos/progress_dao.dart';
 import 'daos/attempts_dao.dart';
 import 'daos/achievements_dao.dart';
+import 'daos/concept_dao.dart';
 
 part 'app_database.g.dart';
 
@@ -94,6 +95,14 @@ class ContentCacheManifest extends Table {
   Set<Column> get primaryKey => {contentPackId};
 }
 
+class BookmarkedConcepts extends Table {
+  TextColumn get conceptId => text().named('concept_id')();
+  IntColumn get savedAt => integer().named('saved_at')();
+
+  @override
+  Set<Column> get primaryKey => {conceptId};
+}
+
 // ─── Database class ──────────────────────────────────────────────────────────
 
 @DriftDatabase(
@@ -106,19 +115,21 @@ class ContentCacheManifest extends Table {
     ThemeUnlocks,
     Settings,
     ContentCacheManifest,
+    BookmarkedConcepts,
   ],
   daos: [
     PlayerDao,
     ProgressDao,
     AttemptsDao,
     AchievementsDao,
+    ConceptDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
@@ -153,6 +164,11 @@ class AppDatabase extends _$AppDatabase {
             unlockedAt: Value(DateTime.now().millisecondsSinceEpoch),
           ),
         );
+      },
+      onUpgrade: (Migrator m, int from, int to) async {
+        if (from < 2) {
+          await m.createTable(bookmarkedConcepts);
+        }
       },
     );
   }
