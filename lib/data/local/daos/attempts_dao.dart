@@ -43,6 +43,15 @@ class AttemptsDao extends DatabaseAccessor<AppDatabase> with _$AttemptsDaoMixin 
         .get();
   }
 
+  /// Gets the most recent N attempts for a level.
+  Future<List<LevelAttempt>> getRecentAttemptsForLevel(String levelId, {int limit = 5}) {
+    return (select(levelAttempts)
+          ..where((a) => a.levelId.equals(levelId))
+          ..orderBy([(a) => OrderingTerm.desc(a.createdAt)])
+          ..limit(limit))
+        .get();
+  }
+
   /// Gets the current attempt number for a level (for first-attempt star).
   Future<int> getAttemptCount(String levelId) async {
     final count = await (select(levelAttempts)
