@@ -7,4 +7,5 @@ mixin _$ProgressDaoMixin on DatabaseAccessor<AppDatabase> {
   $WorldProgressTable get worldProgress => attachedDatabase.worldProgress;
   $LevelCompletionsTable get levelCompletions =>
       attachedDatabase.levelCompletions;
+  $ThemeUnlocksTable get themeUnlocks => attachedDatabase.themeUnlocks;
 }
