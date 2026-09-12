@@ -5,6 +5,7 @@ import 'tokens/cyberpunk_tokens.dart';
 import 'tokens/nature_tokens.dart';
 import 'tokens/space_tokens.dart';
 import 'tokens/medieval_tokens.dart';
+import 'tokens/detective_tokens.dart';
 
 /// All available themes (Section 6.1).
 /// v1.0 ships Terminal/Classic. Others are unlocked in later phases.
@@ -13,7 +14,8 @@ enum AppTheme {
   cyberpunk('cyberpunk', 'Cyberpunk / Data Center'),
   nature('nature', 'Nature / Organic Data'),
   space('space', 'Space / Cosmic Database'),
-  medieval('medieval', 'Medieval / Archival');
+  medieval('medieval', 'Medieval / Archival'),
+  detective('detective', 'Detective / Hacker');
 
   final String id;
   final String displayName;
@@ -54,6 +56,8 @@ final activeThemeDataProvider = Provider<ThemeData>((ref) {
       return SpaceTokens.themeData;
     case AppTheme.medieval:
       return MedievalTokens.themeData;
+    case AppTheme.detective:
+      return DetectiveTokens.themeData;
   }
 });
 
@@ -69,6 +73,8 @@ final activeTokensProvider = Provider<AppThemeTokens>((ref) {
       return SpaceAppThemeTokens();
     case AppTheme.medieval:
       return MedievalAppThemeTokens();
+    case AppTheme.detective:
+      return DetectiveAppThemeTokens();
     case AppTheme.terminalClassic:
       return TerminalClassicAppThemeTokens();
   }
@@ -164,4 +170,19 @@ class MedievalAppThemeTokens implements AppThemeTokens {
   @override Color get accentGlow => MedievalTokens.accentGlow;
   @override Duration get durationNormal => const Duration(milliseconds: 220);
   @override Duration get durationFast => const Duration(milliseconds: 120);
+}
+
+class DetectiveAppThemeTokens implements AppThemeTokens {
+  @override Color get background => DetectiveTokens.background;
+  @override Color get surface => DetectiveTokens.surface;
+  @override Color get surfaceVariant => DetectiveTokens.surfaceVariant;
+  @override Color get primaryText => DetectiveTokens.primaryText;
+  @override Color get secondaryText => DetectiveTokens.secondaryText;
+  @override Color get accent => DetectiveTokens.accent;
+  @override Color get success => DetectiveTokens.success;
+  @override Color get error => DetectiveTokens.error;
+  @override Color get warning => DetectiveTokens.warning;
+  @override Color get accentGlow => DetectiveTokens.accentGlow;
+  @override Duration get durationNormal => const Duration(milliseconds: 200);
+  @override Duration get durationFast => const Duration(milliseconds: 100);
 }
