@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../app_database.dart';
 import '../../remote/leaderboard_service.dart';
 import '../../content/models/rank_system.dart';
+import 'achievements_dao.dart';
 
 part 'player_dao.g.dart';
 
@@ -26,7 +27,7 @@ class PlayerDao extends DatabaseAccessor<AppDatabase> with _$PlayerDaoMixin {
   }
 
   /// Awards XP and updates rank title if threshold crossed.
-  Future<void> addXp(int amount) async {
+  Future<void> addXp(int amount, {AchievementsDao? achievementsDao}) async {
     final profile = await getProfile();
     if (profile == null) return;
 
@@ -38,6 +39,10 @@ class PlayerDao extends DatabaseAccessor<AppDatabase> with _$PlayerDaoMixin {
       totalXp: Value(newXp),
       rankTitle: Value(newRank),
     ));
+
+    if (achievementsDao != null && newXp >= 500) {
+      await achievementsDao.awardAchievement('rank_silver');
+    }
     
     // Sync to global leaderboard (fire-and-forget)
     try {
@@ -81,7 +86,7 @@ class PlayerDao extends DatabaseAccessor<AppDatabase> with _$PlayerDaoMixin {
   }
 
   /// Checks and updates the daily streak using SharedPreferences.
-  Future<void> checkDailyStreak(SharedPreferences prefs) async {
+  Future<void> checkDailyStreak(SharedPreferences prefs, {AchievementsDao? achievementsDao}) async {
     final profile = await getProfile();
     if (profile == null) return;
 
@@ -101,6 +106,11 @@ class PlayerDao extends DatabaseAccessor<AppDatabase> with _$PlayerDaoMixin {
       if (currentStreak > longestStreak) {
         longestStreak = currentStreak;
         await prefs.setInt('longest_streak', longestStreak);
+      }
+      
+      if (achievementsDao != null) {
+        if (currentStreak >= 3) await achievementsDao.awardAchievement('daily_streak_3');
+        if (currentStreak >= 7) await achievementsDao.awardAchievement('daily_streak_7');
       }
     }
 
