@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../theming/tokens/game_tokens.dart';
@@ -13,7 +13,8 @@ import '../../../core/settings/settings_service.dart';
 ///  - Milestone badges (3 / 7 / 30-day)
 ///  - Recent activity log (last 5 active days)
 class StreakCalendarModal extends ConsumerWidget {
-  const StreakCalendarModal({super.key});
+  final ScrollController? scrollController;
+  const StreakCalendarModal({super.key, this.scrollController});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,6 +55,7 @@ class StreakCalendarModal extends ConsumerWidget {
           final isActiveToday = history.contains(todayStr);
 
           return SingleChildScrollView(
+            controller: scrollController,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,18 +234,16 @@ class _FlameHeader extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               Container(
-                width: 64,
-                height: 64,
+                width: 90,
+                height: 90,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: GameTokens.warning.withValues(alpha: 0.12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: GameTokens.warning.withValues(alpha: 0.25),
-                      blurRadius: 20,
-                      spreadRadius: 4,
-                    ),
-                  ],
+                  gradient: RadialGradient(
+                    colors: [
+                      GameTokens.warning.withValues(alpha: 0.25),
+                      GameTokens.warning.withValues(alpha: 0.0),
+                    ],
+                  ),
                 ),
               ),
               Icon(
@@ -253,7 +253,7 @@ class _FlameHeader extends StatelessWidget {
                 color: currentStreak > 0
                     ? GameTokens.warning
                     : GameTokens.secondaryText,
-                size: 36,
+                size: 48,
               ),
             ],
           )
