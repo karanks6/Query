@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../data/local/app_database.dart';
+import '../../theming/app_theme.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theming/tokens/game_tokens.dart';
@@ -89,6 +91,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       if (profile == null) {
         Navigator.of(context).pushReplacementNamed('/onboarding');
       } else {
+        // Load the player's active theme
+        ref.read(themeNotifierProvider.notifier).setThemeById(profile.activeTheme);
         Navigator.of(context).pushReplacementNamed('/dashboard');
       }
     } catch (e, st) {
