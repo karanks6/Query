@@ -32,6 +32,10 @@ final achievementsDaoProvider = Provider((ref) {
   return ref.watch(appDatabaseProvider).achievementsDao;
 });
 
+final conceptDaoProvider = Provider((ref) {
+  return ref.watch(appDatabaseProvider).conceptDao;
+});
+
 // ─── Service providers ────────────────────────────────────────────────────────
 
 final syncServiceProvider = Provider<SyncService>((ref) {
@@ -78,6 +82,13 @@ final worldProgressProvider =
 final allAchievementsProvider = StreamProvider((ref) {
   final db = ref.watch(appDatabaseProvider);
   return db.select(db.achievementsEarned).watch();
+});
+
+// ─── Bookmarked Concepts stream ───────────────────────────────────────────────
+
+final bookmarkedConceptsProvider = StreamProvider<List<String>>((ref) {
+  final dao = ref.watch(conceptDaoProvider);
+  return dao.watchBookmarkedConceptIds();
 });
 
 // ─── Mastery Provider ─────────────────────────────────────────────────────────
