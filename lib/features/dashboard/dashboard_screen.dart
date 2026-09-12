@@ -10,6 +10,7 @@ import '../../core/providers.dart';
 import '../../core/settings/settings_service.dart';
 import 'widgets/streak_calendar_modal.dart';
 import 'widgets/rank_progress_modal.dart';
+import '../../data/content/models/rank_system.dart';
 
 /// Main Menu / Dashboard (Section 5.3).
 ///
@@ -30,7 +31,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final prefs = ref.read(sharedPreferencesProvider);
-      ref.read(playerDaoProvider).checkDailyStreak(prefs);
+      final achievementsDao = ref.read(achievementsDaoProvider);
+      ref.read(playerDaoProvider).checkDailyStreak(prefs, achievementsDao: achievementsDao);
     });
   }
 
@@ -61,7 +63,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const SizedBox(height: GameTokens.spaceMd),
+                      const Spacer(flex: 1), // Add space above continue container box
                       // Continue banner
                       profileAsync.when(
                         data: (profile) => worldsAsync.when(
@@ -77,7 +79,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         error: (_, __) => const SizedBox.shrink(),
                       ),
 
-                      const SizedBox(height: GameTokens.spaceMd),
+                      const SizedBox(height: GameTokens.spaceLg),
                       const Spacer(flex: 1),
 
                       // Streak + XP row
@@ -89,7 +91,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         error: (_, __) => const SizedBox.shrink(),
                       ),
 
-                      const SizedBox(height: GameTokens.spaceMd),
+                      const SizedBox(height: GameTokens.spaceLg),
                       const Spacer(flex: 1),
 
                       // Daily challenge card
@@ -105,7 +107,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       // Bureau Tools List
                       _BureauToolsList(context: context),
 
-                      const Spacer(flex: 3),
+                      const Spacer(flex: 1), // Reduced bottom space
                     ],
                   ),
                 ),
@@ -246,7 +248,7 @@ class _ContinueBanner extends StatelessWidget {
       isPrimary: true,
       onPressed: onContinue,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: GameTokens.spaceSm),
+        padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceLg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -303,29 +305,43 @@ class _StatsRow extends StatelessWidget {
                   alignment: Alignment.bottomCenter,
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 500),
-                    child: const StreakCalendarModal(),
+                    child: DraggableScrollableSheet(
+                      initialChildSize: 0.85,
+                      maxChildSize: 0.95,
+                      minChildSize: 0.5,
+                      builder: (_, controller) => StreakCalendarModal(scrollController: controller),
+                    ),
                   ),
                 ),
               );
             },
             child: SlantedPanel(
-              padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceSm, vertical: GameTokens.spaceMd),
+              padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceLg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
                       const Icon(Icons.local_fire_department,
-                          color: GameTokens.warning, size: 16),
+                          color: GameTokens.warning, size: 20),
                       const SizedBox(width: 4),
-                      Text('STREAK', style: GameTokens.bodySmall),
+                      Text('STREAK', style: GameTokens.bodyMedium),
+                      const Spacer(),
+                      // Streak freeze badge
+                      if ((profile.streakFreezeAvailable as int? ?? 0) > 0)
+                        Tooltip(
+                          message: '${profile.streakFreezeAvailable} Streak Freeze available',
+                          child: const Icon(Icons.ac_unit, color: GameTokens.info, size: 13),
+                        ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: GameTokens.spaceMd),
                   Text(
                     '${profile.streakCount} days',
                     style: GameTokens.headlineMedium.copyWith(
                       color: GameTokens.warning,
+                      fontSize: 24,
                     ),
                   ),
                 ],
@@ -336,23 +352,26 @@ class _StatsRow extends StatelessWidget {
         const SizedBox(width: GameTokens.spaceSm),
         Expanded(
           child: SlantedPanel(
-            padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceSm, vertical: GameTokens.spaceMd),
+            padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceLg),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.bolt,
-                        color: GameTokens.accent, size: 16),
+                    const Icon(Icons.bolt, color: GameTokens.accent, size: 20),
                     const SizedBox(width: 4),
-                    Text('XP', style: GameTokens.bodySmall),
+                    Text('XP', style: GameTokens.bodyMedium),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: GameTokens.spaceMd),
                 Text(
                   '${profile.totalXp}',
-                  style: GameTokens.headlineMedium,
+                  style: GameTokens.headlineMedium.copyWith(fontSize: 24),
                 ),
+                const Spacer(),
+                const SizedBox(height: 6),
+                _XpProgressBar(totalXp: profile.totalXp as int),
               ],
             ),
           ),
@@ -380,23 +399,26 @@ class _StatsRow extends StatelessWidget {
               );
             },
             child: SlantedPanel(
-              padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceSm, vertical: GameTokens.spaceMd),
+              padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceLg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
                       const Icon(Icons.workspace_premium_outlined,
-                          color: GameTokens.accent, size: 16),
+                          color: GameTokens.accent, size: 20),
                       const SizedBox(width: 4),
-                      Text('RANK', style: GameTokens.bodySmall),
+                      Text('RANK', style: GameTokens.bodyMedium),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const Spacer(),
+                  const SizedBox(height: GameTokens.spaceMd),
                   Text(
                     profile.rankTitle,
-                    style: GameTokens.bodySmall.copyWith(
+                    style: GameTokens.bodyMedium.copyWith(
                       color: GameTokens.accent,
+                      fontWeight: FontWeight.bold,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -422,12 +444,12 @@ class _DailyChallengeCard extends StatelessWidget {
     return ActionButton(
       onPressed: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: GameTokens.spaceSm),
+        padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceSm, vertical: GameTokens.spaceLg),
         child: Row(
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               border:
                   Border.all(color: GameTokens.warning, width: 1),
@@ -565,6 +587,66 @@ class _LoadingCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Compact XP progress bar showing progress toward the next rank.
+class _XpProgressBar extends StatelessWidget {
+  final int totalXp;
+  const _XpProgressBar({required this.totalXp});
+
+  @override
+  Widget build(BuildContext context) {
+    final tiers = RankSystem.tiers;
+    final currentIndex = tiers.indexWhere((t) => t.requiredXp > totalXp) - 1;
+    final clampedIndex = currentIndex.clamp(0, tiers.length - 1);
+    final isMaxRank = totalXp >= tiers.last.requiredXp;
+
+    if (isMaxRank) {
+      return Row(
+        children: [
+          Icon(Icons.all_inclusive, color: tiers.last.color, size: 10),
+          const SizedBox(width: 4),
+          Text(
+            'MAX RANK',
+            style: GameTokens.bodySmall.copyWith(
+              fontSize: 9, color: tiers.last.color, letterSpacing: 1,
+            ),
+          ),
+        ],
+      );
+    }
+
+    final currentTier = tiers[clampedIndex];
+    final nextTier = tiers[clampedIndex + 1];
+    final rangeXp = nextTier.requiredXp - currentTier.requiredXp;
+    final earnedXp = totalXp - currentTier.requiredXp;
+    final progress = (earnedXp / rangeXp).clamp(0.0, 1.0);
+    final xpLeft = nextTier.requiredXp - totalXp;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(2),
+          child: LinearProgressIndicator(
+            value: progress,
+            backgroundColor: GameTokens.surfaceVariant,
+            valueColor: AlwaysStoppedAnimation(GameTokens.accent),
+            minHeight: 3,
+          ),
+        ),
+        const SizedBox(height: 3),
+        Text(
+          '$xpLeft XP to ${nextTier.title}',
+          style: GameTokens.bodySmall.copyWith(
+            fontSize: 9,
+            color: GameTokens.secondaryText,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 }
