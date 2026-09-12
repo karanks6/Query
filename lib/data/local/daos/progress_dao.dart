@@ -3,7 +3,7 @@ import '../app_database.dart';
 
 part 'progress_dao.g.dart';
 
-@DriftAccessor(tables: [WorldProgress, LevelCompletions])
+@DriftAccessor(tables: [WorldProgress, LevelCompletions, ThemeUnlocks])
 class ProgressDao extends DatabaseAccessor<AppDatabase> with _$ProgressDaoMixin {
   ProgressDao(super.db);
 
@@ -86,6 +86,19 @@ class ProgressDao extends DatabaseAccessor<AppDatabase> with _$ProgressDaoMixin 
 
       await (update(worldProgress)..where((w) => w.worldId.equals(nextId)))
           .write(const WorldProgressCompanion(unlocked: Value(true)));
+
+      // If World 8 is unlocked, unlock the Detective theme
+      if (nextId == 'world_08') {
+        try {
+          await into(themeUnlocks).insert(
+            ThemeUnlocksCompanion.insert(
+              themeId: 'detective',
+              unlockedAt: Value(DateTime.now().millisecondsSinceEpoch),
+            ),
+            mode: InsertMode.insertOrIgnore,
+          );
+        } catch (_) {}
+      }
     }
   }
 
