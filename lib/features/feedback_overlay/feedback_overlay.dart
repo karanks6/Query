@@ -12,6 +12,8 @@ import '../../core/sandbox_engine/sandbox_engine.dart';
 import '../../core/scoring/level_scorer.dart';
 import '../../core/validation/common_mistakes.dart';
 import '../gameplay/gameplay_provider.dart';
+import '../reference/codex_screen.dart';
+import '../gameplay/replay_screen.dart';
 
 /// Feedback overlay (Section 5.6).
 ///
@@ -329,7 +331,7 @@ class _FeedbackMessage extends StatelessWidget {
                 child: Text(message, style: GameTokens.bodyMedium),
               ),
               // Copy error message to clipboard
-              if (!isSuccess)
+              if (!isSuccess) ...[
                 GestureDetector(
                   onTap: () {
                     Clipboard.setData(ClipboardData(text: message));
@@ -340,6 +342,22 @@ class _FeedbackMessage extends StatelessWidget {
                         color: GameTokens.secondaryText, size: 14),
                   ),
                 ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const CodexScreen(),
+                      ),
+                    );
+                  },
+                  child: Tooltip(
+                    message: 'See in Codex',
+                    child: const Icon(Icons.menu_book,
+                        color: GameTokens.warning, size: 14),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -613,6 +631,20 @@ class _FeedbackActions extends ConsumerWidget {
             child: Text('REVIEW', style: GameTokens.labelLarge.copyWith(color: GameTokens.secondaryText)),
           ),
           const SizedBox(width: GameTokens.spaceSm),
+          IconButton(
+            icon: const Icon(Icons.play_circle_fill, color: GameTokens.accent),
+            tooltip: 'Watch Pro Solution',
+            onPressed: () {
+              final state = ref.read(gameplayProvider);
+              if (state.level != null) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => ReplayScreen(level: state.level!),
+                  ),
+                );
+              }
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.share, color: GameTokens.accent),
             onPressed: () {
