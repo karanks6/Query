@@ -16,6 +16,7 @@ import 'features/achievements/achievements_screen.dart';
 import 'features/sandbox/sandbox_screen.dart';
 import 'features/reference/reference_screen.dart';
 import 'features/daily_challenge/daily_challenge_screen.dart';
+import 'features/multiplayer/multiplayer_lobby_screen.dart';
 import 'data/content/models/level_model.dart';
 import 'package:query/features/settings/settings_screen.dart';
 import 'package:query/features/profile/profile_screen.dart';
@@ -92,6 +93,8 @@ class QueryApp extends ConsumerWidget {
             return _fadeRoute(const LeaderboardScreen(), settings);
           case '/reference':
             return _fadeRoute(const SqlReferenceScreen(), settings);
+          case '/multiplayer':
+            return _fadeRoute(const MultiplayerLobbyScreen(), settings);
           case '/settings':
             return _fadeRoute(const SettingsScreen(), settings);
           case '/profile':
