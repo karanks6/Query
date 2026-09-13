@@ -77,6 +77,9 @@ class LevelModel extends Equatable {
 
   // For Debugging levels: the pre-loaded broken query
   final String? brokenQuery;
+  
+  // For Detective Mode: the pre-loaded starter query
+  final String? detectiveStarterQuery;
 
   const LevelModel({
     required this.id,
@@ -100,6 +103,7 @@ class LevelModel extends Equatable {
     this.allowedStatements = const [],
     this.guidedAnswer,
     this.brokenQuery,
+    this.detectiveStarterQuery,
   });
 
   factory LevelModel.fromJson(Map<String, dynamic> json) {
@@ -137,6 +141,7 @@ class LevelModel extends Equatable {
           const [],
       guidedAnswer: (json['guided_answer'] ?? json['guidedAnswer']) as String?,
       brokenQuery: (json['broken_query'] ?? json['brokenQuery']) as String?,
+      detectiveStarterQuery: (json['detective_starter_query'] ?? json['detectiveStarterQuery']) as String?,
     );
   }
 
