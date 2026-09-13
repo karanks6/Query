@@ -10,6 +10,7 @@ import '../../core/providers.dart';
 import '../../core/settings/settings_service.dart';
 import 'widgets/streak_calendar_modal.dart';
 import 'widgets/rank_progress_modal.dart';
+import 'widgets/weekly_case_card.dart';
 import '../../data/content/models/rank_system.dart';
 
 /// Main Menu / Dashboard (Section 5.3).
@@ -98,6 +99,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       _DailyChallengeCard(
                         onTap: () => Navigator.of(context).pushNamed('/daily_challenge'),
                       ),
+
+                      const SizedBox(height: GameTokens.spaceMd),
+
+                      // Weekly Case Card
+                      const WeeklyCaseCard(),
 
                       const SizedBox(height: GameTokens.spaceLg),
                       const Spacer(flex: 2),
@@ -495,6 +501,7 @@ class _BureauToolsList extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       _BureauToolItem(Icons.map_outlined, 'WORLD MAP', 'Access the global case map', '/world_select'),
+      _BureauToolItem(Icons.speed_outlined, 'MULTIPLAYER', 'Race against other analysts', '/multiplayer'),
       _BureauToolItem(Icons.emoji_events_outlined, 'ACHIEVEMENTS', 'View unlocked commendations', '/achievements'),
       _BureauToolItem(Icons.menu_book_outlined, 'SQL REFERENCE', 'Consult the query manual', '/reference'),
     ];
