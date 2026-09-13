@@ -2789,6 +2789,801 @@ class BookmarkedConceptsCompanion extends UpdateCompanion<BookmarkedConcept> {
   }
 }
 
+class $LevelNotesTable extends LevelNotes
+    with TableInfo<$LevelNotesTable, LevelNote> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LevelNotesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _levelIdMeta =
+      const VerificationMeta('levelId');
+  @override
+  late final GeneratedColumn<String> levelId = GeneratedColumn<String>(
+      'level_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _noteTextMeta =
+      const VerificationMeta('noteText');
+  @override
+  late final GeneratedColumn<String> noteText = GeneratedColumn<String>(
+      'note_text', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [levelId, noteText, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'level_notes';
+  @override
+  VerificationContext validateIntegrity(Insertable<LevelNote> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('level_id')) {
+      context.handle(_levelIdMeta,
+          levelId.isAcceptableOrUnknown(data['level_id']!, _levelIdMeta));
+    } else if (isInserting) {
+      context.missing(_levelIdMeta);
+    }
+    if (data.containsKey('note_text')) {
+      context.handle(_noteTextMeta,
+          noteText.isAcceptableOrUnknown(data['note_text']!, _noteTextMeta));
+    } else if (isInserting) {
+      context.missing(_noteTextMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {levelId};
+  @override
+  LevelNote map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LevelNote(
+      levelId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}level_id'])!,
+      noteText: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}note_text'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}updated_at'])!,
+    );
+  }
+
+  @override
+  $LevelNotesTable createAlias(String alias) {
+    return $LevelNotesTable(attachedDatabase, alias);
+  }
+}
+
+class LevelNote extends DataClass implements Insertable<LevelNote> {
+  final String levelId;
+  final String noteText;
+  final int updatedAt;
+  const LevelNote(
+      {required this.levelId, required this.noteText, required this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['level_id'] = Variable<String>(levelId);
+    map['note_text'] = Variable<String>(noteText);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  LevelNotesCompanion toCompanion(bool nullToAbsent) {
+    return LevelNotesCompanion(
+      levelId: Value(levelId),
+      noteText: Value(noteText),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory LevelNote.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LevelNote(
+      levelId: serializer.fromJson<String>(json['levelId']),
+      noteText: serializer.fromJson<String>(json['noteText']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'levelId': serializer.toJson<String>(levelId),
+      'noteText': serializer.toJson<String>(noteText),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  LevelNote copyWith({String? levelId, String? noteText, int? updatedAt}) =>
+      LevelNote(
+        levelId: levelId ?? this.levelId,
+        noteText: noteText ?? this.noteText,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  LevelNote copyWithCompanion(LevelNotesCompanion data) {
+    return LevelNote(
+      levelId: data.levelId.present ? data.levelId.value : this.levelId,
+      noteText: data.noteText.present ? data.noteText.value : this.noteText,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LevelNote(')
+          ..write('levelId: $levelId, ')
+          ..write('noteText: $noteText, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(levelId, noteText, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LevelNote &&
+          other.levelId == this.levelId &&
+          other.noteText == this.noteText &&
+          other.updatedAt == this.updatedAt);
+}
+
+class LevelNotesCompanion extends UpdateCompanion<LevelNote> {
+  final Value<String> levelId;
+  final Value<String> noteText;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const LevelNotesCompanion({
+    this.levelId = const Value.absent(),
+    this.noteText = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LevelNotesCompanion.insert({
+    required String levelId,
+    required String noteText,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  })  : levelId = Value(levelId),
+        noteText = Value(noteText),
+        updatedAt = Value(updatedAt);
+  static Insertable<LevelNote> custom({
+    Expression<String>? levelId,
+    Expression<String>? noteText,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (levelId != null) 'level_id': levelId,
+      if (noteText != null) 'note_text': noteText,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LevelNotesCompanion copyWith(
+      {Value<String>? levelId,
+      Value<String>? noteText,
+      Value<int>? updatedAt,
+      Value<int>? rowid}) {
+    return LevelNotesCompanion(
+      levelId: levelId ?? this.levelId,
+      noteText: noteText ?? this.noteText,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (levelId.present) {
+      map['level_id'] = Variable<String>(levelId.value);
+    }
+    if (noteText.present) {
+      map['note_text'] = Variable<String>(noteText.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LevelNotesCompanion(')
+          ..write('levelId: $levelId, ')
+          ..write('noteText: $noteText, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WeeklyCaseCompletionTable extends WeeklyCaseCompletion
+    with TableInfo<$WeeklyCaseCompletionTable, WeeklyCaseCompletionData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WeeklyCaseCompletionTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _caseIdMeta = const VerificationMeta('caseId');
+  @override
+  late final GeneratedColumn<String> caseId = GeneratedColumn<String>(
+      'case_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _completedAtMeta =
+      const VerificationMeta('completedAt');
+  @override
+  late final GeneratedColumn<int> completedAt = GeneratedColumn<int>(
+      'completed_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _starsEarnedMeta =
+      const VerificationMeta('starsEarned');
+  @override
+  late final GeneratedColumn<int> starsEarned = GeneratedColumn<int>(
+      'stars_earned', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [caseId, completedAt, starsEarned];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'weekly_case_completion';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<WeeklyCaseCompletionData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('case_id')) {
+      context.handle(_caseIdMeta,
+          caseId.isAcceptableOrUnknown(data['case_id']!, _caseIdMeta));
+    } else if (isInserting) {
+      context.missing(_caseIdMeta);
+    }
+    if (data.containsKey('completed_at')) {
+      context.handle(
+          _completedAtMeta,
+          completedAt.isAcceptableOrUnknown(
+              data['completed_at']!, _completedAtMeta));
+    } else if (isInserting) {
+      context.missing(_completedAtMeta);
+    }
+    if (data.containsKey('stars_earned')) {
+      context.handle(
+          _starsEarnedMeta,
+          starsEarned.isAcceptableOrUnknown(
+              data['stars_earned']!, _starsEarnedMeta));
+    } else if (isInserting) {
+      context.missing(_starsEarnedMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {caseId};
+  @override
+  WeeklyCaseCompletionData map(Map<String, dynamic> data,
+      {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WeeklyCaseCompletionData(
+      caseId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}case_id'])!,
+      completedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}completed_at'])!,
+      starsEarned: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}stars_earned'])!,
+    );
+  }
+
+  @override
+  $WeeklyCaseCompletionTable createAlias(String alias) {
+    return $WeeklyCaseCompletionTable(attachedDatabase, alias);
+  }
+}
+
+class WeeklyCaseCompletionData extends DataClass
+    implements Insertable<WeeklyCaseCompletionData> {
+  final String caseId;
+  final int completedAt;
+  final int starsEarned;
+  const WeeklyCaseCompletionData(
+      {required this.caseId,
+      required this.completedAt,
+      required this.starsEarned});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['case_id'] = Variable<String>(caseId);
+    map['completed_at'] = Variable<int>(completedAt);
+    map['stars_earned'] = Variable<int>(starsEarned);
+    return map;
+  }
+
+  WeeklyCaseCompletionCompanion toCompanion(bool nullToAbsent) {
+    return WeeklyCaseCompletionCompanion(
+      caseId: Value(caseId),
+      completedAt: Value(completedAt),
+      starsEarned: Value(starsEarned),
+    );
+  }
+
+  factory WeeklyCaseCompletionData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WeeklyCaseCompletionData(
+      caseId: serializer.fromJson<String>(json['caseId']),
+      completedAt: serializer.fromJson<int>(json['completedAt']),
+      starsEarned: serializer.fromJson<int>(json['starsEarned']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'caseId': serializer.toJson<String>(caseId),
+      'completedAt': serializer.toJson<int>(completedAt),
+      'starsEarned': serializer.toJson<int>(starsEarned),
+    };
+  }
+
+  WeeklyCaseCompletionData copyWith(
+          {String? caseId, int? completedAt, int? starsEarned}) =>
+      WeeklyCaseCompletionData(
+        caseId: caseId ?? this.caseId,
+        completedAt: completedAt ?? this.completedAt,
+        starsEarned: starsEarned ?? this.starsEarned,
+      );
+  WeeklyCaseCompletionData copyWithCompanion(
+      WeeklyCaseCompletionCompanion data) {
+    return WeeklyCaseCompletionData(
+      caseId: data.caseId.present ? data.caseId.value : this.caseId,
+      completedAt:
+          data.completedAt.present ? data.completedAt.value : this.completedAt,
+      starsEarned:
+          data.starsEarned.present ? data.starsEarned.value : this.starsEarned,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeeklyCaseCompletionData(')
+          ..write('caseId: $caseId, ')
+          ..write('completedAt: $completedAt, ')
+          ..write('starsEarned: $starsEarned')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(caseId, completedAt, starsEarned);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WeeklyCaseCompletionData &&
+          other.caseId == this.caseId &&
+          other.completedAt == this.completedAt &&
+          other.starsEarned == this.starsEarned);
+}
+
+class WeeklyCaseCompletionCompanion
+    extends UpdateCompanion<WeeklyCaseCompletionData> {
+  final Value<String> caseId;
+  final Value<int> completedAt;
+  final Value<int> starsEarned;
+  final Value<int> rowid;
+  const WeeklyCaseCompletionCompanion({
+    this.caseId = const Value.absent(),
+    this.completedAt = const Value.absent(),
+    this.starsEarned = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WeeklyCaseCompletionCompanion.insert({
+    required String caseId,
+    required int completedAt,
+    required int starsEarned,
+    this.rowid = const Value.absent(),
+  })  : caseId = Value(caseId),
+        completedAt = Value(completedAt),
+        starsEarned = Value(starsEarned);
+  static Insertable<WeeklyCaseCompletionData> custom({
+    Expression<String>? caseId,
+    Expression<int>? completedAt,
+    Expression<int>? starsEarned,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (caseId != null) 'case_id': caseId,
+      if (completedAt != null) 'completed_at': completedAt,
+      if (starsEarned != null) 'stars_earned': starsEarned,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WeeklyCaseCompletionCompanion copyWith(
+      {Value<String>? caseId,
+      Value<int>? completedAt,
+      Value<int>? starsEarned,
+      Value<int>? rowid}) {
+    return WeeklyCaseCompletionCompanion(
+      caseId: caseId ?? this.caseId,
+      completedAt: completedAt ?? this.completedAt,
+      starsEarned: starsEarned ?? this.starsEarned,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (caseId.present) {
+      map['case_id'] = Variable<String>(caseId.value);
+    }
+    if (completedAt.present) {
+      map['completed_at'] = Variable<int>(completedAt.value);
+    }
+    if (starsEarned.present) {
+      map['stars_earned'] = Variable<int>(starsEarned.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeeklyCaseCompletionCompanion(')
+          ..write('caseId: $caseId, ')
+          ..write('completedAt: $completedAt, ')
+          ..write('starsEarned: $starsEarned, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RaceHistoryTable extends RaceHistory
+    with TableInfo<$RaceHistoryTable, RaceHistoryData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RaceHistoryTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _raceIdMeta = const VerificationMeta('raceId');
+  @override
+  late final GeneratedColumn<String> raceId = GeneratedColumn<String>(
+      'race_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _opponentNameMeta =
+      const VerificationMeta('opponentName');
+  @override
+  late final GeneratedColumn<String> opponentName = GeneratedColumn<String>(
+      'opponent_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _wonMeta = const VerificationMeta('won');
+  @override
+  late final GeneratedColumn<bool> won = GeneratedColumn<bool>(
+      'won', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("won" IN (0, 1))'));
+  static const VerificationMeta _levelIdMeta =
+      const VerificationMeta('levelId');
+  @override
+  late final GeneratedColumn<String> levelId = GeneratedColumn<String>(
+      'level_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _completedAtMeta =
+      const VerificationMeta('completedAt');
+  @override
+  late final GeneratedColumn<int> completedAt = GeneratedColumn<int>(
+      'completed_at', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [raceId, opponentName, won, levelId, completedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'race_history';
+  @override
+  VerificationContext validateIntegrity(Insertable<RaceHistoryData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('race_id')) {
+      context.handle(_raceIdMeta,
+          raceId.isAcceptableOrUnknown(data['race_id']!, _raceIdMeta));
+    } else if (isInserting) {
+      context.missing(_raceIdMeta);
+    }
+    if (data.containsKey('opponent_name')) {
+      context.handle(
+          _opponentNameMeta,
+          opponentName.isAcceptableOrUnknown(
+              data['opponent_name']!, _opponentNameMeta));
+    } else if (isInserting) {
+      context.missing(_opponentNameMeta);
+    }
+    if (data.containsKey('won')) {
+      context.handle(
+          _wonMeta, won.isAcceptableOrUnknown(data['won']!, _wonMeta));
+    } else if (isInserting) {
+      context.missing(_wonMeta);
+    }
+    if (data.containsKey('level_id')) {
+      context.handle(_levelIdMeta,
+          levelId.isAcceptableOrUnknown(data['level_id']!, _levelIdMeta));
+    } else if (isInserting) {
+      context.missing(_levelIdMeta);
+    }
+    if (data.containsKey('completed_at')) {
+      context.handle(
+          _completedAtMeta,
+          completedAt.isAcceptableOrUnknown(
+              data['completed_at']!, _completedAtMeta));
+    } else if (isInserting) {
+      context.missing(_completedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {raceId};
+  @override
+  RaceHistoryData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RaceHistoryData(
+      raceId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}race_id'])!,
+      opponentName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}opponent_name'])!,
+      won: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}won'])!,
+      levelId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}level_id'])!,
+      completedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}completed_at'])!,
+    );
+  }
+
+  @override
+  $RaceHistoryTable createAlias(String alias) {
+    return $RaceHistoryTable(attachedDatabase, alias);
+  }
+}
+
+class RaceHistoryData extends DataClass implements Insertable<RaceHistoryData> {
+  final String raceId;
+  final String opponentName;
+  final bool won;
+  final String levelId;
+  final int completedAt;
+  const RaceHistoryData(
+      {required this.raceId,
+      required this.opponentName,
+      required this.won,
+      required this.levelId,
+      required this.completedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['race_id'] = Variable<String>(raceId);
+    map['opponent_name'] = Variable<String>(opponentName);
+    map['won'] = Variable<bool>(won);
+    map['level_id'] = Variable<String>(levelId);
+    map['completed_at'] = Variable<int>(completedAt);
+    return map;
+  }
+
+  RaceHistoryCompanion toCompanion(bool nullToAbsent) {
+    return RaceHistoryCompanion(
+      raceId: Value(raceId),
+      opponentName: Value(opponentName),
+      won: Value(won),
+      levelId: Value(levelId),
+      completedAt: Value(completedAt),
+    );
+  }
+
+  factory RaceHistoryData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RaceHistoryData(
+      raceId: serializer.fromJson<String>(json['raceId']),
+      opponentName: serializer.fromJson<String>(json['opponentName']),
+      won: serializer.fromJson<bool>(json['won']),
+      levelId: serializer.fromJson<String>(json['levelId']),
+      completedAt: serializer.fromJson<int>(json['completedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'raceId': serializer.toJson<String>(raceId),
+      'opponentName': serializer.toJson<String>(opponentName),
+      'won': serializer.toJson<bool>(won),
+      'levelId': serializer.toJson<String>(levelId),
+      'completedAt': serializer.toJson<int>(completedAt),
+    };
+  }
+
+  RaceHistoryData copyWith(
+          {String? raceId,
+          String? opponentName,
+          bool? won,
+          String? levelId,
+          int? completedAt}) =>
+      RaceHistoryData(
+        raceId: raceId ?? this.raceId,
+        opponentName: opponentName ?? this.opponentName,
+        won: won ?? this.won,
+        levelId: levelId ?? this.levelId,
+        completedAt: completedAt ?? this.completedAt,
+      );
+  RaceHistoryData copyWithCompanion(RaceHistoryCompanion data) {
+    return RaceHistoryData(
+      raceId: data.raceId.present ? data.raceId.value : this.raceId,
+      opponentName: data.opponentName.present
+          ? data.opponentName.value
+          : this.opponentName,
+      won: data.won.present ? data.won.value : this.won,
+      levelId: data.levelId.present ? data.levelId.value : this.levelId,
+      completedAt:
+          data.completedAt.present ? data.completedAt.value : this.completedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RaceHistoryData(')
+          ..write('raceId: $raceId, ')
+          ..write('opponentName: $opponentName, ')
+          ..write('won: $won, ')
+          ..write('levelId: $levelId, ')
+          ..write('completedAt: $completedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(raceId, opponentName, won, levelId, completedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RaceHistoryData &&
+          other.raceId == this.raceId &&
+          other.opponentName == this.opponentName &&
+          other.won == this.won &&
+          other.levelId == this.levelId &&
+          other.completedAt == this.completedAt);
+}
+
+class RaceHistoryCompanion extends UpdateCompanion<RaceHistoryData> {
+  final Value<String> raceId;
+  final Value<String> opponentName;
+  final Value<bool> won;
+  final Value<String> levelId;
+  final Value<int> completedAt;
+  final Value<int> rowid;
+  const RaceHistoryCompanion({
+    this.raceId = const Value.absent(),
+    this.opponentName = const Value.absent(),
+    this.won = const Value.absent(),
+    this.levelId = const Value.absent(),
+    this.completedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RaceHistoryCompanion.insert({
+    required String raceId,
+    required String opponentName,
+    required bool won,
+    required String levelId,
+    required int completedAt,
+    this.rowid = const Value.absent(),
+  })  : raceId = Value(raceId),
+        opponentName = Value(opponentName),
+        won = Value(won),
+        levelId = Value(levelId),
+        completedAt = Value(completedAt);
+  static Insertable<RaceHistoryData> custom({
+    Expression<String>? raceId,
+    Expression<String>? opponentName,
+    Expression<bool>? won,
+    Expression<String>? levelId,
+    Expression<int>? completedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (raceId != null) 'race_id': raceId,
+      if (opponentName != null) 'opponent_name': opponentName,
+      if (won != null) 'won': won,
+      if (levelId != null) 'level_id': levelId,
+      if (completedAt != null) 'completed_at': completedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RaceHistoryCompanion copyWith(
+      {Value<String>? raceId,
+      Value<String>? opponentName,
+      Value<bool>? won,
+      Value<String>? levelId,
+      Value<int>? completedAt,
+      Value<int>? rowid}) {
+    return RaceHistoryCompanion(
+      raceId: raceId ?? this.raceId,
+      opponentName: opponentName ?? this.opponentName,
+      won: won ?? this.won,
+      levelId: levelId ?? this.levelId,
+      completedAt: completedAt ?? this.completedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (raceId.present) {
+      map['race_id'] = Variable<String>(raceId.value);
+    }
+    if (opponentName.present) {
+      map['opponent_name'] = Variable<String>(opponentName.value);
+    }
+    if (won.present) {
+      map['won'] = Variable<bool>(won.value);
+    }
+    if (levelId.present) {
+      map['level_id'] = Variable<String>(levelId.value);
+    }
+    if (completedAt.present) {
+      map['completed_at'] = Variable<int>(completedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RaceHistoryCompanion(')
+          ..write('raceId: $raceId, ')
+          ..write('opponentName: $opponentName, ')
+          ..write('won: $won, ')
+          ..write('levelId: $levelId, ')
+          ..write('completedAt: $completedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2805,12 +3600,17 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $ContentCacheManifestTable(this);
   late final $BookmarkedConceptsTable bookmarkedConcepts =
       $BookmarkedConceptsTable(this);
+  late final $LevelNotesTable levelNotes = $LevelNotesTable(this);
+  late final $WeeklyCaseCompletionTable weeklyCaseCompletion =
+      $WeeklyCaseCompletionTable(this);
+  late final $RaceHistoryTable raceHistory = $RaceHistoryTable(this);
   late final PlayerDao playerDao = PlayerDao(this as AppDatabase);
   late final ProgressDao progressDao = ProgressDao(this as AppDatabase);
   late final AttemptsDao attemptsDao = AttemptsDao(this as AppDatabase);
   late final AchievementsDao achievementsDao =
       AchievementsDao(this as AppDatabase);
   late final ConceptDao conceptDao = ConceptDao(this as AppDatabase);
+  late final LevelNotesDao levelNotesDao = LevelNotesDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2824,7 +3624,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         themeUnlocks,
         settings,
         contentCacheManifest,
-        bookmarkedConcepts
+        bookmarkedConcepts,
+        levelNotes,
+        weeklyCaseCompletion,
+        raceHistory
       ];
 }
 
@@ -4354,6 +5157,464 @@ typedef $$BookmarkedConceptsTableProcessedTableManager = ProcessedTableManager<
     ),
     BookmarkedConcept,
     PrefetchHooks Function()>;
+typedef $$LevelNotesTableCreateCompanionBuilder = LevelNotesCompanion Function({
+  required String levelId,
+  required String noteText,
+  required int updatedAt,
+  Value<int> rowid,
+});
+typedef $$LevelNotesTableUpdateCompanionBuilder = LevelNotesCompanion Function({
+  Value<String> levelId,
+  Value<String> noteText,
+  Value<int> updatedAt,
+  Value<int> rowid,
+});
+
+class $$LevelNotesTableFilterComposer
+    extends Composer<_$AppDatabase, $LevelNotesTable> {
+  $$LevelNotesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get levelId => $composableBuilder(
+      column: $table.levelId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get noteText => $composableBuilder(
+      column: $table.noteText, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$LevelNotesTableOrderingComposer
+    extends Composer<_$AppDatabase, $LevelNotesTable> {
+  $$LevelNotesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get levelId => $composableBuilder(
+      column: $table.levelId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get noteText => $composableBuilder(
+      column: $table.noteText, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$LevelNotesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LevelNotesTable> {
+  $$LevelNotesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get levelId =>
+      $composableBuilder(column: $table.levelId, builder: (column) => column);
+
+  GeneratedColumn<String> get noteText =>
+      $composableBuilder(column: $table.noteText, builder: (column) => column);
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$LevelNotesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $LevelNotesTable,
+    LevelNote,
+    $$LevelNotesTableFilterComposer,
+    $$LevelNotesTableOrderingComposer,
+    $$LevelNotesTableAnnotationComposer,
+    $$LevelNotesTableCreateCompanionBuilder,
+    $$LevelNotesTableUpdateCompanionBuilder,
+    (LevelNote, BaseReferences<_$AppDatabase, $LevelNotesTable, LevelNote>),
+    LevelNote,
+    PrefetchHooks Function()> {
+  $$LevelNotesTableTableManager(_$AppDatabase db, $LevelNotesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LevelNotesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LevelNotesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LevelNotesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> levelId = const Value.absent(),
+            Value<String> noteText = const Value.absent(),
+            Value<int> updatedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              LevelNotesCompanion(
+            levelId: levelId,
+            noteText: noteText,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String levelId,
+            required String noteText,
+            required int updatedAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              LevelNotesCompanion.insert(
+            levelId: levelId,
+            noteText: noteText,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$LevelNotesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $LevelNotesTable,
+    LevelNote,
+    $$LevelNotesTableFilterComposer,
+    $$LevelNotesTableOrderingComposer,
+    $$LevelNotesTableAnnotationComposer,
+    $$LevelNotesTableCreateCompanionBuilder,
+    $$LevelNotesTableUpdateCompanionBuilder,
+    (LevelNote, BaseReferences<_$AppDatabase, $LevelNotesTable, LevelNote>),
+    LevelNote,
+    PrefetchHooks Function()>;
+typedef $$WeeklyCaseCompletionTableCreateCompanionBuilder
+    = WeeklyCaseCompletionCompanion Function({
+  required String caseId,
+  required int completedAt,
+  required int starsEarned,
+  Value<int> rowid,
+});
+typedef $$WeeklyCaseCompletionTableUpdateCompanionBuilder
+    = WeeklyCaseCompletionCompanion Function({
+  Value<String> caseId,
+  Value<int> completedAt,
+  Value<int> starsEarned,
+  Value<int> rowid,
+});
+
+class $$WeeklyCaseCompletionTableFilterComposer
+    extends Composer<_$AppDatabase, $WeeklyCaseCompletionTable> {
+  $$WeeklyCaseCompletionTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get caseId => $composableBuilder(
+      column: $table.caseId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get starsEarned => $composableBuilder(
+      column: $table.starsEarned, builder: (column) => ColumnFilters(column));
+}
+
+class $$WeeklyCaseCompletionTableOrderingComposer
+    extends Composer<_$AppDatabase, $WeeklyCaseCompletionTable> {
+  $$WeeklyCaseCompletionTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get caseId => $composableBuilder(
+      column: $table.caseId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get starsEarned => $composableBuilder(
+      column: $table.starsEarned, builder: (column) => ColumnOrderings(column));
+}
+
+class $$WeeklyCaseCompletionTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WeeklyCaseCompletionTable> {
+  $$WeeklyCaseCompletionTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get caseId =>
+      $composableBuilder(column: $table.caseId, builder: (column) => column);
+
+  GeneratedColumn<int> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get starsEarned => $composableBuilder(
+      column: $table.starsEarned, builder: (column) => column);
+}
+
+class $$WeeklyCaseCompletionTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $WeeklyCaseCompletionTable,
+    WeeklyCaseCompletionData,
+    $$WeeklyCaseCompletionTableFilterComposer,
+    $$WeeklyCaseCompletionTableOrderingComposer,
+    $$WeeklyCaseCompletionTableAnnotationComposer,
+    $$WeeklyCaseCompletionTableCreateCompanionBuilder,
+    $$WeeklyCaseCompletionTableUpdateCompanionBuilder,
+    (
+      WeeklyCaseCompletionData,
+      BaseReferences<_$AppDatabase, $WeeklyCaseCompletionTable,
+          WeeklyCaseCompletionData>
+    ),
+    WeeklyCaseCompletionData,
+    PrefetchHooks Function()> {
+  $$WeeklyCaseCompletionTableTableManager(
+      _$AppDatabase db, $WeeklyCaseCompletionTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WeeklyCaseCompletionTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WeeklyCaseCompletionTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WeeklyCaseCompletionTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> caseId = const Value.absent(),
+            Value<int> completedAt = const Value.absent(),
+            Value<int> starsEarned = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              WeeklyCaseCompletionCompanion(
+            caseId: caseId,
+            completedAt: completedAt,
+            starsEarned: starsEarned,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String caseId,
+            required int completedAt,
+            required int starsEarned,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              WeeklyCaseCompletionCompanion.insert(
+            caseId: caseId,
+            completedAt: completedAt,
+            starsEarned: starsEarned,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$WeeklyCaseCompletionTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $WeeklyCaseCompletionTable,
+        WeeklyCaseCompletionData,
+        $$WeeklyCaseCompletionTableFilterComposer,
+        $$WeeklyCaseCompletionTableOrderingComposer,
+        $$WeeklyCaseCompletionTableAnnotationComposer,
+        $$WeeklyCaseCompletionTableCreateCompanionBuilder,
+        $$WeeklyCaseCompletionTableUpdateCompanionBuilder,
+        (
+          WeeklyCaseCompletionData,
+          BaseReferences<_$AppDatabase, $WeeklyCaseCompletionTable,
+              WeeklyCaseCompletionData>
+        ),
+        WeeklyCaseCompletionData,
+        PrefetchHooks Function()>;
+typedef $$RaceHistoryTableCreateCompanionBuilder = RaceHistoryCompanion
+    Function({
+  required String raceId,
+  required String opponentName,
+  required bool won,
+  required String levelId,
+  required int completedAt,
+  Value<int> rowid,
+});
+typedef $$RaceHistoryTableUpdateCompanionBuilder = RaceHistoryCompanion
+    Function({
+  Value<String> raceId,
+  Value<String> opponentName,
+  Value<bool> won,
+  Value<String> levelId,
+  Value<int> completedAt,
+  Value<int> rowid,
+});
+
+class $$RaceHistoryTableFilterComposer
+    extends Composer<_$AppDatabase, $RaceHistoryTable> {
+  $$RaceHistoryTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get raceId => $composableBuilder(
+      column: $table.raceId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get opponentName => $composableBuilder(
+      column: $table.opponentName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get won => $composableBuilder(
+      column: $table.won, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get levelId => $composableBuilder(
+      column: $table.levelId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$RaceHistoryTableOrderingComposer
+    extends Composer<_$AppDatabase, $RaceHistoryTable> {
+  $$RaceHistoryTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get raceId => $composableBuilder(
+      column: $table.raceId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get opponentName => $composableBuilder(
+      column: $table.opponentName,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get won => $composableBuilder(
+      column: $table.won, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get levelId => $composableBuilder(
+      column: $table.levelId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$RaceHistoryTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RaceHistoryTable> {
+  $$RaceHistoryTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get raceId =>
+      $composableBuilder(column: $table.raceId, builder: (column) => column);
+
+  GeneratedColumn<String> get opponentName => $composableBuilder(
+      column: $table.opponentName, builder: (column) => column);
+
+  GeneratedColumn<bool> get won =>
+      $composableBuilder(column: $table.won, builder: (column) => column);
+
+  GeneratedColumn<String> get levelId =>
+      $composableBuilder(column: $table.levelId, builder: (column) => column);
+
+  GeneratedColumn<int> get completedAt => $composableBuilder(
+      column: $table.completedAt, builder: (column) => column);
+}
+
+class $$RaceHistoryTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $RaceHistoryTable,
+    RaceHistoryData,
+    $$RaceHistoryTableFilterComposer,
+    $$RaceHistoryTableOrderingComposer,
+    $$RaceHistoryTableAnnotationComposer,
+    $$RaceHistoryTableCreateCompanionBuilder,
+    $$RaceHistoryTableUpdateCompanionBuilder,
+    (
+      RaceHistoryData,
+      BaseReferences<_$AppDatabase, $RaceHistoryTable, RaceHistoryData>
+    ),
+    RaceHistoryData,
+    PrefetchHooks Function()> {
+  $$RaceHistoryTableTableManager(_$AppDatabase db, $RaceHistoryTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RaceHistoryTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RaceHistoryTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RaceHistoryTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> raceId = const Value.absent(),
+            Value<String> opponentName = const Value.absent(),
+            Value<bool> won = const Value.absent(),
+            Value<String> levelId = const Value.absent(),
+            Value<int> completedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              RaceHistoryCompanion(
+            raceId: raceId,
+            opponentName: opponentName,
+            won: won,
+            levelId: levelId,
+            completedAt: completedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String raceId,
+            required String opponentName,
+            required bool won,
+            required String levelId,
+            required int completedAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              RaceHistoryCompanion.insert(
+            raceId: raceId,
+            opponentName: opponentName,
+            won: won,
+            levelId: levelId,
+            completedAt: completedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$RaceHistoryTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $RaceHistoryTable,
+    RaceHistoryData,
+    $$RaceHistoryTableFilterComposer,
+    $$RaceHistoryTableOrderingComposer,
+    $$RaceHistoryTableAnnotationComposer,
+    $$RaceHistoryTableCreateCompanionBuilder,
+    $$RaceHistoryTableUpdateCompanionBuilder,
+    (
+      RaceHistoryData,
+      BaseReferences<_$AppDatabase, $RaceHistoryTable, RaceHistoryData>
+    ),
+    RaceHistoryData,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4376,4 +5637,10 @@ class $AppDatabaseManager {
       $$ContentCacheManifestTableTableManager(_db, _db.contentCacheManifest);
   $$BookmarkedConceptsTableTableManager get bookmarkedConcepts =>
       $$BookmarkedConceptsTableTableManager(_db, _db.bookmarkedConcepts);
+  $$LevelNotesTableTableManager get levelNotes =>
+      $$LevelNotesTableTableManager(_db, _db.levelNotes);
+  $$WeeklyCaseCompletionTableTableManager get weeklyCaseCompletion =>
+      $$WeeklyCaseCompletionTableTableManager(_db, _db.weeklyCaseCompletion);
+  $$RaceHistoryTableTableManager get raceHistory =>
+      $$RaceHistoryTableTableManager(_db, _db.raceHistory);
 }
