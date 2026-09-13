@@ -20,6 +20,7 @@ class _ReplayScreenState extends State<ReplayScreen> {
 
   @override
   void initState() {
+    super.initState();
     _fullCode = widget.level.hints.isNotEmpty 
         ? (widget.level.hints.last.codeSnippet ?? 'SELECT * FROM table;') 
         : 'SELECT * FROM table;';

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../theming/tokens/game_tokens.dart';
-import '../../theming/components/slanted_panel.dart';
-import '../../theming/components/action_button.dart';
+import '../../../theming/tokens/game_tokens.dart';
+import '../../../theming/components/slanted_panel.dart';
+import '../../../theming/components/action_button.dart';
 
 class WeeklyCaseCard extends ConsumerWidget {
   const WeeklyCaseCard({super.key});

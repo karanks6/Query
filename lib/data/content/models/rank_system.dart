@@ -21,7 +21,7 @@ class RankSystem {
       title: 'Junior Analyst',
       requiredXp: 0,
       icon: Icons.badge_outlined,
-      color: const Color(0xFF90A4AE), // Brighter blue grey
+      color: Color(0xFF90A4AE), // Brighter blue grey
     ),
     RankTier(
       title: 'Data Sleuth',

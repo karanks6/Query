@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../theming/tokens/game_tokens.dart';
 import '../../data/content/models/rank_system.dart';
 
 class RankBadge extends StatelessWidget {

@@ -54,9 +54,9 @@ class _CodexScreenState extends State<CodexScreen> {
       backgroundColor: GameTokens.background,
       appBar: AppBar(
         backgroundColor: GameTokens.surface,
-        title: const Text('SQL Error Codex', style: TextStyle(fontFamily: 'FiraCode', color: GameTokens.textAccent)),
+        title: const Text('SQL Error Codex', style: TextStyle(fontFamily: 'FiraCode', color: GameTokens.accent)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: GameTokens.textPrimary),
+          icon: const Icon(Icons.arrow_back_ios, color: GameTokens.primaryText),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
