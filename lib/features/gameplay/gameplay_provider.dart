@@ -30,6 +30,7 @@ class GameplayState {
   final bool isDailyChallenge;    // Whether 2× XP multiplier applies
   final String? hintError;        // Set when IP balance is too low
   final List<String> newlyEarnedAchievements; // IDs earned this session
+  final bool isDetectiveMode;
 
   const GameplayState({
     this.level,
@@ -49,6 +50,7 @@ class GameplayState {
     this.isDailyChallenge = false,
     this.hintError,
     this.newlyEarnedAchievements = const [],
+    this.isDetectiveMode = false,
   });
 
   bool get isFirstAttempt => attemptCount == 0;
@@ -71,6 +73,7 @@ class GameplayState {
     bool? isDailyChallenge,
     String? hintError,
     List<String>? newlyEarnedAchievements,
+    bool? isDetectiveMode,
     bool clearSandboxError = false,
     bool clearReport = false,
     bool clearHintError = false,
@@ -94,6 +97,7 @@ class GameplayState {
       hintError: clearHintError ? null : (hintError ?? this.hintError),
       newlyEarnedAchievements:
           newlyEarnedAchievements ?? this.newlyEarnedAchievements,
+      isDetectiveMode: isDetectiveMode ?? this.isDetectiveMode,
     );
   }
 }
@@ -136,6 +140,18 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
 
   void updateQuery(String query) {
     state = state.copyWith(currentQuery: query, clearReport: true, clearSandboxError: true);
+  }
+
+  void enableDetectiveMode() {
+    if (state.level?.detectiveStarterQuery != null) {
+      state = state.copyWith(
+        isDetectiveMode: true,
+        currentQuery: state.level!.detectiveStarterQuery,
+        clearReport: true,
+        clearSandboxError: true,
+        showFeedback: false,
+      );
+    }
   }
 
   void toggleQueryMode() {
@@ -233,6 +249,7 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
       baseXpReward: level.xpReward,
       performanceActive: level.performanceActive,
       dailyMultiplier: state.isDailyChallenge ? 2.0 : 1.0,
+      isDetectiveMode: state.isDetectiveMode,
     );
 
     // Persist completion
