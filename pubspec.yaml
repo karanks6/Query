@@ -93,6 +93,7 @@ flutter:
     - assets/concept_cards/
     - assets/audio/terminal_classic/
     - assets/images/
+    - assets/reference/
 
   fonts:
     - family: JetBrainsMono
