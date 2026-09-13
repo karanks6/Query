@@ -11,7 +11,7 @@ import '../../core/validation/validation_result.dart';
 import '../../core/sandbox_engine/sandbox_engine.dart';
 import '../../core/scoring/level_scorer.dart';
 import '../../core/validation/common_mistakes.dart';
-import '../gameplay_provider.dart';
+import '../gameplay/gameplay_provider.dart';
 
 /// Feedback overlay (Section 5.6).
 ///
