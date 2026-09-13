@@ -1,0 +1,44 @@
+{
+  "errors": [
+    {
+      "id": "syntax_error",
+      "title": "Syntax Error",
+      "description": "SQL couldn't understand your query because of a typo or missing keyword. Check your spelling, commas, and parentheses.",
+      "bad_example": "SELECT * FORM employees;",
+      "good_example": "SELECT * FROM employees;",
+      "keywords": ["syntax", "near", "unrecognized", "unexpected"]
+    },
+    {
+      "id": "no_such_table",
+      "title": "No Such Table",
+      "description": "You are trying to query a table that does not exist in the database. Double-check the table name in the schema browser.",
+      "bad_example": "SELECT * FROM emplyees;",
+      "good_example": "SELECT * FROM employees;",
+      "keywords": ["no such table", "does not exist"]
+    },
+    {
+      "id": "no_such_column",
+      "title": "No Such Column",
+      "description": "The column you are selecting or filtering by doesn't exist in the referenced table.",
+      "bad_example": "SELECT full_name FROM employees;",
+      "good_example": "SELECT first_name, last_name FROM employees;",
+      "keywords": ["no such column", "unknown column"]
+    },
+    {
+      "id": "missing_group_by",
+      "title": "Missing GROUP BY",
+      "description": "When using an aggregate function (like COUNT, SUM, AVG) alongside normal columns, you must group the results by those normal columns.",
+      "bad_example": "SELECT department, COUNT(*) FROM employees;",
+      "good_example": "SELECT department, COUNT(*) FROM employees GROUP BY department;",
+      "keywords": ["misuse of aggregate", "group by"]
+    },
+    {
+      "id": "ambiguous_column",
+      "title": "Ambiguous Column Name",
+      "description": "When joining tables that have columns with the same name (like 'id'), you must specify which table's column you mean.",
+      "bad_example": "SELECT id FROM employees JOIN departments ON employees.dept_id = departments.id;",
+      "good_example": "SELECT employees.id FROM employees JOIN departments ON employees.dept_id = departments.id;",
+      "keywords": ["ambiguous column", "ambiguous"]
+    }
+  ]
+}
