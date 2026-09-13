@@ -2,19 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
 import '../../../theming/tokens/game_tokens.dart';
 import '../../../theming/components/slanted_panel.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/content/models/level_model.dart';
+import '../gameplay_provider.dart';
 
-class DataBrowser extends StatefulWidget {
+class DataBrowser extends ConsumerStatefulWidget {
   final LevelModel level;
   final ScrollController? scrollController;
 
   const DataBrowser({super.key, required this.level, this.scrollController});
 
   @override
-  State<DataBrowser> createState() => _DataBrowserState();
+  ConsumerState<DataBrowser> createState() => _DataBrowserState();
 }
 
-class _DataBrowserState extends State<DataBrowser> {
+class _DataBrowserState extends ConsumerState<DataBrowser> {
   final Set<String> _expanded = {};
   final Map<String, List<Map<String, dynamic>>> _tableData = {};
   bool _isLoading = true;
@@ -60,6 +62,9 @@ class _DataBrowserState extends State<DataBrowser> {
 
   @override
   Widget build(BuildContext context) {
+    final gameplayState = ref.watch(gameplayProvider);
+    final isDetectiveMode = gameplayState.isDetectiveMode;
+
     return SlantedPanel(
       padding: EdgeInsets.zero,
       child: Column(
@@ -110,7 +115,8 @@ class _DataBrowserState extends State<DataBrowser> {
                             .map((table) => _TableItem(
                                   tableName: table.name,
                                   data: _tableData[table.name] ?? [],
-                                  isExpanded: _expanded.contains(table.name),
+                                    isExpanded: _expanded.contains(table.name),
+                                  isDetectiveMode: isDetectiveMode,
                                   onToggle: () {
                                     setState(() {
                                       if (_expanded.contains(table.name)) {
@@ -134,12 +140,14 @@ class _TableItem extends StatelessWidget {
   final String tableName;
   final List<Map<String, dynamic>> data;
   final bool isExpanded;
+  final bool isDetectiveMode;
   final VoidCallback onToggle;
 
   const _TableItem({
     required this.tableName,
     required this.data,
     required this.isExpanded,
+    required this.isDetectiveMode,
     required this.onToggle,
   });
 
@@ -222,7 +230,19 @@ class _TableItem extends StatelessWidget {
                       rows: data.map((row) {
                         return DataRow(
                           cells: row.keys.map((key) {
-                            return DataCell(Text(row[key]?.toString() ?? 'NULL'));
+                            String value = row[key]?.toString() ?? 'NULL';
+                            if (isDetectiveMode && key != 'id') {
+                              // Mask the value, keeping only length and structure (basic obfuscation)
+                              value = value.replaceAll(RegExp(r'[a-zA-Z0-9]'), '█');
+                            }
+                            return DataCell(
+                              Text(
+                                value,
+                                style: isDetectiveMode && key != 'id'
+                                    ? TextStyle(color: GameTokens.warning)
+                                    : null,
+                              ),
+                            );
                           }).toList(),
                         );
                       }).toList(),
