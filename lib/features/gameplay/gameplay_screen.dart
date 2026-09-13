@@ -20,6 +20,7 @@ import 'widgets/concept_lesson_dialog.dart';
 import '../feedback_overlay/feedback_overlay.dart';
 import '../hints/hints_modal.dart';
 import 'widgets/query_history_sheet.dart';
+import 'widgets/notes_sheet.dart';
 
 /// Core Gameplay Screen (Section 5.5).
 ///
@@ -605,6 +606,23 @@ class _ActionBar extends ConsumerWidget {
             ),
           ),
 
+          const SizedBox(width: GameTokens.spaceSm),
+
+          // Notes
+          ActionButton(
+            onPressed: () => _showNotes(context, level),
+            child: Row(
+              children: [
+                const Icon(Icons.note_alt_outlined,
+                    color: GameTokens.secondaryText, size: 16),
+                if (MediaQuery.of(context).size.width > 600) ...[
+                  const SizedBox(width: 4),
+                  Text('NOTES', style: GameTokens.labelLarge.copyWith(color: GameTokens.secondaryText)),
+                ],
+              ],
+            ),
+          ),
+
           const Spacer(),
 
           // Run button
@@ -687,6 +705,20 @@ class _ActionBar extends ConsumerWidget {
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         child: QueryHistorySheet(levelId: level.id),
+      ),
+    );
+  }
+
+  void _showNotes(BuildContext context, LevelModel level) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: const NotesSheet(),
       ),
     );
   }
