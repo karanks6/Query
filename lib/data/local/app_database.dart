@@ -8,6 +8,7 @@ import 'daos/progress_dao.dart';
 import 'daos/attempts_dao.dart';
 import 'daos/achievements_dao.dart';
 import 'daos/concept_dao.dart';
+import 'daos/level_notes_dao.dart';
 
 part 'app_database.g.dart';
 
@@ -103,6 +104,35 @@ class BookmarkedConcepts extends Table {
   Set<Column> get primaryKey => {conceptId};
 }
 
+class LevelNotes extends Table {
+  TextColumn get levelId => text().named('level_id')();
+  TextColumn get noteText => text().named('note_text')();
+  IntColumn get updatedAt => integer().named('updated_at')();
+
+  @override
+  Set<Column> get primaryKey => {levelId};
+}
+
+class WeeklyCaseCompletion extends Table {
+  TextColumn get caseId => text().named('case_id')();
+  IntColumn get completedAt => integer().named('completed_at')();
+  IntColumn get starsEarned => integer().named('stars_earned')();
+
+  @override
+  Set<Column> get primaryKey => {caseId};
+}
+
+class RaceHistory extends Table {
+  TextColumn get raceId => text().named('race_id')();
+  TextColumn get opponentName => text().named('opponent_name')();
+  BoolColumn get won => boolean()();
+  TextColumn get levelId => text().named('level_id')();
+  IntColumn get completedAt => integer().named('completed_at')();
+
+  @override
+  Set<Column> get primaryKey => {raceId};
+}
+
 // ─── Database class ──────────────────────────────────────────────────────────
 
 @DriftDatabase(
@@ -116,6 +146,9 @@ class BookmarkedConcepts extends Table {
     Settings,
     ContentCacheManifest,
     BookmarkedConcepts,
+    LevelNotes,
+    WeeklyCaseCompletion,
+    RaceHistory,
   ],
   daos: [
     PlayerDao,
@@ -123,13 +156,14 @@ class BookmarkedConcepts extends Table {
     AttemptsDao,
     AchievementsDao,
     ConceptDao,
+    LevelNotesDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
@@ -168,6 +202,11 @@ class AppDatabase extends _$AppDatabase {
       onUpgrade: (Migrator m, int from, int to) async {
         if (from < 2) {
           await m.createTable(bookmarkedConcepts);
+        }
+        if (from < 3) {
+          await m.createTable(levelNotes);
+          await m.createTable(weeklyCaseCompletion);
+          await m.createTable(raceHistory);
         }
       },
     );
