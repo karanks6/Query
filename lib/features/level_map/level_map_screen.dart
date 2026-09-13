@@ -29,6 +29,7 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
   bool _loading = true;
   String? _error;
   Map<String, int> _levelStars = {};
+  Set<String> _levelNotes = {};
 
   @override
   void initState() {
@@ -50,10 +51,20 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
         }
       }
 
+      final notes = <String>{};
+      final levelNotesDao = ref.read(appDatabaseProvider).levelNotesDao;
+      for (final level in world.levels) {
+        final note = await levelNotesDao.getNoteForLevel(level.id);
+        if (note != null && note.noteText.trim().isNotEmpty) {
+          notes.add(level.id);
+        }
+      }
+
       if (mounted) {
         setState(() {
           _world = world;
           _levelStars = stars;
+          _levelNotes = notes;
           _loading = false;
         });
       }
@@ -107,6 +118,7 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
                 : _LevelGrid(
                     world: _world!,
                     levelStars: _levelStars,
+                    levelNotes: _levelNotes,
                     onLevelTap: (level) => _onLevelTap(context, level),
                   ),
       ),
@@ -137,11 +149,13 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
 class _LevelGrid extends StatelessWidget {
   final WorldModel world;
   final Map<String, int> levelStars;
+  final Set<String> levelNotes;
   final void Function(LevelModel) onLevelTap;
 
   const _LevelGrid({
     required this.world,
     required this.levelStars,
+    required this.levelNotes,
     required this.onLevelTap,
   });
 
@@ -213,12 +227,15 @@ class _LevelGrid extends StatelessWidget {
                 final isNextToPlay = isUnlocked && !isCompleted &&
                     (index == 0 || levelStars.containsKey(world.levels[index - 1].id));
 
+                final hasNote = levelNotes.contains(level.id);
+
                 return _LevelNode(
                   level: level,
                   stars: stars,
                   isCompleted: isCompleted,
                   isUnlocked: isUnlocked,
                   isNextToPlay: isNextToPlay,
+                  hasNote: hasNote,
                   onTap: isUnlocked ? () => onLevelTap(level) : null,
                 )
                     .animate()
@@ -246,6 +263,7 @@ class _LevelNode extends StatelessWidget {
   final bool isCompleted;
   final bool isUnlocked;
   final bool isNextToPlay;
+  final bool hasNote;
   final VoidCallback? onTap;
 
   const _LevelNode({
@@ -254,6 +272,7 @@ class _LevelNode extends StatelessWidget {
     required this.isCompleted,
     required this.isUnlocked,
     this.isNextToPlay = false,
+    this.hasNote = false,
     this.onTap,
   });
 
@@ -292,6 +311,14 @@ class _LevelNode extends StatelessWidget {
                     right: -6,
                     child: Icon(Icons.workspace_premium,
                         color: GameTokens.warning, size: 11),
+                  ),
+                // Note badge
+                if (hasNote)
+                  Positioned(
+                    top: -6,
+                    left: -6,
+                    child: Icon(Icons.note_alt,
+                        color: GameTokens.info, size: 11),
                   ),
               ],
             ),
