@@ -23,6 +23,7 @@ class LevelScorer {
     required int baseXpReward,
     required bool performanceActive,
     double dailyMultiplier = 1.0,
+    bool isDetectiveMode = false,
   }) {
     // Full solution hint caps at 1 star
     final hintCapApplied = highestHintUsed == HintTier.fullSolution;
@@ -53,6 +54,11 @@ class LevelScorer {
     // Apply daily challenge multiplier (2× = double XP)
     if (dailyMultiplier > 1.0) {
       xpEarned = (xpEarned * dailyMultiplier).round();
+    }
+
+    // Detective mode applies a 25% XP penalty
+    if (isDetectiveMode) {
+      xpEarned = (xpEarned * 0.75).round();
     }
 
     return LevelScore(
