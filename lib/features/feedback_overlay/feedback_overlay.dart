@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
 import '../../theming/components/action_button.dart';
@@ -10,12 +11,13 @@ import '../../core/validation/validation_result.dart';
 import '../../core/sandbox_engine/sandbox_engine.dart';
 import '../../core/scoring/level_scorer.dart';
 import '../../core/validation/common_mistakes.dart';
+import '../gameplay_provider.dart';
 
 /// Feedback overlay (Section 5.6).
 ///
 /// Surfaces the 4-layer feedback loop without leaving gameplay context.
 /// Shows on top of the Gameplay Screen as a bottom sheet.
-class FeedbackOverlay extends StatelessWidget {
+class FeedbackOverlay extends ConsumerWidget {
   final QueryValidationReport? report;
   final SandboxException? sandboxError;
   final LevelScore? score;
@@ -36,11 +38,17 @@ class FeedbackOverlay extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isSuccess = report?.isComplete ?? false;
     final accentColor = isSuccess
         ? GameTokens.success
         : GameTokens.error;
+    
+    final state = ref.watch(gameplayProvider);
+    final offerDetectiveMode = !isSuccess && 
+                               state.attemptCount >= 3 && 
+                               state.level?.detectiveStarterQuery != null && 
+                               !state.isDetectiveMode;
 
     return SlantedPanel(
       borderColorOverride: accentColor,
@@ -80,6 +88,16 @@ class FeedbackOverlay extends StatelessWidget {
                   const SizedBox(height: GameTokens.spaceSm),
                   _AchievementUnlockedRow(
                     achievementIds: newlyEarnedAchievements,
+                  ),
+                ],
+
+                if (offerDetectiveMode) ...[
+                  const SizedBox(height: GameTokens.spaceMd),
+                  _DetectiveModeOfferCard(
+                    onAccept: () {
+                      ref.read(gameplayProvider.notifier).enableDetectiveMode();
+                      onDismiss();
+                    },
                   ),
                 ],
 
@@ -550,7 +568,7 @@ class _StarItem extends StatelessWidget {
   }
 }
 
-class _FeedbackActions extends StatelessWidget {
+class _FeedbackActions extends ConsumerWidget {
   final bool isSuccess;
   final VoidCallback onDismiss;
   final VoidCallback? onNextLevel;
@@ -564,7 +582,7 @@ class _FeedbackActions extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -596,10 +614,33 @@ class _FeedbackActions extends StatelessWidget {
           ),
           const SizedBox(width: GameTokens.spaceSm),
           IconButton(
-            icon: Icon(Icons.share, color: GameTokens.accent),
+            icon: const Icon(Icons.share, color: GameTokens.accent),
             onPressed: () {
+              final state = ref.read(gameplayProvider);
+              final level = state.level?.title ?? 'Unknown Case';
+              final query = state.currentQuery.trim();
+              
+              final score = state.levelScore;
+              final stars = score != null 
+                  ? '⭐' * score.starCount + '☆' * (3 - score.starCount)
+                  : '';
+              final timeMedal = score?.timeMedal?.name.toUpperCase() ?? 'NO MEDAL';
+
+              final text = '''
+I just cracked the "$level" case in Query! 🔍
+
+Score: $stars
+Medal: $timeMedal
+
+My Solution:
+```sql
+$query
+```
+
+Can you write a faster query? #QueryGame #SQL
+''';
               // ignore: deprecated_member_use
-              Share.share('I just cracked a SQL case in Query!\nLevel passed with flying colors. #QueryGame #SQL');
+              Share.share(text.trim());
             },
           ),
         ],
@@ -679,6 +720,51 @@ class _AchievementUnlockedRow extends StatelessWidget {
           }).toList(),
         ),
       ],
+    );
+  }
+}
+
+// ─── Detective Mode Offer ─────────────────────────────────────────────────────
+
+class _DetectiveModeOfferCard extends StatelessWidget {
+  final VoidCallback onAccept;
+  const _DetectiveModeOfferCard({required this.onAccept});
+
+  @override
+  Widget build(BuildContext context) {
+    return SlantedPanel(
+      borderColorOverride: GameTokens.warning,
+      colorOverride: GameTokens.warningSurface,
+      padding: const EdgeInsets.all(GameTokens.spaceMd),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.search_outlined, color: GameTokens.warning, size: 16),
+              const SizedBox(width: 8),
+              Text(
+                'DETECTIVE MODE AVAILABLE',
+                style: GameTokens.headlineMedium.copyWith(color: GameTokens.warning),
+              ),
+            ],
+          ),
+          const SizedBox(height: GameTokens.spaceSm),
+          Text(
+            'Stuck? Enter Detective Mode to get a partially complete starter query, but the database schema will be redacted.',
+            style: GameTokens.bodyMedium,
+          ),
+          const SizedBox(height: GameTokens.spaceMd),
+          Align(
+            alignment: Alignment.centerRight,
+            child: ActionButton(
+              isPrimary: true,
+              onPressed: onAccept,
+              child: const Text('ENABLE DETECTIVE MODE'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
