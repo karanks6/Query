@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
+import '../../theming/components/action_button.dart';
 import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/game_widgets.dart';
+import 'codex_screen.dart';
 
 class SqlReferenceScreen extends ConsumerStatefulWidget {
   const SqlReferenceScreen({super.key});
@@ -73,6 +75,24 @@ class _SqlReferenceScreenState extends ConsumerState<SqlReferenceScreen> {
       appBar: GameAppBar(
         title: 'SQL REFERENCE',
         onBack: () => Navigator.of(context).pop(),
+        actions: [
+          ActionButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const CodexScreen()),
+              );
+            },
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: Row(
+              children: [
+                const Icon(Icons.menu_book, color: GameTokens.warning, size: 14),
+                const SizedBox(width: 6),
+                Text('CODEX', style: GameTokens.labelLarge.copyWith(color: GameTokens.warning)),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: ParallaxBackground(
         child: Column(
