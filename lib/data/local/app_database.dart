@@ -9,6 +9,7 @@ import 'daos/attempts_dao.dart';
 import 'daos/achievements_dao.dart';
 import 'daos/concept_dao.dart';
 import 'daos/level_notes_dao.dart';
+import 'daos/themes_dao.dart';
 
 part 'app_database.g.dart';
 
@@ -157,6 +158,7 @@ class RaceHistory extends Table {
     AchievementsDao,
     ConceptDao,
     LevelNotesDao,
+    ThemesDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
