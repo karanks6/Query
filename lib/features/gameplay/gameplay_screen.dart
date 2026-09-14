@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers.dart';
 
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
 import '../../theming/components/action_button.dart';
@@ -92,7 +93,7 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
                 child: isTablet
                     ? _TabletLayout(level: widget.level, state: state)
                     : _PhoneLayout(level: widget.level, state: state),
-              ),
+              ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.05, end: 0, duration: 400.ms, curve: Curves.easeOutQuad),
             ],
           ),
         ),
