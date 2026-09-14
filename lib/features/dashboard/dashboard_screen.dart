@@ -61,60 +61,99 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 padding: const EdgeInsets.all(GameTokens.spaceMd),
                 sliver: SliverFillRemaining(
                   hasScrollBody: false,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Spacer(flex: 1), // Add space above continue container box
-                      // Continue banner
-                      profileAsync.when(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isDesktop = constraints.maxWidth > 720;
+                      
+                      final continueBanner = profileAsync.when(
                         data: (profile) => worldsAsync.when(
                           data: (worlds) => _ContinueBanner(
                             worlds: worlds,
-                            onContinue: () =>
-                                _navigateToCurrentWorld(context, worlds),
+                            onContinue: () => _navigateToCurrentWorld(context, worlds),
                           ),
                           loading: () => const _LoadingCard(),
                           error: (_, __) => const SizedBox.shrink(),
                         ),
                         loading: () => const _LoadingCard(),
                         error: (_, __) => const SizedBox.shrink(),
-                      ),
+                      );
 
-                      const SizedBox(height: GameTokens.spaceLg),
-                      const Spacer(flex: 1),
-
-                      // Streak + XP row
-                      profileAsync.when(
-                        data: (profile) => profile != null
-                            ? _StatsRow(profile: profile)
-                            : const SizedBox.shrink(),
+                      final statsRow = profileAsync.when(
+                        data: (profile) => profile != null ? _StatsRow(profile: profile) : const SizedBox.shrink(),
                         loading: () => const _LoadingCard(),
                         error: (_, __) => const SizedBox.shrink(),
-                      ),
+                      );
 
-                      const SizedBox(height: GameTokens.spaceLg),
-                      const Spacer(flex: 1),
-
-                      // Daily challenge card
-                      _DailyChallengeCard(
+                      final dailyChallenge = _DailyChallengeCard(
                         onTap: () => Navigator.of(context).pushNamed('/daily_challenge'),
-                      ),
+                      );
+                      
+                      final weeklyCase = const WeeklyCaseCard();
 
-                      const SizedBox(height: GameTokens.spaceMd),
+                      if (isDesktop) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const Spacer(flex: 1),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: [
+                                      continueBanner,
+                                      const SizedBox(height: GameTokens.spaceLg),
+                                      statsRow,
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: GameTokens.spaceLg),
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: [
+                                      dailyChallenge,
+                                      const SizedBox(height: GameTokens.spaceLg),
+                                      weeklyCase,
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Spacer(flex: 2),
+                            const GameDivider(label: '// BUREAU TOOLS'),
+                            const SizedBox(height: GameTokens.spaceMd),
+                            _BureauToolsList(context: context),
+                            const Spacer(flex: 1),
+                          ],
+                        );
+                      }
 
-                      // Weekly Case Card
-                      const WeeklyCaseCard(),
-
-                      const SizedBox(height: GameTokens.spaceLg),
-                      const Spacer(flex: 2),
-                      const GameDivider(label: '// BUREAU TOOLS'),
-                      const SizedBox(height: GameTokens.spaceMd),
-
-                      // Bureau Tools List
-                      _BureauToolsList(context: context),
-
-                      const Spacer(flex: 1), // Reduced bottom space
-                    ],
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Spacer(flex: 1),
+                          continueBanner,
+                          const SizedBox(height: GameTokens.spaceLg),
+                          const Spacer(flex: 1),
+                          statsRow,
+                          const SizedBox(height: GameTokens.spaceLg),
+                          const Spacer(flex: 1),
+                          dailyChallenge,
+                          const SizedBox(height: GameTokens.spaceMd),
+                          weeklyCase,
+                          const SizedBox(height: GameTokens.spaceLg),
+                          const Spacer(flex: 2),
+                          const GameDivider(label: '// BUREAU TOOLS'),
+                          const SizedBox(height: GameTokens.spaceMd),
+                          _BureauToolsList(context: context),
+                          const Spacer(flex: 1),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),
@@ -192,6 +231,26 @@ class _DashboardAppBar extends StatelessWidget {
                             style: GameTokens.bodySmall,
                           ),
                         ],
+                      ),
+                      const SizedBox(width: GameTokens.spaceSm),
+                      GestureDetector(
+                        onTap: () => Navigator.of(context).pushNamed('/settings'),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: GameTokens.accent,
+                              width: 1,
+                            ),
+                            borderRadius: GameTokens.borderRadiusSm,
+                          ),
+                          child: const Icon(
+                            Icons.settings,
+                            color: GameTokens.accent,
+                            size: 20,
+                          ),
+                        ),
                       ),
                       const SizedBox(width: GameTokens.spaceSm),
                       GestureDetector(
