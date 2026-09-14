@@ -29,6 +29,7 @@ enum AppTheme {
       (t) => t.id == id,
       orElse: () => AppTheme.terminalClassic,
     );
+  }
 }
 
 /// Central theme provider â€” manages the active theme and returns
