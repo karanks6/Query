@@ -36,6 +36,10 @@ final conceptDaoProvider = Provider((ref) {
   return ref.watch(appDatabaseProvider).conceptDao;
 });
 
+final themesDaoProvider = Provider((ref) {
+  return ref.watch(appDatabaseProvider).themesDao;
+});
+
 // ─── Service providers ────────────────────────────────────────────────────────
 
 final syncServiceProvider = Provider<SyncService>((ref) {

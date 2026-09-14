@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../theming/tokens/game_tokens.dart';
+import '../../../core/settings/settings_service.dart';
 
 /// Results pane â€” displays query result rows with color-coded diff.
 ///
@@ -7,7 +9,7 @@ import '../../../theming/tokens/game_tokens.dart';
 ///   - Match (default): neutral background
 ///   - Extra: orange tint ("you returned this, we didn't expect it")
 ///   - Missing: red tint ("we expected this, you didn't return it")
-class ResultPane extends StatelessWidget {
+class ResultPane extends ConsumerWidget {
   final List<Map<String, dynamic>> rows;
   final Set<int> extraRowIndices;
   final Set<int> missingRowIndices;
@@ -20,7 +22,8 @@ class ResultPane extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isColorblindMode = ref.watch(settingsProvider).colorblindModeEnabled;
     if (rows.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(GameTokens.spaceMd),
@@ -114,21 +117,44 @@ class ResultPane extends StatelessWidget {
                       color: rowColor != null
                           ? WidgetStateProperty.all(rowColor)
                           : null,
-                      cells: columns
-                          .map((col) => DataCell(
-                                Text(
-                                  _formatValue(row[col]),
-                                  style: GameTokens.codeSmall.copyWith(
-                                    color: row[col] == null
-                                        ? GameTokens.disabledText
-                                        : GameTokens.primaryText,
-                                    fontStyle: row[col] == null
-                                        ? FontStyle.italic
-                                        : FontStyle.normal,
-                                  ),
-                                ),
-                              ))
-                          .toList(),
+                      cells: columns.asMap().entries.map((colEntry) {
+                        final colIdx = colEntry.key;
+                        final colName = colEntry.value;
+                        
+                        Widget cellContent = Text(
+                          _formatValue(row[colName]),
+                          style: GameTokens.codeSmall.copyWith(
+                            color: row[colName] == null
+                                ? GameTokens.disabledText
+                                : GameTokens.primaryText,
+                            fontStyle: row[colName] == null
+                                ? FontStyle.italic
+                                : FontStyle.normal,
+                          ),
+                        );
+                        
+                        if (isColorblindMode && colIdx == 0) {
+                          if (extraRowIndices.contains(i)) {
+                            cellContent = Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text('[+] ', style: TextStyle(color: GameTokens.warning, fontWeight: FontWeight.bold)),
+                                cellContent,
+                              ],
+                            );
+                          } else if (missingRowIndices.contains(i)) {
+                            cellContent = Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text('[-] ', style: TextStyle(color: GameTokens.error, fontWeight: FontWeight.bold)),
+                                cellContent,
+                              ],
+                            );
+                          }
+                        }
+
+                        return DataCell(cellContent);
+                      }).toList(),
                     );
                   }).toList(),
                 ),

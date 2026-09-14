@@ -17,6 +17,7 @@ class _CodexScreenState extends State<CodexScreen> {
   List<dynamic> _errors = [];
   bool _isLoading = true;
   String _searchQuery = '';
+  dynamic _selectedError;
 
   @override
   void initState() {
@@ -31,11 +32,10 @@ class _CodexScreenState extends State<CodexScreen> {
       setState(() {
         _errors = data['errors'] ?? [];
         _isLoading = false;
+        if (widget.initialErrorId != null) {
+          _selectedError = _errors.firstWhere((e) => e['id'] == widget.initialErrorId, orElse: () => null);
+        }
       });
-
-      if (widget.initialErrorId != null && _errors.isNotEmpty) {
-        // Find and maybe expand or scroll to it (advanced UX, skipping for now)
-      }
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -63,81 +63,163 @@ class _CodexScreenState extends State<CodexScreen> {
       body: ParallaxBackground(
         child: _isLoading
             ? const Center(child: CircularProgressIndicator(color: GameTokens.accent))
-            : Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: TextField(
-                      style: const TextStyle(color: GameTokens.primaryText),
-                      decoration: InputDecoration(
-                        isDense: true,
-                        focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: GameTokens.accent)),
-                        prefixIcon: const Icon(Icons.search, color: Colors.white30),
-                        filled: true,
-                        fillColor: GameTokens.surface,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
-                        ),
-                        hintText: 'Search for an error...',
-                        hintStyle: const TextStyle(color: Colors.white30),
-                      ),
-                      onChanged: (val) {
-                        setState(() {
-                          _searchQuery = val;
-                        });
-                      },
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: filteredErrors.length,
-                      itemBuilder: (context, index) {
-                        final error = filteredErrors[index];
-                        final isHighlighted = error['id'] == widget.initialErrorId;
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: SlantedPanel(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(Icons.error_outline, color: GameTokens.warning, size: 20),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        error['title'],
-                                        style: TextStyle(
-                                          color: isHighlighted ? GameTokens.accent : GameTokens.warning,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  error['description'],
-                                  style: const TextStyle(color: GameTokens.primaryText, fontSize: 14),
-                                ),
-                                const SizedBox(height: 12),
-                                _buildCodeSnippet('Bad Example', error['bad_example'], Colors.redAccent),
-                                const SizedBox(height: 8),
-                                _buildCodeSnippet('Good Example', error['good_example'], Colors.greenAccent),
-                              ],
-                            ),
+            : LayoutBuilder(
+                builder: (context, constraints) {
+                  final isDesktop = constraints.maxWidth > 720;
+
+                  if (isDesktop) {
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            children: [
+                              _buildSearchBar(),
+                              Expanded(
+                                child: _buildList(filteredErrors, isDesktop: true),
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          flex: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 16, bottom: 16, right: 16),
+                            child: _selectedError != null
+                                ? SlantedPanel(
+                                    padding: const EdgeInsets.all(24),
+                                    child: _buildErrorDetails(_selectedError),
+                                  )
+                                : const Center(
+                                    child: Text('Select an error to view details', style: TextStyle(color: GameTokens.secondaryText)),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  // Mobile Layout
+                  return Column(
+                    children: [
+                      _buildSearchBar(),
+                      Expanded(
+                        child: _buildList(filteredErrors, isDesktop: false),
+                      ),
+                    ],
+                  );
+                },
               ),
       ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        style: const TextStyle(color: GameTokens.primaryText),
+        decoration: InputDecoration(
+          isDense: true,
+          focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: GameTokens.accent)),
+          prefixIcon: const Icon(Icons.search, color: Colors.white30),
+          filled: true,
+          fillColor: GameTokens.surface,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide.none,
+          ),
+          hintText: 'Search for an error...',
+          hintStyle: const TextStyle(color: Colors.white30),
+        ),
+        onChanged: (val) {
+          setState(() {
+            _searchQuery = val;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildList(List<dynamic> filteredErrors, {required bool isDesktop}) {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: filteredErrors.length,
+      itemBuilder: (context, index) {
+        final error = filteredErrors[index];
+        final isSelected = error == _selectedError;
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: GestureDetector(
+            onTap: () {
+              if (isDesktop) {
+                setState(() {
+                  _selectedError = error;
+                });
+              } else {
+                // Keep mobile behavior where expanding might be needed, but since it's inside the list, it's just tap to view?
+                // Wait, the original code always showed details on mobile.
+              }
+            },
+            child: SlantedPanel(
+              padding: const EdgeInsets.all(16),
+              child: isDesktop
+                  ? Row(
+                      children: [
+                        Icon(Icons.error_outline, color: GameTokens.warning, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            error['title'],
+                            style: TextStyle(
+                              color: isSelected ? GameTokens.accent : GameTokens.warning,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : _buildErrorDetails(error, isHighlighted: error['id'] == widget.initialErrorId),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildErrorDetails(dynamic error, {bool isHighlighted = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.error_outline, color: GameTokens.warning, size: 20),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                error['title'],
+                style: TextStyle(
+                  color: isHighlighted ? GameTokens.accent : GameTokens.warning,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          error['description'],
+          style: const TextStyle(color: GameTokens.primaryText, fontSize: 14),
+        ),
+        const SizedBox(height: 12),
+        _buildCodeSnippet('Bad Example', error['bad_example'], Colors.redAccent),
+        const SizedBox(height: 8),
+        _buildCodeSnippet('Good Example', error['good_example'], Colors.greenAccent),
+      ],
     );
   }
 
@@ -153,9 +235,12 @@ class _CodexScreenState extends State<CodexScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
+          Text(label, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text(code, style: const TextStyle(color: GameTokens.primaryText, fontFamily: 'FiraCode', fontSize: 13)),
+          Text(
+            code,
+            style: const TextStyle(fontFamily: 'FiraCode', color: GameTokens.primaryText, fontSize: 13),
+          ),
         ],
       ),
     );

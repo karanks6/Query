@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
 import '../../theming/components/action_button.dart';
 import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/game_widgets.dart';
+
+enum SandboxSchema {
+  standard('HR & E-Commerce (Standard)'),
+  space('Space Fleet (Sci-Fi)'),
+  custom('Custom SQL Schema');
+
+  final String label;
+  const SandboxSchema(this.label);
+}
 
 class SandboxScreen extends StatefulWidget {
   const SandboxScreen({super.key});
@@ -13,53 +23,106 @@ class SandboxScreen extends StatefulWidget {
   State<SandboxScreen> createState() => _SandboxScreenState();
 }
 
-class _SandboxScreenState extends State<SandboxScreen> {
+class _SandboxScreenState extends State<SandboxScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   final TextEditingController _queryController = TextEditingController();
-  late sqlite.Database _db;
+  final TextEditingController _schemaController = TextEditingController();
   
+  late sqlite.Database _db;
   sqlite.ResultSet? _result;
   String? _error;
   bool _isInitializing = true;
+  SandboxSchema _selectedSchema = SandboxSchema.standard;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _schemaController.text = _getInitialCustomSchema();
     _initDb();
+    _loadSnippets();
+  }
+  
+  void _loadSnippets() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedQuery = prefs.getString('sandbox_saved_query');
+    if (savedQuery != null && savedQuery.isNotEmpty && _queryController.text == 'SELECT * FROM employees;') {
+      _queryController.text = savedQuery;
+    }
+  }
+
+  void _saveSnippet() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('sandbox_saved_query', _queryController.text);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Query snippet saved!', style: GameTokens.bodyMedium.copyWith(color: GameTokens.background)),
+          backgroundColor: GameTokens.success,
+        )
+      );
+    }
+  }
+
+  String _getInitialCustomSchema() {
+    return '''-- Create your custom tables here
+CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT);
+INSERT INTO users VALUES (1, 'Player One');''';
   }
 
   void _initDb() {
     try {
       _db = sqlite.sqlite3.openInMemory();
       
-      // Seed the sandbox with a rich standard schema (HR / E-commerce mix)
-      _db.execute('''
-        CREATE TABLE departments (id INTEGER PRIMARY KEY, name TEXT NOT NULL, budget REAL);
-        CREATE TABLE employees (id INTEGER PRIMARY KEY, name TEXT NOT NULL, department_id INTEGER, salary REAL, hire_date TEXT);
-        CREATE TABLE projects (id INTEGER PRIMARY KEY, name TEXT NOT NULL, status TEXT);
-        CREATE TABLE assignments (employee_id INTEGER, project_id INTEGER, role TEXT);
-        
-        INSERT INTO departments VALUES (1, 'Engineering', 500000), (2, 'Marketing', 150000), (3, 'Sales', 200000);
-        INSERT INTO employees VALUES (101, 'Alice', 1, 95000, '2023-01-15'), (102, 'Bob', 1, 85000, '2023-03-22'), (103, 'Charlie', 2, 75000, '2022-11-05'), (104, 'Diana', 3, 105000, '2021-08-30'), (105, 'Eve', NULL, 60000, '2024-01-10');
-        INSERT INTO projects VALUES (10, 'Project Apollo', 'Active'), (20, 'Project Zeus', 'Planning'), (30, 'Project Hermes', 'Completed');
-        INSERT INTO assignments VALUES (101, 10, 'Lead'), (102, 10, 'Developer'), (101, 20, 'Consultant'), (104, 30, 'Manager');
-      ''');
+      String schemaSql = '';
+      if (_selectedSchema == SandboxSchema.standard) {
+        schemaSql = '''
+          CREATE TABLE departments (id INTEGER PRIMARY KEY, name TEXT NOT NULL, budget REAL);
+          CREATE TABLE employees (id INTEGER PRIMARY KEY, name TEXT NOT NULL, department_id INTEGER, salary REAL, hire_date TEXT);
+          CREATE TABLE projects (id INTEGER PRIMARY KEY, name TEXT NOT NULL, status TEXT);
+          CREATE TABLE assignments (employee_id INTEGER, project_id INTEGER, role TEXT);
+          
+          INSERT INTO departments VALUES (1, 'Engineering', 500000), (2, 'Marketing', 150000), (3, 'Sales', 200000);
+          INSERT INTO employees VALUES (101, 'Alice', 1, 95000, '2023-01-15'), (102, 'Bob', 1, 85000, '2023-03-22'), (103, 'Charlie', 2, 75000, '2022-11-05'), (104, 'Diana', 3, 105000, '2021-08-30'), (105, 'Eve', NULL, 60000, '2024-01-10');
+          INSERT INTO projects VALUES (10, 'Project Apollo', 'Active'), (20, 'Project Zeus', 'Planning'), (30, 'Project Hermes', 'Completed');
+          INSERT INTO assignments VALUES (101, 10, 'Lead'), (102, 10, 'Developer'), (101, 20, 'Consultant'), (104, 30, 'Manager');
+        ''';
+        _queryController.text = 'SELECT * FROM employees;';
+      } else if (_selectedSchema == SandboxSchema.space) {
+        schemaSql = '''
+          CREATE TABLE ships (id INTEGER PRIMARY KEY, name TEXT, class TEXT);
+          CREATE TABLE crew (id INTEGER PRIMARY KEY, name TEXT, ship_id INTEGER, role TEXT);
+          INSERT INTO ships VALUES (1, 'USCSS Nostromo', 'Freighter'), (2, 'USS Enterprise', 'Cruiser');
+          INSERT INTO crew VALUES (1, 'Ripley', 1, 'Warrant Officer'), (2, 'Kirk', 2, 'Captain');
+        ''';
+        _queryController.text = 'SELECT * FROM ships;';
+      } else {
+        schemaSql = _schemaController.text;
+      }
+      
+      if (schemaSql.trim().isNotEmpty) {
+        _db.execute(schemaSql);
+      }
       
       setState(() {
         _isInitializing = false;
-        _queryController.text = 'SELECT * FROM employees;';
+        _error = null;
+        _result = null;
       });
-      _runQuery();
     } catch (e) {
       setState(() {
-        _error = 'Failed to initialize Sandbox: $e';
+        _error = 'Failed to initialize Schema: \$e';
         _isInitializing = false;
+        _result = null;
       });
     }
   }
 
   @override
   void dispose() {
+    _tabController.dispose();
     _queryController.dispose();
+    _schemaController.dispose();
     _db.dispose();
     super.dispose();
   }
@@ -83,6 +146,14 @@ class _SandboxScreenState extends State<SandboxScreen> {
       });
     }
   }
+  
+  void _applySchema() {
+    _db.dispose();
+    _initDb();
+    if (_selectedSchema == SandboxSchema.custom) {
+      _tabController.animateTo(0); // Go back to query tab
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,60 +164,168 @@ class _SandboxScreenState extends State<SandboxScreen> {
         onBack: () => Navigator.of(context).pop(),
       ),
       body: ParallaxBackground(
-        child: _isInitializing
-            ? const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(GameTokens.accent)))
-            : LayoutBuilder(
-                builder: (context, constraints) {
-                  final isDesktop = constraints.maxWidth > 720;
-                  return SingleChildScrollView(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: constraints.maxHeight,
-                      ),
-                      child: IntrinsicHeight(
-                        child: Padding(
-                          padding: const EdgeInsets.all(GameTokens.spaceMd),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              // Info Banner
-                              SlantedPanel(
-                                padding: const EdgeInsets.all(GameTokens.spaceMd),
-                                child: Text(
-                                  'Memory instance active. Available tables: departments, employees, projects, assignments.',
-                                  style: GameTokens.bodySmall.copyWith(color: GameTokens.accent),
-                                ),
-                              ),
-                              const SizedBox(height: GameTokens.spaceMd),
-                              
-                              // Main content area (split or stacked)
-                              Expanded(
-                                child: isDesktop
-                                    ? Row(
-                                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                                        children: [
-                                          Expanded(flex: 1, child: _buildEditor()),
-                                          const SizedBox(width: GameTokens.spaceMd),
-                                          Expanded(flex: 1, child: _buildResultsPanel()),
-                                        ],
-                                      )
-                                    : Column(
-                                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                                        children: [
-                                          Expanded(flex: 2, child: _buildEditor()),
-                                          const SizedBox(height: GameTokens.spaceMd),
-                                          Expanded(flex: 3, child: _buildResultsPanel()),
-                                        ],
-                                      ),
-                              ),
-                            ],
-                          ),
-                        ),
+        child: Column(
+          children: [
+            TabBar(
+              controller: _tabController,
+              indicatorColor: GameTokens.accent,
+              labelColor: GameTokens.accent,
+              unselectedLabelColor: GameTokens.secondaryText,
+              tabs: const [
+                Tab(text: 'QUERY TERMINAL'),
+                Tab(text: 'SCHEMA BUILDER'),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  _buildQueryTab(context),
+                  _buildSchemaTab(context),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQueryTab(BuildContext context) {
+    if (_isInitializing) {
+      return const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(GameTokens.accent)));
+    }
+    
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isDesktop = constraints.maxWidth > 720;
+        return Padding(
+          padding: const EdgeInsets.all(GameTokens.spaceMd),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Info Banner
+              SlantedPanel(
+                padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceSm),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Active Schema: \${_selectedSchema.label}',
+                        style: GameTokens.bodySmall.copyWith(color: GameTokens.accent),
                       ),
                     ),
-                  );
-                },
+                    DropdownButton<SandboxSchema>(
+                      value: _selectedSchema,
+                      dropdownColor: GameTokens.surfaceHighlight,
+                      style: GameTokens.bodySmall.copyWith(color: GameTokens.primaryText),
+                      underline: const SizedBox(),
+                      icon: const Icon(Icons.arrow_drop_down, color: GameTokens.accent),
+                      items: SandboxSchema.values.map((schema) {
+                        return DropdownMenuItem(
+                          value: schema,
+                          child: Text(schema.label),
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          setState(() {
+                            _selectedSchema = val;
+                          });
+                          if (val != SandboxSchema.custom) {
+                            _applySchema();
+                          } else {
+                            _tabController.animateTo(1);
+                          }
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(height: GameTokens.spaceMd),
+              
+              // Main content area
+              Expanded(
+                child: isDesktop
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(flex: 1, child: _buildEditor()),
+                          const SizedBox(width: GameTokens.spaceMd),
+                          Expanded(flex: 1, child: _buildResultsPanel()),
+                        ],
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(flex: 2, child: _buildEditor()),
+                          const SizedBox(height: GameTokens.spaceMd),
+                          Expanded(flex: 3, child: _buildResultsPanel()),
+                        ],
+                      ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+  
+  Widget _buildSchemaTab(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(GameTokens.spaceMd),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SlantedPanel(
+            padding: const EdgeInsets.all(GameTokens.spaceMd),
+            child: Text(
+              'Paste your custom DDL/DML statements here. This will initialize the in-memory database.',
+              style: GameTokens.bodySmall.copyWith(color: GameTokens.info),
+            ),
+          ),
+          const SizedBox(height: GameTokens.spaceMd),
+          Expanded(
+            child: SlantedPanel(
+              padding: EdgeInsets.zero,
+              child: TextField(
+                controller: _schemaController,
+                maxLines: null,
+                expands: true,
+                style: GameTokens.code.copyWith(
+                  color: GameTokens.primaryText,
+                  height: 1.5,
+                ),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.all(GameTokens.spaceMd),
+                  hintText: 'CREATE TABLE ...',
+                  hintStyle: GameTokens.bodyMedium.copyWith(color: GameTokens.secondaryText),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: GameTokens.spaceMd),
+          ActionButton(
+            isPrimary: true,
+            onPressed: () {
+              setState(() {
+                _selectedSchema = SandboxSchema.custom;
+              });
+              _applySchema();
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.build, size: 16),
+                const SizedBox(width: GameTokens.spaceSm),
+                const Text('INITIALIZE DATABASE'),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -176,17 +355,36 @@ class _SandboxScreenState extends State<SandboxScreen> {
           ),
         ),
         const SizedBox(height: GameTokens.spaceMd),
-        ActionButton(
-          isPrimary: true,
-          onPressed: _runQuery,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.play_arrow, size: 16),
-              const SizedBox(width: GameTokens.spaceSm),
-              const Text('EXECUTE QUERY'),
-            ],
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: ActionButton(
+                isPrimary: true,
+                onPressed: _runQuery,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.play_arrow, size: 16),
+                    const SizedBox(width: GameTokens.spaceSm),
+                    const Text('EXECUTE'),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: GameTokens.spaceMd),
+            ActionButton(
+              isPrimary: false,
+              onPressed: _saveSnippet,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.save, size: 16),
+                  const SizedBox(width: GameTokens.spaceSm),
+                  const Text('SAVE'),
+                ],
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -206,7 +404,7 @@ class _SandboxScreenState extends State<SandboxScreen> {
     if (_error != null) {
       return SingleChildScrollView(
         child: Text(
-          'ERROR: $_error',
+          'ERROR: \$_error',
           style: GameTokens.bodyMedium.copyWith(color: GameTokens.error),
         ),
       );

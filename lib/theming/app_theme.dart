@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../core/settings/settings_service.dart';
+import '../core/providers.dart';
 import 'tokens/game_tokens.dart';
 import 'tokens/cyberpunk_tokens.dart';
 import 'tokens/nature_tokens.dart';
@@ -26,20 +29,39 @@ enum AppTheme {
       (t) => t.id == id,
       orElse: () => AppTheme.terminalClassic,
     );
-  }
 }
 
 /// Central theme provider â€” manages the active theme and returns
 /// the MaterialThemeData for the currently active theme.
 class ThemeNotifier extends StateNotifier<AppTheme> {
-  ThemeNotifier() : super(AppTheme.terminalClassic);
+  final SharedPreferences _prefs;
+  final Ref _ref;
 
-  void setTheme(AppTheme theme) => state = theme;
-  void setThemeById(String id) => state = AppTheme.fromId(id);
+  ThemeNotifier(this._prefs, this._ref) : super(AppTheme.terminalClassic) {
+    _loadTheme();
+  }
+
+  void _loadTheme() {
+    final themeId = _prefs.getString('active_theme') ?? 'terminal_classic';
+    state = AppTheme.fromId(themeId);
+  }
+
+  void setTheme(AppTheme theme) {
+    state = theme;
+    _prefs.setString('active_theme', theme.id);
+    _ref.read(playerDaoProvider).setActiveTheme(theme.id);
+  }
+
+  void setThemeById(String id) {
+    setTheme(AppTheme.fromId(id));
+  }
 }
 
 final themeNotifierProvider = StateNotifierProvider<ThemeNotifier, AppTheme>(
-  (ref) => ThemeNotifier(),
+  (ref) {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return ThemeNotifier(prefs, ref);
+  },
 );
 
 /// Returns the [ThemeData] for the currently active theme.

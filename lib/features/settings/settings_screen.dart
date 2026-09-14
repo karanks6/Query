@@ -7,6 +7,7 @@ import '../../theming/components/slanted_panel.dart';
 import '../../shared/widgets/game_widgets.dart';
 import '../gameplay/widgets/parallax_background.dart';
 import '../../core/settings/settings_service.dart';
+import 'settings_providers.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -35,18 +36,46 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: GameTokens.spaceSm),
             SlantedPanel(
-              child: Column(
-                children: AppTheme.values.map((t) {
-                  return RadioListTile<AppTheme>(
-                    title: Text(t.displayName, style: GameTokens.bodyMedium),
-                    value: t,
-                    groupValue: theme,
-                    activeColor: GameTokens.accent,
-                    onChanged: (value) {
-                      if (value != null) themeNotifier.setTheme(value);
+              child: Consumer(
+                builder: (context, ref, _) {
+                  final unlockedThemesAsync = ref.watch(unlockedThemesProvider);
+
+                  return unlockedThemesAsync.when(
+                    data: (unlockedThemeIds) {
+                      return Column(
+                        children: AppTheme.values.map((t) {
+                          final isUnlocked = unlockedThemeIds.contains(t.id);
+                          return RadioListTile<AppTheme>(
+                            title: Row(
+                              children: [
+                                Text(
+                                  t.displayName, 
+                                  style: GameTokens.bodyMedium.copyWith(
+                                    color: isUnlocked ? GameTokens.primaryText : GameTokens.disabledText,
+                                  ),
+                                ),
+                                if (!isUnlocked) ...[
+                                  const Spacer(),
+                                  const Icon(Icons.lock, size: 16, color: GameTokens.disabledText),
+                                ],
+                              ],
+                            ),
+                            value: t,
+                            groupValue: theme,
+                            activeColor: GameTokens.accent,
+                            onChanged: isUnlocked 
+                                ? (value) {
+                                    if (value != null) themeNotifier.setTheme(value);
+                                  }
+                                : null,
+                          );
+                        }).toList(),
+                      );
                     },
+                    loading: () => const Center(child: CircularProgressIndicator(color: GameTokens.accent)),
+                    error: (_, __) => const Text('Error loading themes', style: TextStyle(color: GameTokens.error)),
                   );
-                }).toList(),
+                }
               ),
             ),
             const SizedBox(height: GameTokens.spaceXl),
