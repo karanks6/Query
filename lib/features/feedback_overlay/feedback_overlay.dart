@@ -11,6 +11,7 @@ import '../../core/validation/validation_result.dart';
 import '../../core/sandbox_engine/sandbox_engine.dart';
 import '../../core/scoring/level_scorer.dart';
 import '../../core/validation/common_mistakes.dart';
+import '../../core/audio/audio_controller.dart';
 import '../gameplay/gameplay_provider.dart';
 import '../reference/codex_screen.dart';
 import '../gameplay/replay_screen.dart';
@@ -42,6 +43,12 @@ class FeedbackOverlay extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isSuccess = report?.isComplete ?? false;
+    
+    // Play sound effect on build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(audioControllerProvider).playSfx(isSuccess ? 'level_success' : 'level_failure');
+    });
+
     final accentColor = isSuccess
         ? GameTokens.success
         : GameTokens.error;
