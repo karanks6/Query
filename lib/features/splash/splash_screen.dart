@@ -9,6 +9,7 @@ import '../gameplay/widgets/parallax_background.dart';
 import '../../core/providers.dart';
 import '../../data/content/level_loader.dart';
 import '../../data/content/content_updater_service.dart';
+import '../../theming/app_theme.dart';
 
 /// Splash screen and loading state (Section 5.1).
 ///
