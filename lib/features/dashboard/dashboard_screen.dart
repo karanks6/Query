@@ -302,6 +302,12 @@ class _ContinueBanner extends StatelessWidget {
       'world_02': 'Filter District',
       'world_03': 'The Aggregation Exchange',
       'world_04': 'Junction City',
+      'world_05': 'The Subquery Labyrinth',
+      'world_06': 'Window Function District',
+      'world_07': 'Data Modification Zone',
+      'world_08': 'Transaction Vault',
+      'world_09': 'The Optimization Engine',
+      'world_10': 'Advanced Analytics Bureau',
     };
 
     final name = worldNames[current.worldId] ?? current.worldId;
@@ -665,9 +671,17 @@ class _XpProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tiers = RankSystem.tiers;
-    final currentIndex = tiers.indexWhere((t) => t.requiredXp > totalXp) - 1;
-    final clampedIndex = currentIndex.clamp(0, tiers.length - 1);
     final isMaxRank = totalXp >= tiers.last.requiredXp;
+
+    // Find the index of the current tier (the highest tier the player has reached).
+    // indexWhere returns the first tier whose XP requirement exceeds totalXp.
+    // Subtracting 1 gives the tier the player is currently in.
+    final nextTierIndex = tiers.indexWhere((t) => t.requiredXp > totalXp);
+    // If nextTierIndex == -1, player has exceeded all tiers (max rank).
+    // If nextTierIndex == 0, player hasn't reached the first tier threshold yet.
+    final currentIndex = nextTierIndex == -1
+        ? tiers.length - 1
+        : (nextTierIndex - 1).clamp(0, tiers.length - 2);
 
     if (isMaxRank) {
       return Row(
@@ -684,8 +698,8 @@ class _XpProgressBar extends StatelessWidget {
       );
     }
 
-    final currentTier = tiers[clampedIndex];
-    final nextTier = tiers[clampedIndex + 1];
+    final currentTier = tiers[currentIndex];
+    final nextTier = tiers[currentIndex + 1];
     final rangeXp = nextTier.requiredXp - currentTier.requiredXp;
     final earnedXp = totalXp - currentTier.requiredXp;
     final progress = (earnedXp / rangeXp).clamp(0.0, 1.0);
