@@ -61,9 +61,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 padding: const EdgeInsets.all(GameTokens.spaceMd),
                 sliver: SliverFillRemaining(
                   hasScrollBody: false,
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final isDesktop = constraints.maxWidth > 720;
+                  child: Builder(
+                    builder: (context) {
+                      // Use MediaQuery instead of LayoutBuilder: LayoutBuilder triggers
+                      // intrinsic dimension queries which SliverFillRemaining forbids.
+                      final isDesktop = MediaQuery.sizeOf(context).width > 720;
                       
                       final continueBanner = profileAsync.when(
                         data: (profile) => worldsAsync.when(
@@ -361,7 +363,10 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
+    // IntrinsicHeight removed: it forces a 2-pass layout that can crash inside
+    // SliverFillRemaining. Cards use mainAxisAlignment to distribute space.
+    return SizedBox(
+      height: 130,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
