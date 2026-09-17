@@ -33,7 +33,10 @@ class _CodexScreenState extends State<CodexScreen> {
         _errors = data['errors'] ?? [];
         _isLoading = false;
         if (widget.initialErrorId != null) {
-          _selectedError = _errors.firstWhere((e) => e['id'] == widget.initialErrorId, orElse: () => null);
+          _selectedError = _errors.firstWhere(
+            (e) => e['id'] == widget.initialErrorId,
+            orElse: () => null,
+          );
         }
       });
     } catch (e) {
@@ -45,8 +48,14 @@ class _CodexScreenState extends State<CodexScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Bug fix: guard against null fields in JSON when building the search text.
     final filteredErrors = _errors.where((err) {
-      final text = (err['title'] + err['description'] + err['keywords'].join(' ')).toLowerCase();
+      final title = (err['title'] as String?) ?? '';
+      final description = (err['description'] as String?) ?? '';
+      final keywords = (err['keywords'] as List<dynamic>? ?? [])
+          .map((k) => k.toString())
+          .join(' ');
+      final text = '$title $description $keywords'.toLowerCase();
       return text.contains(_searchQuery.toLowerCase());
     }).toList();
 
@@ -54,64 +63,98 @@ class _CodexScreenState extends State<CodexScreen> {
       backgroundColor: GameTokens.background,
       appBar: AppBar(
         backgroundColor: GameTokens.surface,
-        title: const Text('SQL Error Codex', style: TextStyle(fontFamily: 'FiraCode', color: GameTokens.accent)),
+        title: const Text(
+          'SQL Error Codex',
+          style: TextStyle(fontFamily: 'FiraCode', color: GameTokens.accent),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: GameTokens.primaryText),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: ParallaxBackground(
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: GameTokens.accent))
-            : LayoutBuilder(
-                builder: (context, constraints) {
-                  final isDesktop = constraints.maxWidth > 720;
+      // Bug fix: ParallaxBackground wraps a Stack which gives unbounded height
+      // constraints to its children. LayoutBuilder inside an unbounded height
+      // context crashes Flutter ("LayoutBuilder does not support returning
+      // intrinsic dimensions"). Fix: use a separate Scaffold body without
+      // ParallaxBackground for this screen, or wrap with a SizedBox.expand.
+      body: Stack(
+        children: [
+          // Replicate the parallax background layers without the problematic wrapper
+          Container(
+            decoration: BoxDecoration(
+              color: GameTokens.background,
+              gradient: RadialGradient(
+                center: Alignment.center,
+                radius: 1.5,
+                colors: [
+                  GameTokens.surfaceHighlight.withValues(alpha: 0.3),
+                  GameTokens.background,
+                ],
+              ),
+            ),
+          ),
+          // Foreground: constrained to screen bounds so LayoutBuilder works correctly
+          _isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(color: GameTokens.accent),
+                )
+              : LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isDesktop = constraints.maxWidth > 720;
 
-                  if (isDesktop) {
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                    if (isDesktop) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                _buildSearchBar(),
+                                Expanded(
+                                  child: _buildList(filteredErrors, isDesktop: true),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            flex: 2,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 16, bottom: 16, right: 16),
+                              child: _selectedError != null
+                                  ? SlantedPanel(
+                                      padding: const EdgeInsets.all(24),
+                                      child: SingleChildScrollView(
+                                        child: _buildErrorDetails(_selectedError),
+                                      ),
+                                    )
+                                  : const Center(
+                                      child: Text(
+                                        'Select an error to view details',
+                                        style: TextStyle(
+                                            color: GameTokens.secondaryText),
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    // Mobile Layout
+                    return Column(
                       children: [
+                        _buildSearchBar(),
                         Expanded(
-                          flex: 1,
-                          child: Column(
-                            children: [
-                              _buildSearchBar(),
-                              Expanded(
-                                child: _buildList(filteredErrors, isDesktop: true),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          flex: 2,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 16, bottom: 16, right: 16),
-                            child: _selectedError != null
-                                ? SlantedPanel(
-                                    padding: const EdgeInsets.all(24),
-                                    child: _buildErrorDetails(_selectedError),
-                                  )
-                                : const Center(
-                                    child: Text('Select an error to view details', style: TextStyle(color: GameTokens.secondaryText)),
-                                  ),
-                          ),
+                          child: _buildList(filteredErrors, isDesktop: false),
                         ),
                       ],
                     );
-                  }
-
-                  // Mobile Layout
-                  return Column(
-                    children: [
-                      _buildSearchBar(),
-                      Expanded(
-                        child: _buildList(filteredErrors, isDesktop: false),
-                      ),
-                    ],
-                  );
-                },
-              ),
+                  },
+                ),
+        ],
       ),
     );
   }
@@ -123,7 +166,8 @@ class _CodexScreenState extends State<CodexScreen> {
         style: const TextStyle(color: GameTokens.primaryText),
         decoration: InputDecoration(
           isDense: true,
-          focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: GameTokens.accent)),
+          focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: GameTokens.accent)),
           prefixIcon: const Icon(Icons.search, color: Colors.white30),
           filled: true,
           fillColor: GameTokens.surface,
@@ -171,7 +215,8 @@ class _CodexScreenState extends State<CodexScreen> {
                     builder: (_, scrollController) => Container(
                       decoration: BoxDecoration(
                         color: GameTokens.surface,
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                        borderRadius:
+                            const BorderRadius.vertical(top: Radius.circular(8)),
                       ),
                       child: SingleChildScrollView(
                         controller: scrollController,
@@ -191,13 +236,16 @@ class _CodexScreenState extends State<CodexScreen> {
               child: isDesktop
                   ? Row(
                       children: [
-                        Icon(Icons.error_outline, color: GameTokens.warning, size: 20),
+                        const Icon(Icons.error_outline,
+                            color: GameTokens.warning, size: 20),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            error['title'],
+                            (error['title'] as String?) ?? 'Unknown Error',
                             style: TextStyle(
-                              color: isSelected ? GameTokens.accent : GameTokens.warning,
+                              color: isSelected
+                                  ? GameTokens.accent
+                                  : GameTokens.warning,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -205,7 +253,10 @@ class _CodexScreenState extends State<CodexScreen> {
                         ),
                       ],
                     )
-                  : _buildErrorDetails(error, isHighlighted: error['id'] == widget.initialErrorId),
+                  : _buildErrorDetails(
+                      error,
+                      isHighlighted: error['id'] == widget.initialErrorId,
+                    ),
             ),
           ),
         );
@@ -214,16 +265,22 @@ class _CodexScreenState extends State<CodexScreen> {
   }
 
   Widget _buildErrorDetails(dynamic error, {bool isHighlighted = false}) {
+    // Bug fix: all JSON fields accessed with null-safe casts.
+    final title = (error['title'] as String?) ?? 'Unknown Error';
+    final description = (error['description'] as String?) ?? '';
+    final badExample = (error['bad_example'] as String?) ?? '';
+    final goodExample = (error['good_example'] as String?) ?? '';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(Icons.error_outline, color: GameTokens.warning, size: 20),
+            const Icon(Icons.error_outline, color: GameTokens.warning, size: 20),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                error['title'],
+                title,
                 style: TextStyle(
                   color: isHighlighted ? GameTokens.accent : GameTokens.warning,
                   fontSize: 18,
@@ -235,13 +292,13 @@ class _CodexScreenState extends State<CodexScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          error['description'],
+          description,
           style: const TextStyle(color: GameTokens.primaryText, fontSize: 14),
         ),
         const SizedBox(height: 12),
-        _buildCodeSnippet('Bad Example', error['bad_example'], Colors.redAccent),
+        _buildCodeSnippet('Bad Example', badExample, Colors.redAccent),
         const SizedBox(height: 8),
-        _buildCodeSnippet('Good Example', error['good_example'], Colors.greenAccent),
+        _buildCodeSnippet('Good Example', goodExample, Colors.greenAccent),
       ],
     );
   }
@@ -258,11 +315,19 @@ class _CodexScreenState extends State<CodexScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold)),
+          Text(
+            label,
+            style: TextStyle(
+                color: color, fontSize: 12, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 4),
           Text(
-            code,
-            style: const TextStyle(fontFamily: 'FiraCode', color: GameTokens.primaryText, fontSize: 13),
+            code.isEmpty ? '(no example)' : code,
+            style: const TextStyle(
+              fontFamily: 'FiraCode',
+              color: GameTokens.primaryText,
+              fontSize: 13,
+            ),
           ),
         ],
       ),
