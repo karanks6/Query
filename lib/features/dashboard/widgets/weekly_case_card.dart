@@ -9,9 +9,7 @@ class WeeklyCaseCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // In a real app, we'd check if the user completed the weekly case this week.
-    final isCompleted = false;
-    final timeRemaining = "2 days left";
+    // TODO: Replace hardcoded values with real data from WeeklyCaseCompletion DB table.
 
     return SlantedPanel(
       padding: const EdgeInsets.all(16),
@@ -29,9 +27,9 @@ class WeeklyCaseCard extends ConsumerWidget {
                   Text('WEEKLY CASE FILE', style: TextStyle(fontFamily: 'FiraCode', color: GameTokens.warning, fontWeight: FontWeight.bold)),
                 ],
               ),
-              Text(
-                timeRemaining,
-                style: const TextStyle(color: GameTokens.primaryText, fontSize: 12),
+              const Text(
+                '2 days left', // TODO: calculate from weekly case expiry date
+                style: TextStyle(color: GameTokens.primaryText, fontSize: 12),
               ),
             ],
           ),
@@ -63,25 +61,18 @@ class WeeklyCaseCard extends ConsumerWidget {
                 ),
               ),
               const Spacer(),
-              if (isCompleted)
-                Row(
-                  children: [
-                    Icon(Icons.check_circle, color: GameTokens.success, size: 16),
-                    const SizedBox(width: 4),
-                    const Text('CRACKED', style: TextStyle(color: GameTokens.success, fontWeight: FontWeight.bold)),
-                  ],
-                )
-              else
-                ActionButton(
-                  isPrimary: true,
-                  onPressed: () {
-                    // Navigate to weekly case level
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Navigating to Weekly Case (Mock)')),
-                    );
-                  },
-                  child: const Text('START INVESTIGATION'),
-                ),
+              // TODO: Replace with completed-state check from WeeklyCaseCompletion table.
+              // When isCompleted is true, show the 'CRACKED' row instead of the button.
+              ActionButton(
+                isPrimary: true,
+                onPressed: () {
+                  // Navigate to weekly case level
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Navigating to Weekly Case (Mock)')),
+                  );
+                },
+                child: const Text('START INVESTIGATION'),
+              ),
             ],
           ),
         ],
