@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
-import '../gameplay/widgets/parallax_background.dart';
 
 class CodexScreen extends StatefulWidget {
   final String? initialErrorId;
