@@ -322,8 +322,10 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
         return false;
       }
     }
+    // Only upgrade the hint tier if the new tier is higher than the current one.
+    final updatedTier = tier.index > state.highestHintUsed.index ? tier : state.highestHintUsed;
     state = state.copyWith(
-      highestHintUsed: tier.index > state.highestHintUsed.index ? tier : null,
+      highestHintUsed: updatedTier,
       clearHintError: true,
     );
     return true;
