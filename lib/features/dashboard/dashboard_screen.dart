@@ -392,10 +392,10 @@ class _StatsRow extends StatelessWidget {
               );
             },
             child: SlantedPanel(
-              padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceLg),
+              padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceSm),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Row(
                     children: [
@@ -412,7 +412,6 @@ class _StatsRow extends StatelessWidget {
                         ),
                     ],
                   ),
-                  const SizedBox(height: GameTokens.spaceMd),
                   Text(
                     '${profile.streakCount} days',
                     style: GameTokens.headlineMedium.copyWith(
@@ -428,10 +427,10 @@ class _StatsRow extends StatelessWidget {
         const SizedBox(width: GameTokens.spaceSm),
         Expanded(
           child: SlantedPanel(
-            padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceLg),
+            padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceSm),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Row(
                   children: [
@@ -440,13 +439,11 @@ class _StatsRow extends StatelessWidget {
                     Text('XP', style: GameTokens.bodyMedium),
                   ],
                 ),
-                const SizedBox(height: GameTokens.spaceMd),
                 Text(
                   '${profile.totalXp}',
                   style: GameTokens.headlineMedium.copyWith(fontSize: 24),
                 ),
-                const Spacer(),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 _XpProgressBar(totalXp: profile.totalXp as int),
               ],
             ),
@@ -475,10 +472,10 @@ class _StatsRow extends StatelessWidget {
               );
             },
             child: SlantedPanel(
-              padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceLg),
+              padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceSm),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Row(
                     children: [
@@ -488,8 +485,6 @@ class _StatsRow extends StatelessWidget {
                       Text('RANK', style: GameTokens.bodyMedium),
                     ],
                   ),
-                  const Spacer(),
-                  const SizedBox(height: GameTokens.spaceMd),
                   Text(
                     profile.rankTitle,
                     style: GameTokens.bodyMedium.copyWith(
