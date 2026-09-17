@@ -159,8 +159,31 @@ class _CodexScreenState extends State<CodexScreen> {
                   _selectedError = error;
                 });
               } else {
-                // Keep mobile behavior where expanding might be needed, but since it's inside the list, it's just tap to view?
-                // Wait, the original code always showed details on mobile.
+                // On mobile: show detail in a modal bottom sheet
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => DraggableScrollableSheet(
+                    initialChildSize: 0.75,
+                    maxChildSize: 0.95,
+                    minChildSize: 0.5,
+                    builder: (_, scrollController) => Container(
+                      decoration: BoxDecoration(
+                        color: GameTokens.surface,
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                      ),
+                      child: SingleChildScrollView(
+                        controller: scrollController,
+                        padding: const EdgeInsets.all(24),
+                        child: _buildErrorDetails(
+                          error,
+                          isHighlighted: error['id'] == widget.initialErrorId,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
               }
             },
             child: SlantedPanel(
