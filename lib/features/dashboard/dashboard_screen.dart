@@ -566,7 +566,6 @@ class _BureauToolsList extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       _BureauToolItem(Icons.map_outlined, 'WORLD MAP', 'Access the global case map', '/world_select'),
-      _BureauToolItem(Icons.speed_outlined, 'MULTIPLAYER', 'Race against other analysts', '/multiplayer'),
       _BureauToolItem(Icons.emoji_events_outlined, 'ACHIEVEMENTS', 'View unlocked commendations', '/achievements'),
       _BureauToolItem(Icons.menu_book_outlined, 'SQL REFERENCE', 'Consult the query manual', '/reference'),
     ];
