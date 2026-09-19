@@ -90,6 +90,7 @@ flutter:
     - assets/levels/world_05_nested_depths/
     - assets/levels/world_06_data_forge/
     - assets/levels/daily_challenges/
+    - assets/levels/weekly_cases/
     - assets/concept_cards/
     - assets/audio/terminal_classic/
     - assets/images/
