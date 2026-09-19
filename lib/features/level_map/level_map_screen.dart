@@ -9,6 +9,8 @@ import '../../shared/widgets/game_widgets.dart';
 import '../../data/content/level_loader.dart';
 import '../../data/content/models/level_model.dart';
 import '../../core/providers.dart';
+import '../../game/scenes/level_map_scene.dart';
+import '../../main.dart';
 
 /// Level Selection Map / Grid (Section 5.4).
 ///
@@ -35,6 +37,9 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
   void initState() {
     super.initState();
     _loadWorld();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(queryGameProvider).pushScene(LevelMapScene());
+    });
   }
 
   Future<void> _loadWorld() async {
@@ -81,7 +86,7 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: GameTokens.background,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: GameTokens.surface,
         leading: IconButton(
@@ -115,13 +120,12 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
               )
             : _error != null
                 ? _ErrorView(error: _error!)
-                : _LevelGrid(
+                : _LevelPath(
                     world: _world!,
                     levelStars: _levelStars,
                     levelNotes: _levelNotes,
                     onLevelTap: (level) => _onLevelTap(context, level),
                   ),
-      ),
     );
   }
 
@@ -146,13 +150,13 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
   }
 }
 
-class _LevelGrid extends StatelessWidget {
+class _LevelPath extends StatelessWidget {
   final WorldModel world;
   final Map<String, int> levelStars;
   final Set<String> levelNotes;
   final void Function(LevelModel) onLevelTap;
 
-  const _LevelGrid({
+  const _LevelPath({
     required this.world,
     required this.levelStars,
     required this.levelNotes,
@@ -161,99 +165,97 @@ class _LevelGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1000),
-        child: CustomScrollView(
-          slivers: [
-        // World narrative header
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(GameTokens.spaceMd),
-            child: SlantedPanel(
-              padding: const EdgeInsets.all(GameTokens.spaceMd),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '// ${world.caseFile.toUpperCase()}',
-                    style: GameTokens.bodySmall.copyWith(
-                      color: GameTokens.secondaryText,
-                      letterSpacing: 1.5,
-                    ),
+    // We create a scrolling area with a predefined height to fit the winding path.
+    final height = 200.0 + (world.levels.length * 100.0);
+    
+    return SingleChildScrollView(
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 800),
+          child: Column(
+            children: [
+              // World narrative header
+              Padding(
+                padding: const EdgeInsets.all(GameTokens.spaceMd),
+                child: SlantedPanel(
+                  padding: const EdgeInsets.all(GameTokens.spaceMd),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '// ${world.caseFile.toUpperCase()}',
+                        style: GameTokens.bodySmall.copyWith(
+                          color: GameTokens.secondaryText,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: GameTokens.spaceSm),
+                      Text(
+                        world.narrativeIntro,
+                        style: GameTokens.bodyMedium.copyWith(
+                          color: GameTokens.secondaryText,
+                        ),
+                      ),
+                      const SizedBox(height: GameTokens.spaceMd),
+                      Text(
+                        'Concepts: ${world.coreSqlConcept}',
+                        style: GameTokens.bodySmall.copyWith(
+                          color: GameTokens.accent,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: GameTokens.spaceSm),
-                  Text(
-                    world.narrativeIntro,
-                    style: GameTokens.bodyMedium.copyWith(
-                      color: GameTokens.secondaryText,
-                    ),
-                  ),
-                  const SizedBox(height: GameTokens.spaceMd),
-                  Text(
-                    'Concepts: ${world.coreSqlConcept}',
-                    style: GameTokens.bodySmall.copyWith(
-                      color: GameTokens.accent,
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
+              
+              // Winding path nodes
+              SizedBox(
+                height: height,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final centerX = constraints.maxWidth / 2;
+                    return Stack(
+                      children: List.generate(world.levels.length, (index) {
+                        final level = world.levels[index];
+                        final stars = levelStars[level.id] ?? 0;
+                        final isCompleted = stars > 0;
+                        final isUnlocked = index == 0 ||
+                            levelStars.containsKey(
+                              world.levels[index - 1].id,
+                            );
+                        final isNextToPlay = isUnlocked && !isCompleted &&
+                            (index == 0 || levelStars.containsKey(world.levels[index - 1].id));
+                        final hasNote = levelNotes.contains(level.id);
 
-        // Level nodes
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: GameTokens.spaceMd,
-          ),
-          sliver: SliverGrid(
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 80,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-              childAspectRatio: 0.9,
-            ),
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final level = world.levels[index];
-                final stars = levelStars[level.id] ?? 0;
-                final isCompleted = stars > 0;
-                final isUnlocked = index == 0 ||
-                    levelStars.containsKey(
-                      world.levels[index - 1].id,
+                        // Calculate position based on the winding path
+                        double top = 50.0 + (index * 100.0);
+                        double offset = (index % 4) == 1 || (index % 4) == 2 ? 100 : -100;
+                        if (index % 2 == 0) offset = 0; // middle
+                        double left = centerX - 30 + offset; // -30 for node radius
+
+                        return Positioned(
+                          top: top,
+                          left: left,
+                          child: _LevelNode(
+                            level: level,
+                            stars: stars,
+                            isCompleted: isCompleted,
+                            isUnlocked: isUnlocked,
+                            isNextToPlay: isNextToPlay,
+                            hasNote: hasNote,
+                            onTap: isUnlocked ? () => onLevelTap(level) : null,
+                          ).animate().fadeIn(delay: (index * 40).ms, duration: 300.ms).scale(begin: const Offset(0.8, 0.8)),
+                        );
+                      }),
                     );
-                // The "next" level is the first unlocked and not yet completed
-                final isNextToPlay = isUnlocked && !isCompleted &&
-                    (index == 0 || levelStars.containsKey(world.levels[index - 1].id));
-
-                final hasNote = levelNotes.contains(level.id);
-
-                return _LevelNode(
-                  level: level,
-                  stars: stars,
-                  isCompleted: isCompleted,
-                  isUnlocked: isUnlocked,
-                  isNextToPlay: isNextToPlay,
-                  hasNote: hasNote,
-                  onTap: isUnlocked ? () => onLevelTap(level) : null,
-                )
-                    .animate()
-                    .fadeIn(delay: (index * 40).ms, duration: 300.ms)
-                    .scale(begin: const Offset(0.8, 0.8));
-              },
-              childCount: world.levels.length,
-            ),
+                  },
+                ),
+              ),
+            ],
           ),
         ),
-
-        const SliverToBoxAdapter(
-          child: SizedBox(height: GameTokens.spaceXl),
-        ),
-      ],
-    ),
-  ),
-);
+      ),
+    );
   }
 }
 
