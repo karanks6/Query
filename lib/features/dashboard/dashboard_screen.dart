@@ -9,9 +9,10 @@ import '../../shared/widgets/game_widgets.dart';
 import '../../core/providers.dart';
 import '../../core/settings/settings_service.dart';
 import 'widgets/streak_calendar_modal.dart';
-import 'widgets/rank_progress_modal.dart';
 import 'widgets/weekly_case_card.dart';
 import '../../data/content/models/rank_system.dart';
+import '../../game/scenes/dashboard_scene.dart';
+import '../../main.dart';
 
 /// Main Menu / Dashboard (Section 5.3).
 ///
@@ -34,6 +35,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       final prefs = ref.read(sharedPreferencesProvider);
       final achievementsDao = ref.read(achievementsDaoProvider);
       ref.read(playerDaoProvider).checkDailyStreak(prefs, achievementsDao: achievementsDao);
+      
+      ref.read(queryGameProvider).pushScene(DashboardScene());
     });
   }
 
@@ -43,20 +46,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final worldsAsync = ref.watch(allWorldProgressProvider);
 
     return Scaffold(
-      backgroundColor: GameTokens.background,
-      body: ParallaxBackground(
-        child: SafeArea(
-          child: Center(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 800),
               child: CustomScrollView(
                 slivers: [
-              // Ã¢â€â‚¬Ã¢â€â‚¬ App bar Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
-              SliverToBoxAdapter(
-                child: _DashboardAppBar(profileAsync: profileAsync),
-              ),
-
-              // Ã¢â€â‚¬Ã¢â€â‚¬ Body Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+              // ─── Body ────────────────────────────────────────────────────────
               SliverPadding(
                 padding: const EdgeInsets.all(GameTokens.spaceMd),
                 sliver: SliverFillRemaining(
@@ -163,9 +160,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
         ),
       ),
-    ),
-  ),
-);
+    );
   }
 
   void _navigateToCurrentWorld(BuildContext context, List<dynamic> worlds) {
@@ -177,114 +172,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 }
 
-class _DashboardAppBar extends StatelessWidget {
-  final AsyncValue profileAsync;
-
-  const _DashboardAppBar({required this.profileAsync});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: GameTokens.spaceMd,
-        vertical: GameTokens.spaceSm,
-      ),
-      decoration: BoxDecoration(
-        color: GameTokens.surface,
-        border: Border(
-          bottom: BorderSide(color: GameTokens.accentDim, width: 1),
-        ),
-      ),
-      child: Row(
-        children: [
-          // Logo
-          Text(
-            'QUERY',
-            style: GameTokens.displayMedium.copyWith(
-              fontSize: 24,
-              letterSpacing: 6,
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.w900,
-              shadows: [
-                Shadow(
-                  color: GameTokens.accent.withValues(alpha: 0.5),
-                  offset: const Offset(2, 2),
-                ),
-              ],
-            ),
-          ),
-          const Spacer(),
-
-          // Player info
-          profileAsync.when(
-            data: (profile) => profile != null
-                ? Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            profile.displayName,
-                            style: GameTokens.bodyMedium,
-                          ),
-                          Text(
-                            profile.rankTitle,
-                            style: GameTokens.bodySmall,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(width: GameTokens.spaceSm),
-                      GestureDetector(
-                        onTap: () => Navigator.of(context).pushNamed('/settings'),
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: GameTokens.accent,
-                              width: 1,
-                            ),
-                            borderRadius: GameTokens.borderRadiusSm,
-                          ),
-                          child: const Icon(
-                            Icons.settings,
-                            color: GameTokens.accent,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: GameTokens.spaceSm),
-                      GestureDetector(
-                        onTap: () => Navigator.of(context).pushNamed('/profile'),
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: GameTokens.accent,
-                              width: 1,
-                            ),
-                            borderRadius: GameTokens.borderRadiusSm,
-                          ),
-                          child: const Icon(
-                            Icons.person_outline,
-                            color: GameTokens.accent,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : const SizedBox.shrink(),
-            loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _ContinueBanner extends StatelessWidget {
   final List<dynamic> worlds;
@@ -568,6 +455,8 @@ class _BureauToolsList extends StatelessWidget {
       _BureauToolItem(Icons.map_outlined, 'WORLD MAP', 'Access the global case map', '/world_select'),
       _BureauToolItem(Icons.emoji_events_outlined, 'ACHIEVEMENTS', 'View unlocked commendations', '/achievements'),
       _BureauToolItem(Icons.menu_book_outlined, 'SQL REFERENCE', 'Consult the query manual', '/reference'),
+      _BureauToolItem(Icons.person_outline, 'AGENT PROFILE', 'View your career stats', '/profile'),
+      _BureauToolItem(Icons.settings_outlined, 'SETTINGS', 'System configuration', '/settings'),
     ];
 
     return Column(
