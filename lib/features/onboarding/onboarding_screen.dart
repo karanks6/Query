@@ -6,6 +6,8 @@ import '../../theming/components/slanted_panel.dart';
 import '../../theming/components/action_button.dart';
 import '../gameplay/widgets/parallax_background.dart';
 import '../../core/providers.dart';
+import '../../game/scenes/onboarding_scene.dart';
+import '../../main.dart';
 
 /// Onboarding flow (Section 5.2):
 /// 1. 3 narrative story cards ("Welcome to the Bureau")
@@ -24,6 +26,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   int _currentPage = 0;
   bool _isSaving = false;
   String? _nameError;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(queryGameProvider).pushScene(OnboardingScene());
+    });
+  }
 
   static const _storyCards = [
     _StoryCard(
@@ -101,10 +111,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: GameTokens.background,
-      body: ParallaxBackground(
-        child: SafeArea(
-          child: Column(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: Column(
           children: [
             // Top bar with skip
             Padding(
@@ -216,7 +225,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             ),
           ],
         ),
-      ),
       ),
     );
   }
