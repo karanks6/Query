@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flame/game.dart';
 
 import 'theming/app_theme.dart';
 import 'features/splash/splash_screen.dart';
@@ -23,6 +24,10 @@ import 'package:query/features/leaderboard/leaderboard_screen.dart';
 import 'package:query/core/settings/settings_service.dart';
 import 'firebase_options.dart';
 
+import 'game/query_game.dart';
+
+final queryGameProvider = Provider<QueryGame>((ref) => QueryGame());
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -41,9 +46,25 @@ void main() async {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
       ],
-      child: const QueryApp(),
+      child: const GameRoot(),
     ),
   );
+}
+
+class GameRoot extends ConsumerWidget {
+  const GameRoot({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final game = ref.watch(queryGameProvider);
+    return GameWidget<QueryGame>(
+      game: game,
+      overlayBuilderMap: {
+        'flutter_ui': (context, game) => const QueryApp(),
+      },
+      initialActiveOverlays: const ['flutter_ui'],
+    );
+  }
 }
 
 class QueryApp extends ConsumerWidget {
@@ -56,7 +77,9 @@ class QueryApp extends ConsumerWidget {
     return MaterialApp(
       title: 'Query — Learn SQL',
       debugShowCheckedModeBanner: false,
-      theme: themeData,
+      theme: themeData.copyWith(
+        scaffoldBackgroundColor: Colors.transparent, // Allow Flame to show through
+      ),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -115,6 +138,7 @@ class QueryApp extends ConsumerWidget {
         return FadeTransition(opacity: animation, child: child);
       },
       transitionDuration: const Duration(milliseconds: 220),
+      opaque: false, // Important: Allow Flame game behind route
     );
   }
 
@@ -128,6 +152,7 @@ class QueryApp extends ConsumerWidget {
         return SlideTransition(position: animation.drive(tween), child: child);
       },
       transitionDuration: const Duration(milliseconds: 300),
+      opaque: false, // Important: Allow Flame game behind route
     );
   }
 }
