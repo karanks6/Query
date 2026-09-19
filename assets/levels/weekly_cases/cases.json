@@ -1,0 +1,168 @@
+﻿[
+  {
+    "case_id": "weekly_001",
+    "title": "The Phantom Payroll",
+    "client": "Nexus Financial Corp",
+    "narrative": "Employees are reporting ghost salaries — payments going to names that do not exist in the HR system. The Corruptor has injected phantom records. Cross-reference the payroll database and expose every phantom entry.",
+    "difficulty": "Intermediate",
+    "xp_reward": 500,
+    "levels": [
+      {
+        "id": "weekly_001_level_01",
+        "world_id": "weekly",
+        "level_number": 1,
+        "title": "Part 1 — Survey the Payroll",
+        "narrative": "First, get a full picture of the payroll table. Retrieve all payroll records sorted by salary descending.",
+        "type": "puzzle",
+        "schema": {
+          "tables": [
+            {
+              "name": "payroll",
+              "columns": [
+                { "name": "id",            "type": "INTEGER", "primary_key": true },
+                { "name": "employee_name", "type": "TEXT",    "not_null": true },
+                { "name": "department",    "type": "TEXT" },
+                { "name": "salary",        "type": "REAL",    "not_null": true },
+                { "name": "payment_date",  "type": "TEXT" }
+              ]
+            }
+          ]
+        },
+        "schema_sql": "CREATE TABLE payroll (id INTEGER PRIMARY KEY, employee_name TEXT NOT NULL, department TEXT, salary REAL NOT NULL, payment_date TEXT);",
+        "seed_sql": "INSERT INTO payroll VALUES (1,'Alice Chen','Engineering',95000,'2024-01-31'),(2,'Bob Martinez','Marketing',72000,'2024-01-31'),(3,'Ghost_7X92','Accounting',140000,'2024-01-31'),(4,'Clara Novak','Engineering',88000,'2024-01-31'),(5,'Phantom_K11','Executive',220000,'2024-01-31'),(6,'David Wu','HR',65000,'2024-01-31');",
+        "expected_result": [
+          {"id": 5, "employee_name": "Phantom_K11", "department": "Executive",   "salary": 220000.0, "payment_date": "2024-01-31"},
+          {"id": 3, "employee_name": "Ghost_7X92",  "department": "Accounting",  "salary": 140000.0, "payment_date": "2024-01-31"},
+          {"id": 1, "employee_name": "Alice Chen",  "department": "Engineering", "salary": 95000.0,  "payment_date": "2024-01-31"},
+          {"id": 4, "employee_name": "Clara Novak", "department": "Engineering", "salary": 88000.0,  "payment_date": "2024-01-31"},
+          {"id": 2, "employee_name": "Bob Martinez","department": "Marketing",   "salary": 72000.0,  "payment_date": "2024-01-31"},
+          {"id": 6, "employee_name": "David Wu",    "department": "HR",          "salary": 65000.0,  "payment_date": "2024-01-31"}
+        ],
+        "order_sensitive": true,
+        "performance_active": false,
+        "efficiency_threshold": 0.5,
+        "xp_reward": 80,
+        "allowed_world_number": 1,
+        "hints": [
+          { "tier": "nudge",          "content": "Use ORDER BY to sort records. DESC means highest first." },
+          { "tier": "partial_reveal", "content": "SELECT * FROM payroll ORDER BY ...", "code_snippet": "SELECT * FROM payroll ORDER BY salary DESC;" },
+          { "tier": "full_solution",  "content": "Full solution:", "code_snippet": "SELECT * FROM payroll ORDER BY salary DESC;" }
+        ]
+      },
+      {
+        "id": "weekly_001_level_02",
+        "world_id": "weekly",
+        "level_number": 2,
+        "title": "Part 2 — Find the Phantoms",
+        "narrative": "Real employees have names like Firstname Lastname. Phantom entries contain underscores. Filter for names containing an underscore to expose the injected records.",
+        "type": "puzzle",
+        "schema": {
+          "tables": [
+            {
+              "name": "payroll",
+              "columns": [
+                { "name": "id",            "type": "INTEGER", "primary_key": true },
+                { "name": "employee_name", "type": "TEXT",    "not_null": true },
+                { "name": "department",    "type": "TEXT" },
+                { "name": "salary",        "type": "REAL",    "not_null": true },
+                { "name": "payment_date",  "type": "TEXT" }
+              ]
+            }
+          ]
+        },
+        "schema_sql": "CREATE TABLE payroll (id INTEGER PRIMARY KEY, employee_name TEXT NOT NULL, department TEXT, salary REAL NOT NULL, payment_date TEXT);",
+        "seed_sql": "INSERT INTO payroll VALUES (1,'Alice Chen','Engineering',95000,'2024-01-31'),(2,'Bob Martinez','Marketing',72000,'2024-01-31'),(3,'Ghost_7X92','Accounting',140000,'2024-01-31'),(4,'Clara Novak','Engineering',88000,'2024-01-31'),(5,'Phantom_K11','Executive',220000,'2024-01-31'),(6,'David Wu','HR',65000,'2024-01-31');",
+        "expected_result": [
+          {"id": 3, "employee_name": "Ghost_7X92",  "department": "Accounting", "salary": 140000.0, "payment_date": "2024-01-31"},
+          {"id": 5, "employee_name": "Phantom_K11", "department": "Executive",  "salary": 220000.0, "payment_date": "2024-01-31"}
+        ],
+        "order_sensitive": false,
+        "performance_active": false,
+        "efficiency_threshold": 0.5,
+        "xp_reward": 100,
+        "allowed_world_number": 2,
+        "hints": [
+          { "tier": "nudge",          "content": "The LIKE operator with % wildcards can find patterns in text. Note: underscore is itself a LIKE wildcard, so use ESCAPE to match it literally." },
+          { "tier": "partial_reveal", "content": "Use LIKE with ESCAPE to match a literal underscore:", "code_snippet": "SELECT * FROM payroll WHERE employee_name LIKE '%\\_%' ESCAPE '\\';" },
+          { "tier": "full_solution",  "content": "Full solution:", "code_snippet": "SELECT * FROM payroll WHERE employee_name LIKE '%\\_%' ESCAPE '\\';" }
+        ]
+      },
+      {
+        "id": "weekly_001_level_03",
+        "world_id": "weekly",
+        "level_number": 3,
+        "title": "Part 3 — Total Phantom Drain",
+        "narrative": "The CFO needs the total financial damage. Sum the salaries of all phantom employees and label the result phantom_drain.",
+        "type": "puzzle",
+        "schema": {
+          "tables": [
+            {
+              "name": "payroll",
+              "columns": [
+                { "name": "id",            "type": "INTEGER", "primary_key": true },
+                { "name": "employee_name", "type": "TEXT",    "not_null": true },
+                { "name": "department",    "type": "TEXT" },
+                { "name": "salary",        "type": "REAL",    "not_null": true },
+                { "name": "payment_date",  "type": "TEXT" }
+              ]
+            }
+          ]
+        },
+        "schema_sql": "CREATE TABLE payroll (id INTEGER PRIMARY KEY, employee_name TEXT NOT NULL, department TEXT, salary REAL NOT NULL, payment_date TEXT);",
+        "seed_sql": "INSERT INTO payroll VALUES (1,'Alice Chen','Engineering',95000,'2024-01-31'),(2,'Bob Martinez','Marketing',72000,'2024-01-31'),(3,'Ghost_7X92','Accounting',140000,'2024-01-31'),(4,'Clara Novak','Engineering',88000,'2024-01-31'),(5,'Phantom_K11','Executive',220000,'2024-01-31'),(6,'David Wu','HR',65000,'2024-01-31');",
+        "expected_result": [
+          {"phantom_drain": 360000.0}
+        ],
+        "order_sensitive": false,
+        "performance_active": false,
+        "efficiency_threshold": 0.5,
+        "xp_reward": 120,
+        "allowed_world_number": 3,
+        "hints": [
+          { "tier": "nudge",          "content": "SUM() is the aggregate function for totals. Combine it with the same LIKE filter from Part 2 and alias the result." },
+          { "tier": "partial_reveal", "content": "SELECT SUM(salary) AS phantom_drain FROM payroll WHERE ...", "code_snippet": "SELECT SUM(salary) AS phantom_drain FROM payroll WHERE employee_name LIKE '%\\_%' ESCAPE '\\';" },
+          { "tier": "full_solution",  "content": "Full solution:", "code_snippet": "SELECT SUM(salary) AS phantom_drain FROM payroll WHERE employee_name LIKE '%\\_%' ESCAPE '\\';" }
+        ]
+      },
+      {
+        "id": "weekly_001_level_04",
+        "world_id": "weekly",
+        "level_number": 4,
+        "title": "Part 4 — Department Breakdown",
+        "narrative": "Final report: calculate total payroll per department for all legitimate employees only (no underscores in name), sorted by total descending. This closes the case.",
+        "type": "puzzle",
+        "schema": {
+          "tables": [
+            {
+              "name": "payroll",
+              "columns": [
+                { "name": "id",            "type": "INTEGER", "primary_key": true },
+                { "name": "employee_name", "type": "TEXT",    "not_null": true },
+                { "name": "department",    "type": "TEXT" },
+                { "name": "salary",        "type": "REAL",    "not_null": true },
+                { "name": "payment_date",  "type": "TEXT" }
+              ]
+            }
+          ]
+        },
+        "schema_sql": "CREATE TABLE payroll (id INTEGER PRIMARY KEY, employee_name TEXT NOT NULL, department TEXT, salary REAL NOT NULL, payment_date TEXT);",
+        "seed_sql": "INSERT INTO payroll VALUES (1,'Alice Chen','Engineering',95000,'2024-01-31'),(2,'Bob Martinez','Marketing',72000,'2024-01-31'),(3,'Ghost_7X92','Accounting',140000,'2024-01-31'),(4,'Clara Novak','Engineering',88000,'2024-01-31'),(5,'Phantom_K11','Executive',220000,'2024-01-31'),(6,'David Wu','HR',65000,'2024-01-31');",
+        "expected_result": [
+          {"department": "Engineering", "total_salary": 183000.0},
+          {"department": "Marketing",   "total_salary": 72000.0},
+          {"department": "HR",          "total_salary": 65000.0}
+        ],
+        "order_sensitive": true,
+        "performance_active": false,
+        "efficiency_threshold": 0.5,
+        "xp_reward": 200,
+        "allowed_world_number": 3,
+        "hints": [
+          { "tier": "nudge",          "content": "Combine a NOT LIKE phantom filter with GROUP BY department and SUM(salary). Alias the sum as total_salary and order DESC." },
+          { "tier": "partial_reveal", "content": "SELECT department, SUM(salary) AS total_salary FROM payroll WHERE ... GROUP BY department ORDER BY total_salary DESC;", "code_snippet": "SELECT department, SUM(salary) AS total_salary\nFROM payroll\nWHERE employee_name NOT LIKE '%\\_%' ESCAPE '\\'\nGROUP BY department\nORDER BY total_salary DESC;" },
+          { "tier": "full_solution",  "content": "Full solution:", "code_snippet": "SELECT department, SUM(salary) AS total_salary\nFROM payroll\nWHERE employee_name NOT LIKE '%\\_%' ESCAPE '\\'\nGROUP BY department\nORDER BY total_salary DESC;" }
+        ]
+      }
+    ]
+  }
+]
