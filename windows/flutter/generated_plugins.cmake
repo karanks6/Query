@@ -3,11 +3,13 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  audioplayers_windows
   cloud_firestore
   firebase_app_check
   firebase_auth
   firebase_core
   firebase_storage
+  rive_native
   share_plus
   sqlite3_flutter_libs
   url_launcher_windows
