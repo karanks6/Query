@@ -10,6 +10,8 @@ import '../../core/providers.dart';
 import '../../data/content/level_loader.dart';
 import '../../data/content/content_updater_service.dart';
 import '../../theming/app_theme.dart';
+import '../../game/scenes/splash_scene.dart';
+import '../../main.dart';
 
 /// Splash screen and loading state (Section 5.1).
 ///
@@ -46,6 +48,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     super.initState();
     _startTipRotation();
     _initializeApp();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(queryGameProvider).pushScene(SplashScene());
+    });
   }
 
   Timer? _tipTimer;
@@ -144,9 +150,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     }
 
     return Scaffold(
-      backgroundColor: GameTokens.background,
-      body: ParallaxBackground(
-        child: SafeArea(
+      backgroundColor: Colors.transparent, // Let Flame background show
+      body: SafeArea(
           child: Column(
             children: [
               Expanded(
@@ -223,8 +228,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 ),
               ),
             ],
-          ),
-        ),
       ),
     );
   }
