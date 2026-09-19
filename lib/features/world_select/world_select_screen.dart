@@ -6,22 +6,36 @@ import '../../theming/components/action_button.dart';
 import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/game_widgets.dart';
 import '../../core/providers.dart';
+import '../../game/scenes/world_select_scene.dart';
+import '../../main.dart';
 
-class WorldSelectScreen extends ConsumerWidget {
+class WorldSelectScreen extends ConsumerStatefulWidget {
   const WorldSelectScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<WorldSelectScreen> createState() => _WorldSelectScreenState();
+}
+
+class _WorldSelectScreenState extends ConsumerState<WorldSelectScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(queryGameProvider).pushScene(WorldSelectScene());
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final worldsAsync = ref.watch(allWorldProgressProvider);
 
     return Scaffold(
-      backgroundColor: GameTokens.background,
+      backgroundColor: Colors.transparent,
       appBar: GameAppBar(
         title: 'WORLD SELECT',
         onBack: () => Navigator.of(context).pop(),
       ),
-      body: ParallaxBackground(
-        child: worldsAsync.when(
+      body: worldsAsync.when(
           data: (worlds) {
             if (worlds.isEmpty) {
               return Center(child: Text('NO DATA', style: GameTokens.bodyMedium));
@@ -130,7 +144,6 @@ class WorldSelectScreen extends ConsumerWidget {
             child: Text('ERROR: $err', style: GameTokens.bodyMedium.copyWith(color: GameTokens.error)),
           ),
         ),
-      ),
     );
   }
 }
