@@ -51,6 +51,10 @@ dependencies:
   shared_preferences: ^2.5.3
   sensors_plus: ^7.1.0
   flutter_markdown: ^0.7.7+1
+  flame: ^1.35.1
+  flame_riverpod: ^5.4.21
+  flame_audio: ^2.11.14
+  rive: ^0.14.11
 
 dev_dependencies:
   flutter_test:
