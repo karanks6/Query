@@ -15,6 +15,7 @@ import 'features/achievements/achievements_screen.dart';
 import 'features/sandbox/sandbox_screen.dart';
 import 'features/reference/reference_screen.dart';
 import 'features/daily_challenge/daily_challenge_screen.dart';
+import 'features/weekly_case/weekly_case_screen.dart';
 import 'data/content/models/level_model.dart';
 import 'package:query/features/settings/settings_screen.dart';
 import 'package:query/features/profile/profile_screen.dart';
@@ -97,6 +98,8 @@ class QueryApp extends ConsumerWidget {
             return _fadeRoute(const ProfileScreen(), settings);
           case '/daily_challenge':
             return _fadeRoute(const DailyChallengeScreen(), settings);
+          case '/weekly_case':
+            return _fadeRoute(const WeeklyCaseScreen(), settings);
           default:
             return _fadeRoute(const SplashScreen(), settings);
         }
