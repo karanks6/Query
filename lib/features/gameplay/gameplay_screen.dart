@@ -8,13 +8,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
 import '../../theming/components/action_button.dart';
-import 'widgets/parallax_background.dart';
 import '../../shared/widgets/game_widgets.dart';
 import '../../data/content/models/level_model.dart';
 import '../../core/scoring/level_scorer.dart';
 import 'gameplay_provider.dart';
 import 'widgets/data_browser.dart';
-import 'widgets/block_mode_workspace.dart';
 import 'widgets/code_mode_workspace.dart';
 import 'widgets/result_pane.dart';
 import 'widgets/concept_lesson_dialog.dart';
@@ -22,6 +20,8 @@ import '../feedback_overlay/feedback_overlay.dart';
 import '../hints/hints_modal.dart';
 import 'widgets/query_history_sheet.dart';
 import 'widgets/notes_sheet.dart';
+import '../../game/scenes/gameplay_scene.dart';
+import '../../main.dart';
 
 /// Core Gameplay Screen (Section 5.5).
 ///
@@ -57,6 +57,11 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
             widget.level,
             isDailyChallenge: isDailyChallenge,
           );
+          
+      // Push GameplayScene to Flame Engine
+      ref.read(queryGameProvider).pushScene(
+            GameplayScene(level: widget.level),
+          );
 
       if (widget.level.type == LevelType.tutorial || widget.level.levelNumber == 1) {
         showDialog(
@@ -80,10 +85,9 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
     });
 
     return Scaffold(
-      backgroundColor: GameTokens.background,
-      body: ParallaxBackground(
-        child: SafeArea(
-          child: Column(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: Column(
             children: [
               // Ã¢â€â‚¬Ã¢â€â‚¬ HUD / Top bar Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
               _GameplayHUD(level: widget.level, state: state),
@@ -97,7 +101,6 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
             ],
           ),
         ),
-      ),
     );
   }
 
@@ -518,13 +521,7 @@ class _WorkspaceArea extends ConsumerWidget {
     return AnimatedSwitcher(
       duration: GameTokens.durationNormal,
       child: state.queryMode == QueryMode.block
-          ? BlockModeWorkspace(
-              key: const ValueKey('block'),
-              level: level,
-              currentQuery: state.currentQuery,
-              onQueryChanged: (q) =>
-                  ref.read(gameplayProvider.notifier).updateQuery(q),
-            )
+          ? SizedBox.expand(key: const ValueKey('block')) // Flame engine handles block mode
           : CodeModeWorkspace(
               key: const ValueKey('code'),
               schema: level.schema,
