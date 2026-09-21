@@ -70,4 +70,42 @@ class ParticleEffects {
       ),
     );
   }
+
+  /// Creates gold rain particles dropping from top of screen
+  static ParticleSystemComponent goldRain(Vector2 screenSize) {
+    return ParticleSystemComponent(
+      position: Vector2.zero(),
+      particle: Particle.generate(
+        count: 100,
+        lifespan: 3.0,
+        generator: (i) {
+          final startX = _random.nextDouble() * screenSize.x;
+          final startY = -_random.nextDouble() * 200; // Start slightly above screen
+          final speedY = _random.nextDouble() * 150 + 50;
+          
+          return AcceleratedParticle(
+            position: Vector2(startX, startY),
+            speed: Vector2(0, speedY),
+            acceleration: Vector2(0, 100), // Gravity
+            child: ComputedParticle(
+              renderer: (canvas, particle) {
+                final paint = Paint()
+                  ..color = const Color(0xFFFFCC00).withOpacity(min(1.0, (1 - particle.progress) * 1.5))
+                  ..style = PaintingStyle.fill;
+                
+                // Draw little rectangular confetti
+                canvas.save();
+                canvas.rotate(particle.progress * 4 * pi); // Spinning
+                canvas.drawRect(
+                  Rect.fromCenter(center: Offset.zero, width: 6, height: 10), 
+                  paint
+                );
+                canvas.restore();
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
