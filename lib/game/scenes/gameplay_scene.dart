@@ -35,7 +35,7 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
     // Add HUD
     hud = GameplayHudComponent(
       level: level,
-      state: ref.read(gameplayProvider)!,
+      state: ref.read(gameplayProvider),
       onBackTap: () {
         // Trigger back action (would need router access or provider event)
       },
@@ -45,28 +45,28 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
     // Add Briefing Panel
     briefingPanel = BriefingPanelComponent(
       level: level,
-      size: Vector2(size.x - 40, 150),
+      size: Vector2(gameRef.size.x - 40, 150),
       position: Vector2(20, 80), // Below HUD
     );
     add(briefingPanel);
     
     // Add Tab Bar
     tabBar = TabBarComponent(
-      state: ref.read(gameplayProvider)!,
+      state: ref.read(gameplayProvider),
       onToggle: () {
         ref.read(gameplayProvider.notifier).toggleQueryMode();
       },
       size: Vector2(160, 40),
-      position: Vector2(size.x / 2 - 80, 80), // Centered below HUD
+      position: Vector2(gameRef.size.x / 2 - 80, 80), // Centered below HUD
     );
     add(tabBar);
 
     // Action buttons (left side bottom)
-    final btnY = size.y - 70;
+    final btnY = gameRef.size.y - 70;
     add(IconButtonComponent(
       label: 'HINT',
       onTap: () {
-        final state = ref.read(gameplayProvider)!;
+        final state = ref.read(gameplayProvider);
         showModalBottomSheet(
           context: navigatorKey.currentContext!,
           backgroundColor: const Color(0xFF15171E),
@@ -129,31 +129,30 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
         ref.read(gameplayProvider.notifier).runQuery();
       },
       size: Vector2(160, 48),
-      position: Vector2(size.x - 180, size.y - 70), // Bottom right
+      position: Vector2(gameRef.size.x - 180, gameRef.size.y - 70), // Bottom right
     );
     add(runButton);
   }
 
   @override
-  void onGameResize(Vector2 gameSize) {
-    super.onGameResize(gameSize);
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
     if (isLoaded) {
-      briefingPanel.size = Vector2(gameSize.x - 40, 150);
-      runButton.position = Vector2(gameSize.x - 180, gameSize.y - 70);
+      briefingPanel.size = Vector2(size.x - 40, 150);
+      tabBar.position = Vector2(size.x / 2 - 80, 80);
+      runButton.position = Vector2(size.x - 180, size.y - 70);
+      // Ideally update icon buttons positions here too
     }
   }
 
   @override
-  void onMount() {
-    super.onMount();
-    listen(gameplayProvider, (previous, next) {
-      if (next != null) {
-        if (next.queryMode == QueryMode.block) {
-          blockWorkspace.priority = 10;
-        } else {
-          blockWorkspace.priority = -10;
-        }
-      }
-    });
+  void update(double dt) {
+    super.update(dt);
+    final state = ref.read(gameplayProvider);
+    if (state.queryMode == QueryMode.block) {
+      blockWorkspace.priority = 10;
+    } else {
+      blockWorkspace.priority = -10;
+    }
   }
 }

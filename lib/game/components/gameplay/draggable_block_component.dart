@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
+import 'block_workspace_component.dart';
 
 enum ClauseType {
   select('SELECT', 0),
@@ -135,7 +136,10 @@ class DraggableBlockComponent extends PositionComponent with DragCallbacks, TapC
     scale = Vector2.all(1.0);
     priority = 1;
     
-    if (originalPosition != null) {
+    // Call workspace drag end handler if parent is BlockWorkspaceComponent
+    if (parent is BlockWorkspaceComponent) {
+      (parent as BlockWorkspaceComponent).handleBlockDragEnd(this);
+    } else if (originalPosition != null) {
       position = originalPosition!;
     }
   }
