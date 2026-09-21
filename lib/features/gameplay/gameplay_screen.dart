@@ -11,6 +11,7 @@ import 'widgets/result_pane.dart';
 import 'widgets/concept_lesson_dialog.dart';
 import '../feedback_overlay/feedback_overlay.dart';
 import '../../game/scenes/gameplay_scene.dart';
+import '../../game/scenes/victory_scene.dart';
 import '../../main.dart';
 
 /// Core Gameplay Screen.
@@ -61,7 +62,44 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
 
     ref.listen<GameplayState>(gameplayProvider, (previous, next) {
       if ((previous == null || !previous.showFeedback) && next.showFeedback) {
-        _showFeedback(context, next);
+        if (next.levelCompleted) {
+          ref.read(queryGameProvider).pushScene(
+            VictoryScene(
+              level: widget.level,
+              state: next,
+              onNextLevel: () async {
+                final loader = ref.read(levelLoaderProvider);
+                try {
+                  final world = await loader.loadWorld(widget.level.worldId);
+                  if (!context.mounted) return;
+                  final currentIndex = world.levels.indexWhere((l) => l.id == widget.level.id);
+                  if (currentIndex >= 0 && currentIndex < world.levels.length - 1) {
+                    final nextLevel = world.levels[currentIndex + 1];
+                    ref.read(queryGameProvider).popScene();
+                    Navigator.of(context).pushReplacementNamed('/gameplay', arguments: nextLevel);
+                  } else {
+                    ref.read(queryGameProvider).popScene();
+                    Navigator.of(context).pop();
+                  }
+                } catch (e) {
+                  if (!context.mounted) return;
+                  ref.read(queryGameProvider).popScene();
+                  Navigator.of(context).pop();
+                }
+              },
+              onReplay: () {
+                ref.read(queryGameProvider).popScene();
+                ref.read(gameplayProvider.notifier).dismissFeedback();
+              },
+              onMap: () {
+                ref.read(queryGameProvider).popScene();
+                Navigator.of(context).pop();
+              },
+            ),
+          );
+        } else {
+          _showFeedback(context, next);
+        }
       }
     });
 
