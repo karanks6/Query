@@ -27,6 +27,7 @@ import 'firebase_options.dart';
 import 'game/query_game.dart';
 
 final queryGameProvider = Provider<QueryGame>((ref) => QueryGame());
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -75,6 +76,7 @@ class QueryApp extends ConsumerWidget {
     final themeData = ref.watch(activeThemeDataProvider);
 
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'Query — Learn SQL',
       debugShowCheckedModeBanner: false,
       theme: themeData.copyWith(
