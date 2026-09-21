@@ -49,18 +49,13 @@ class FeedbackOverlay extends ConsumerWidget {
       ref.read(audioControllerProvider).playSfx(isSuccess ? 'level_success' : 'level_failure');
     });
 
-    final accentColor = isSuccess
-        ? GameTokens.success
-        : GameTokens.error;
-    
     final state = ref.watch(gameplayProvider);
-    final offerDetectiveMode = !isSuccess && 
-                               state.attemptCount >= 3 && 
+    final offerDetectiveMode = state.attemptCount >= 3 && 
                                state.level?.detectiveStarterQuery != null && 
                                !state.isDetectiveMode;
 
     return SlantedPanel(
-      borderColorOverride: accentColor,
+      borderColorOverride: GameTokens.error,
       colorOverride: GameTokens.surface,
       child: SafeArea(
         top: false,
@@ -112,17 +107,9 @@ class FeedbackOverlay extends ConsumerWidget {
 
                 const SizedBox(height: GameTokens.spaceMd),
 
-                // Star breakdown (on success)
-                if (isSuccess && score != null)
-                  _StarBreakdown(score: score!),
-
-                const SizedBox(height: GameTokens.spaceLg),
-
                 // CTAs
                 _FeedbackActions(
-                  isSuccess: isSuccess,
                   onDismiss: onDismiss,
-                  onNextLevel: onNextLevel,
                   onRetry: onRetry,
                 ),
               ],
@@ -151,10 +138,7 @@ class FeedbackOverlay extends ConsumerWidget {
 }
 
 class _FeedbackHeader extends StatelessWidget {
-  final bool isSuccess;
-  final LevelScore? score;
-
-  const _FeedbackHeader({required this.isSuccess, this.score});
+  const _FeedbackHeader();
 
   @override
   Widget build(BuildContext context) {
@@ -163,128 +147,33 @@ class _FeedbackHeader extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(
-              isSuccess ? Icons.check_circle_outline : Icons.cancel_outlined,
-              color: isSuccess ? GameTokens.success : GameTokens.error,
+            const Icon(
+              Icons.cancel_outlined,
+              color: GameTokens.error,
               size: 24,
-            )
-                .animate(target: isSuccess ? 1 : 0)
-                .scale(duration: 400.ms, curve: Curves.bounceOut),
+            ).animate().scale(duration: 400.ms, curve: Curves.bounceOut),
             const SizedBox(width: GameTokens.spaceSm),
             Text(
-              isSuccess ? 'CASE CRACKED!' : 'NOT QUITE.',
+              'NOT QUITE.',
               style: GameTokens.headlineLarge.copyWith(
-                color: isSuccess ? GameTokens.success : GameTokens.error,
+                color: GameTokens.error,
               ),
             ),
           ],
         ),
-        // Animated star pop-in on success
-        if (isSuccess && score != null) ...[
-          const SizedBox(height: GameTokens.spaceMd),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(3, (i) {
-              final earned = i < score!.starCount;
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Icon(
-                  earned ? Icons.star_rounded : Icons.star_border_rounded,
-                  color: earned ? GameTokens.accent : GameTokens.disabledText,
-                  size: 40,
-                )
-                    .animate()
-                    .scale(
-                      begin: const Offset(0.0, 0.0),
-                      end: const Offset(1.0, 1.0),
-                      delay: (400 + i * 200).ms,
-                      duration: 350.ms,
-                      curve: Curves.bounceOut,
-                    )
-                    .fadeIn(delay: (400 + i * 200).ms, duration: 200.ms),
-              );
-            }),
-          ),
-          // Time medal row
-          if (score!.timeMedal != null)
-            Padding(
-              padding: const EdgeInsets.only(top: GameTokens.spaceSm),
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _medalColor(score!.timeMedal!).withValues(alpha: 0.15),
-                    border: Border.all(color: _medalColor(score!.timeMedal!)),
-                    borderRadius: GameTokens.borderRadiusSm,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.timer_outlined,
-                          color: _medalColor(score!.timeMedal!), size: 14),
-                      const SizedBox(width: 6),
-                      Text(
-                        '${score!.timeMedal!.name.toUpperCase()} TIME MEDAL  +${score!.timeMedal!.xpBonus} XP',
-                        style: GameTokens.bodySmall.copyWith(
-                          color: _medalColor(score!.timeMedal!),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
-                ).animate().fadeIn(delay: 1200.ms, duration: 400.ms),
-              ),
-            ),
-        ],
       ],
     );
-  }
-
-  Color _medalColor(TimeMedal medal) {
-    switch (medal) {
-      case TimeMedal.gold:
-        return GameTokens.warning;
-      case TimeMedal.silver:
-        return const Color(0xFFB0BEC5);
-      case TimeMedal.bronze:
-        return const Color(0xFFBF8A60);
-    }
   }
 }
 
 class _FeedbackMessage extends StatelessWidget {
   final QueryValidationReport? report;
   final SandboxException? sandboxError;
-  final bool isSuccess;
-  final LevelScore? score;
 
   const _FeedbackMessage({
     this.report,
     this.sandboxError,
-    required this.isSuccess,
-    this.score,
   });
-
-  static const _successMessages = [
-    'Your query returned the correct result. Well done, Agent.',
-    'Case closed. Impeccable work, Detective.',
-    'Query executed flawlessly. The Bureau is impressed.',
-    'Target data extracted. Another case in the books.',
-    'Textbook execution. The Archive is updated.',
-  ];
-
-  static const _successMessages3Stars = [
-    'Perfect execution. You\'re a senior analyst in the making.',
-    'Flawless. Not a single clause out of place.',
-    'Outstanding. You handled that like a field veteran.',
-  ];
-
-  static const _successMessagesHint = [
-    'Case closed — but your methods raised some eyebrows at the Bureau.',
-    'Query solved, though the hint logs will be reviewed.',
-    'Result correct. The full solution hint won\'t appear in your official record.',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -295,26 +184,13 @@ class _FeedbackMessage extends StatelessWidget {
           sandboxError!.message;
     } else if (report == null) {
       message = 'No result yet.';
-    } else if (isSuccess) {
-      final hintUsed = score?.hintCapApplied ?? false;
-      final perfect = (score?.starCount ?? 0) == 3;
-      final pool = perfect && !hintUsed
-          ? _successMessages3Stars
-          : hintUsed
-              ? _successMessagesHint
-              : _successMessages;
-      message = pool[(pool.length * DateTime.now().millisecond ~/ 1000).clamp(0, pool.length - 1)];
-      if (report!.efficiencyScore != null) {
-        final pct = (report!.efficiencyScore! * 100).toStringAsFixed(0);
-        message += '\nEfficiency: $pct%';
-      }
     } else {
       final failure = report!.firstFailure;
       message = failure.plainEnglishMessage ?? failure.errorMessage ?? 'Unknown error.';
     }
 
     // Diff summary (if result failed)
-    if (!isSuccess && report?.resultDiff != null) {
+    if (report?.resultDiff != null) {
       message = report!.resultDiff!.plainEnglishSummary;
     }
 
