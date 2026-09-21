@@ -1,4 +1,5 @@
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
 import 'draggable_block_component.dart';
 import '../../query_game.dart';
@@ -116,6 +117,17 @@ class BlockWorkspaceComponent extends PositionComponent with HasGameReference<Qu
         if (s.attachedBlock == block) s.attachedBlock = null;
       }
       targetSlot.attachedBlock = block;
+      
+      // Visual feedback for snapping
+      block.add(
+        ScaleEffect.by(
+          Vector2.all(1.1),
+          EffectController(
+            duration: 0.1,
+            reverseDuration: 0.1,
+          ),
+        ),
+      );
     } else {
       // Return to original position
       if (block.originalPosition != null) {
