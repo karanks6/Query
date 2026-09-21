@@ -11,6 +11,8 @@ import '../components/gameplay/run_button_component.dart';
 import '../components/gameplay/tab_bar_component.dart';
 import '../components/gameplay/icon_button_component.dart';
 import 'package:flutter/material.dart';
+import 'package:flame/effects.dart';
+import '../effects/particle_effects.dart';
 
 import '../../main.dart'; // for navigatorKey
 import '../../features/hints/hints_modal.dart';
@@ -145,6 +147,8 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
     }
   }
 
+  LevelState _lastState = LevelState.initial;
+
   @override
   void update(double dt) {
     super.update(dt);
@@ -153,6 +157,29 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
       blockWorkspace.priority = 10;
     } else {
       blockWorkspace.priority = -10;
+    }
+
+    if (state.levelState != _lastState) {
+      _lastState = state.levelState;
+      if (_lastState == LevelState.success) {
+        // Success Explosion from center of screen
+        add(ParticleEffects.successExplosion(gameRef.size / 2));
+      } else if (_lastState == LevelState.failed) {
+        // Error sparks from run button
+        add(ParticleEffects.errorSparks(runButton.position + runButton.size / 2));
+        
+        // Shake run button
+        runButton.add(
+          MoveEffect.by(
+            Vector2(10, 0),
+            EffectController(
+              duration: 0.05,
+              reverseDuration: 0.05,
+              repeatCount: 4,
+            ),
+          ),
+        );
+      }
     }
   }
 }
