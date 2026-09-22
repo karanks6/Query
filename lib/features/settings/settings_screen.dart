@@ -23,7 +23,7 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: GameTokens.background,
       appBar: GameAppBar(
-        title: 'SETTINGS',
+        title: 'SYSTEM CONFIGURATION',
         onBack: () => Navigator.of(context).pop(),
       ),
       body: ParallaxBackground(
@@ -117,6 +117,40 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: GameTokens.spaceXl),
             Text(
+              'VISUAL EFFECTS',
+              style: GameTokens.labelLarge.copyWith(color: GameTokens.secondaryText),
+            ),
+            const SizedBox(height: GameTokens.spaceSm),
+            SlantedPanel(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceLg, vertical: GameTokens.spaceMd),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('CRT Scanline Intensity', style: GameTokens.bodyMedium),
+                            Text('80%', style: GameTokens.code.copyWith(color: GameTokens.accent)),
+                          ],
+                        ),
+                        const SizedBox(height: GameTokens.spaceSm),
+                        Slider(
+                          value: 0.8,
+                          activeColor: GameTokens.accent,
+                          inactiveColor: GameTokens.accentDim,
+                          onChanged: (val) {},
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: GameTokens.spaceXl),
+            Text(
               'SYSTEM',
               style: GameTokens.labelLarge.copyWith(color: GameTokens.secondaryText),
             ),
@@ -143,6 +177,32 @@ class SettingsScreen extends ConsumerWidget {
                 }
               ),
             ),
+            const SizedBox(height: GameTokens.spaceXl),
+            const SizedBox(height: GameTokens.spaceXl),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceLg),
+              child: OutlinedButton(
+                onPressed: () {},
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: GameTokens.error, width: 2),
+                  padding: const EdgeInsets.symmetric(vertical: GameTokens.spaceLg),
+                  backgroundColor: GameTokens.error.withValues(alpha: 0.1),
+                  shape: RoundedRectangleBorder(borderRadius: GameTokens.borderRadiusSm),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.warning, color: GameTokens.error),
+                    const SizedBox(width: GameTokens.spaceSm),
+                    Text(
+                      'CLEAR LOCAL DATA & RESET PROGRESS',
+                      style: GameTokens.labelLarge.copyWith(color: GameTokens.error),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: GameTokens.spaceXl),
           ],
         ),
       ),
