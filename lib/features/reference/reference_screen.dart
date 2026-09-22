@@ -23,57 +23,106 @@ class _SqlReferenceScreenState extends ConsumerState<SqlReferenceScreen> {
       'command': 'SELECT',
       'description': 'Extracts data from a database.',
       'example': 'SELECT column1, column2 FROM table_name;',
+      'category': 'SELECT',
     },
     {
       'command': 'WHERE',
       'description': 'Filters records based on specified conditions.',
       'example': 'SELECT * FROM table_name WHERE condition;',
+      'category': 'WHERE',
     },
     {
       'command': 'ORDER BY',
       'description': 'Sorts the result set in ascending or descending order.',
       'example': 'SELECT * FROM table_name ORDER BY column1 ASC|DESC;',
+      'category': 'WHERE',
     },
     {
       'command': 'LIMIT',
       'description': 'Specifies the number of records to return.',
       'example': 'SELECT * FROM table_name LIMIT 10;',
+      'category': 'WHERE',
     },
     {
       'command': 'GROUP BY',
       'description': 'Groups rows that have the same values into summary rows.',
       'example': 'SELECT column_name, COUNT(column_name) FROM table_name GROUP BY column_name;',
+      'category': 'GROUP',
     },
     {
       'command': 'HAVING',
       'description': 'Added to SQL because the WHERE keyword could not be used with aggregate functions.',
       'example': 'SELECT column_name, COUNT(column_name) FROM table_name GROUP BY column_name HAVING COUNT(column_name) > 5;',
+      'category': 'GROUP',
     },
     {
       'command': 'INNER JOIN',
       'description': 'Returns records that have matching values in both tables.',
       'example': 'SELECT column_name(s) FROM table1 INNER JOIN table2 ON table1.column_name = table2.column_name;',
+      'category': 'JOIN',
     },
     {
       'command': 'LEFT JOIN',
       'description': 'Returns all records from the left table, and the matched records from the right table.',
       'example': 'SELECT column_name(s) FROM table1 LEFT JOIN table2 ON table1.column_name = table2.column_name;',
+      'category': 'JOIN',
+    },
+    {
+      'command': 'INSERT',
+      'description': 'Inserts new records into a table.',
+      'example': 'INSERT INTO table_name (column1, column2) VALUES (value1, value2);',
+      'category': 'DML',
+    },
+    {
+      'command': 'COUNT',
+      'description': 'Returns the number of rows that matches a specified criterion.',
+      'example': 'SELECT COUNT(column_name) FROM table_name WHERE condition;',
+      'category': 'FUNC',
     },
   ];
+
+  String _searchQuery = '';
+  String _selectedCategory = 'ALL';
+  final List<String> _categories = ['ALL', 'SELECT', 'WHERE', 'GROUP', 'JOIN', 'DML', 'FUNC'];
+
+  late TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final bookmarkedAsync = ref.watch(bookmarkedConceptsProvider);
     final bookmarkedList = bookmarkedAsync.value ?? [];
 
-    final displayedConcepts = _showBookmarksOnly
-        ? _allConcepts.where((c) => bookmarkedList.contains(c['command'])).toList()
-        : _allConcepts;
+    var displayedConcepts = _allConcepts;
+    
+    // Filter by Category
+    if (_selectedCategory != 'ALL') {
+      displayedConcepts = displayedConcepts.where((c) => c['category'] == _selectedCategory).toList();
+    }
+    
+    // Filter by Search Query
+    if (_searchQuery.isNotEmpty) {
+      final q = _searchQuery.toLowerCase();
+      displayedConcepts = displayedConcepts.where((c) {
+        return c['command']!.toLowerCase().contains(q) || c['description']!.toLowerCase().contains(q);
+      }).toList();
+    }
 
     return Scaffold(
       backgroundColor: GameTokens.background,
       appBar: GameAppBar(
-        title: 'SQL REFERENCE',
+        title: 'SQL REFERENCE TERMINAL',
         onBack: () => Navigator.of(context).pop(),
         actions: [
           ActionButton(
@@ -97,52 +146,87 @@ class _SqlReferenceScreenState extends ConsumerState<SqlReferenceScreen> {
       body: ParallaxBackground(
         child: Column(
           children: [
+            // Search Bar
             Padding(
-              padding: const EdgeInsets.all(GameTokens.spaceMd),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _ToggleButton(
-                    title: 'ALL CONCEPTS',
-                    isActive: !_showBookmarksOnly,
-                    onTap: () => setState(() => _showBookmarksOnly = false),
+              padding: const EdgeInsets.all(GameTokens.spaceLg),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (val) => setState(() => _searchQuery = val),
+                    style: GameTokens.code.copyWith(color: GameTokens.accent),
+                    decoration: InputDecoration(
+                      hintText: 'SEARCH TERMINAL...',
+                      hintStyle: GameTokens.code.copyWith(color: GameTokens.secondaryText),
+                      prefixIcon: const Icon(Icons.search, color: GameTokens.accentDim),
+                      filled: true,
+                      fillColor: GameTokens.surface,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: GameTokens.accentDim),
+                        borderRadius: GameTokens.borderRadiusSm,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: GameTokens.accent),
+                        borderRadius: GameTokens.borderRadiusSm,
+                      ),
+                    ),
                   ),
-                  const SizedBox(width: GameTokens.spaceMd),
-                  _ToggleButton(
-                    title: 'BOOKMARKS',
-                    isActive: _showBookmarksOnly,
-                    onTap: () => setState(() => _showBookmarksOnly = true),
-                  ),
-                ],
+                ),
               ),
             ),
+            // Category Tabs
+            SizedBox(
+              height: 48,
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceLg),
+                scrollDirection: Axis.horizontal,
+                itemCount: _categories.length,
+                separatorBuilder: (context, index) => const SizedBox(width: GameTokens.spaceMd),
+                itemBuilder: (context, index) {
+                  final cat = _categories[index];
+                  return _ToggleButton(
+                    title: cat,
+                    isActive: _selectedCategory == cat,
+                    onTap: () => setState(() => _selectedCategory = cat),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: GameTokens.spaceMd),
+            // Content
             Expanded(
               child: displayedConcepts.isEmpty
                   ? Center(
                       child: Text(
-                        'No bookmarked concepts yet.',
-                        style: GameTokens.bodyMedium.copyWith(color: GameTokens.secondaryText),
+                        'NO MATCHING RECORDS FOUND',
+                        style: GameTokens.code.copyWith(color: GameTokens.secondaryText),
                       ),
                     )
-                  : ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceSm),
-                      itemCount: displayedConcepts.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: GameTokens.spaceMd),
-                      itemBuilder: (context, index) {
-                        final concept = displayedConcepts[index];
-                        final command = concept['command']!;
-                        final isBookmarked = bookmarkedList.contains(command);
+                  : Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: ListView.separated(
+                          padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceLg, vertical: GameTokens.spaceMd),
+                          itemCount: displayedConcepts.length,
+                          separatorBuilder: (context, index) => const SizedBox(height: GameTokens.spaceLg),
+                          itemBuilder: (context, index) {
+                            final concept = displayedConcepts[index];
+                            final command = concept['command']!;
+                            final isBookmarked = bookmarkedList.contains(command);
 
-                        return _ReferenceItem(
-                          command: command,
-                          description: concept['description']!,
-                          example: concept['example']!,
-                          isBookmarked: isBookmarked,
-                          onBookmarkToggle: () {
-                            ref.read(conceptDaoProvider).toggleBookmark(command);
+                            return _ReferenceItem(
+                              command: command,
+                              description: concept['description']!,
+                              example: concept['example']!,
+                              isBookmarked: isBookmarked,
+                              onBookmarkToggle: () {
+                                ref.read(conceptDaoProvider).toggleBookmark(command);
+                              },
+                            );
                           },
-                        );
-                      },
+                        ),
+                      ),
                     ),
             ),
           ],
