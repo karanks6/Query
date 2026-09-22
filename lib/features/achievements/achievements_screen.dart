@@ -46,55 +46,122 @@ const List<AchievementDef> _kAchievements = [
   AchievementDef(id:'rank_silver',title:'Moving Up',description:'Silver Rank achieved. The Bureau promotes you.',unlockCondition:'Reach Silver Rank by earning enough XP through level completions.',icon:Icons.workspace_premium,category:'Dedication'),
 ];
 
-class AchievementsScreen extends ConsumerWidget {
+class AchievementsScreen extends ConsumerStatefulWidget {
   const AchievementsScreen({super.key});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AchievementsScreen> createState() => _AchievementsScreenState();
+}
+
+class _AchievementsScreenState extends ConsumerState<AchievementsScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final achievementsAsync = ref.watch(allAchievementsProvider);
     return Scaffold(
-      backgroundColor: GameTokens.background,
-      appBar: GameAppBar(title: 'ACHIEVEMENTS', onBack: () => Navigator.of(context).pop()),
-      body: ParallaxBackground(
-        child: achievementsAsync.when(
-          data: (earnedList) {
-            final earnedMap = <String, DateTime>{
-              for (final e in earnedList)
-                e.achievementId: DateTime.fromMillisecondsSinceEpoch(e.earnedAt),
-            };
-            final categories = <String>[];
-            final byCategory = <String, List<AchievementDef>>{};
-            for (final def in _kAchievements) {
-              if (!categories.contains(def.category)) categories.add(def.category);
-              byCategory.putIfAbsent(def.category, () => []).add(def);
-            }
-            final earned = earnedMap.length;
-            final total = _kAchievements.length;
-            return ListView(
-              padding: const EdgeInsets.all(GameTokens.spaceMd),
-              children: [
-                _ProgressBanner(earned: earned, total: total),
-                const SizedBox(height: GameTokens.spaceLg),
-                for (final cat in categories) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: GameTokens.spaceSm),
-                    child: Text(cat.toUpperCase(), style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText, letterSpacing: 2, fontSize: 10)),
+      backgroundColor: GameTokens.background, // Solid background
+      appBar: GameAppBar(title: 'COMMENDATIONS ARCHIVE', onBack: () => Navigator.of(context).pop()),
+      body: achievementsAsync.when(
+        data: (earnedList) {
+          final earnedMap = <String, DateTime>{
+            for (final e in earnedList)
+              e.achievementId: DateTime.fromMillisecondsSinceEpoch(e.earnedAt),
+          };
+          
+          final earnedCount = earnedMap.length;
+          final totalCount = _kAchievements.length;
+
+          return Column(
+            children: [
+              const SizedBox(height: GameTokens.spaceLg),
+              _ProgressBanner(earned: earnedCount, total: totalCount),
+              const SizedBox(height: GameTokens.spaceLg),
+              // Custom TabBar
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 600),
+                  child: SlantedPanel(
+                    child: TabBar(
+                      controller: _tabController,
+                      indicatorColor: GameTokens.accent,
+                      labelColor: GameTokens.accent,
+                      unselectedLabelColor: GameTokens.secondaryText,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      indicatorWeight: 4,
+                      dividerColor: Colors.transparent,
+                      tabs: const [
+                        Tab(text: 'ALL'),
+                        Tab(text: 'EARNED'),
+                        Tab(text: 'LOCKED'),
+                      ],
+                    ),
                   ),
-                  ...byCategory[cat]!.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final def = entry.value;
-                    final earnedAt = earnedMap[def.id];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: GameTokens.spaceSm),
-                      child: _AchievementTile(def: def, isEarned: earnedAt != null, earnedAt: earnedAt, animationDelay: (index * 40).ms),
-                    );
-                  }),
-                  const SizedBox(height: GameTokens.spaceMd),
-                ],
-              ],
+                ),
+              ),
+              const SizedBox(height: GameTokens.spaceLg),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildGrid(_kAchievements, earnedMap),
+                    _buildGrid(_kAchievements.where((a) => earnedMap.containsKey(a.id)).toList(), earnedMap),
+                    _buildGrid(_kAchievements.where((a) => !earnedMap.containsKey(a.id)).toList(), earnedMap),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(GameTokens.accent), strokeWidth: 2)),
+        error: (err, stack) => Center(child: Text('ERROR: ', style: GameTokens.bodyMedium.copyWith(color: GameTokens.error))),
+      ),
+    );
+  }
+
+  Widget _buildGrid(List<AchievementDef> achievements, Map<String, DateTime> earnedMap) {
+    if (achievements.isEmpty) {
+      return Center(
+        child: Text(
+          'NO ACHIEVEMENTS FOUND',
+          style: GameTokens.headlineMedium.copyWith(color: GameTokens.secondaryText),
+        ),
+      );
+    }
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 800),
+        child: GridView.builder(
+          padding: const EdgeInsets.all(GameTokens.spaceLg),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 250,
+            crossAxisSpacing: GameTokens.spaceLg,
+            mainAxisSpacing: GameTokens.spaceLg,
+            childAspectRatio: 0.8,
+          ),
+          itemCount: achievements.length,
+          itemBuilder: (context, index) {
+            final def = achievements[index];
+            final earnedAt = earnedMap[def.id];
+            return _AchievementTile(
+              def: def,
+              isEarned: earnedAt != null,
+              earnedAt: earnedAt,
+              animationDelay: (index * 40).ms,
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(GameTokens.accent), strokeWidth: 2)),
-          error: (err, stack) => Center(child: Text('ERROR: ', style: GameTokens.bodyMedium.copyWith(color: GameTokens.error))),
         ),
       ),
     );
@@ -108,136 +175,218 @@ class _ProgressBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pct = total == 0 ? 0.0 : earned / total;
-    return SlantedPanel(
-      borderColorOverride: GameTokens.accent,
-      padding: const EdgeInsets.all(GameTokens.spaceMd),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('BUREAU RECORD', style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText, letterSpacing: 1.5)),
-          Text(' / ', style: GameTokens.headlineLarge.copyWith(color: GameTokens.accent)),
-        ]),
-        const SizedBox(height: GameTokens.spaceSm),
-        ClipRRect(
-          borderRadius: GameTokens.borderRadiusSm,
-          child: LinearProgressIndicator(value: pct, minHeight: 6, backgroundColor: GameTokens.surfaceVariant, valueColor: const AlwaysStoppedAnimation(GameTokens.accent)),
-        ),
-        const SizedBox(height: 6),
-        Text('% complete', style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText, fontSize: 10)),
-      ]),
-    );
-  }
-}
-
-class _AchievementTile extends StatelessWidget {
-  final AchievementDef def;
-  final bool isEarned;
-  final DateTime? earnedAt;
-  final Duration animationDelay;
-  const _AchievementTile({required this.def, required this.isEarned, required this.earnedAt, required this.animationDelay});
-
-  void _showUnlockInfo(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
-        child: SlantedPanel(
-          borderColorOverride: GameTokens.info,
-          colorOverride: GameTokens.surface,
-          padding: const EdgeInsets.all(GameTokens.spaceLg),
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(children: [
-              const Icon(Icons.lock_outline, color: GameTokens.info, size: 14),
-              const SizedBox(width: 8),
-              Text('HOW TO UNLOCK', style: GameTokens.bodySmall.copyWith(color: GameTokens.info, letterSpacing: 1.5)),
-            ]),
-            const SizedBox(height: GameTokens.spaceMd),
-            Row(children: [
-              Container(
-                width: 44, height: 44,
-                decoration: BoxDecoration(color: GameTokens.accentDim.withValues(alpha: 0.1), borderRadius: GameTokens.borderRadiusSm, border: Border.all(color: GameTokens.accentDim)),
-                child: Icon(def.icon, color: GameTokens.accentDim, size: 22),
-              ),
-              const SizedBox(width: GameTokens.spaceSm),
-              Expanded(child: Text(def.title, style: GameTokens.headlineMedium.copyWith(color: GameTokens.primaryText))),
-            ]),
-            const SizedBox(height: GameTokens.spaceMd),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(GameTokens.spaceMd),
-              decoration: BoxDecoration(
-                color: GameTokens.info.withValues(alpha: 0.07),
-                borderRadius: GameTokens.borderRadiusSm,
-                border: Border.all(color: GameTokens.info.withValues(alpha: 0.35)),
-              ),
-              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Icon(Icons.info_outline, color: GameTokens.info, size: 14),
-                const SizedBox(width: 8),
-                Expanded(child: Text(def.unlockCondition, style: GameTokens.bodyMedium.copyWith(color: GameTokens.primaryText, height: 1.5))),
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 600),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceLg),
+          child: SlantedPanel(
+            borderColorOverride: GameTokens.accent,
+            padding: const EdgeInsets.all(GameTokens.spaceMd),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text('BUREAU RECORD', style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText, letterSpacing: 1.5)),
+                Text('$earned / $total', style: GameTokens.headlineLarge.copyWith(color: GameTokens.accent)),
               ]),
-            ),
-            const SizedBox(height: GameTokens.spaceLg),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('GOT IT', style: GameTokens.labelLarge.copyWith(color: GameTokens.accent)),
+              const SizedBox(height: GameTokens.spaceSm),
+              ClipRRect(
+                borderRadius: GameTokens.borderRadiusSm,
+                child: LinearProgressIndicator(value: pct, minHeight: 6, backgroundColor: GameTokens.surfaceVariant, valueColor: const AlwaysStoppedAnimation(GameTokens.accent)),
               ),
-            ),
-          ]),
+              const SizedBox(height: 6),
+              Text('${(pct * 100).toInt()}% complete', style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText, fontSize: 10)),
+            ]),
+          ),
         ),
       ),
     );
   }
+}
+
+class _AchievementTile extends StatefulWidget {
+  final AchievementDef def;
+  final bool isEarned;
+  final DateTime? earnedAt;
+  final Duration animationDelay;
+  
+  const _AchievementTile({
+    required this.def, 
+    required this.isEarned, 
+    required this.earnedAt, 
+    required this.animationDelay
+  });
+
+  @override
+  State<_AchievementTile> createState() => _AchievementTileState();
+}
+
+class _AchievementTileState extends State<_AchievementTile> {
+  bool _isFlipped = false;
 
   @override
   Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (widget.isEarned) {
+          setState(() {
+            _isFlipped = !_isFlipped;
+          });
+        }
+      },
+      child: TweenAnimationBuilder(
+        tween: Tween<double>(begin: 0, end: _isFlipped ? 1 : 0),
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeOutBack,
+        builder: (context, double val, child) {
+          // 3D flip effect on Y-axis
+          final isBack = val > 0.5;
+          return Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.001) // perspective
+              ..rotateY(val * 3.14159), // 180 degree flip
+            child: isBack
+                ? Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()..rotateY(3.14159),
+                    child: _buildDetailPanel(),
+                  )
+                : _buildFrontPanel(),
+          );
+        },
+      ),
+    ).animate().fadeIn(delay: widget.animationDelay, duration: 400.ms).scale(begin: const Offset(0.9, 0.9));
+  }
+
+  Widget _buildFrontPanel() {
     return SlantedPanel(
-      borderColorOverride: isEarned ? GameTokens.accent : GameTokens.accentDim,
-      padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceSm),
-      colorOverride: isEarned ? null : GameTokens.surface,
-      child: Row(children: [
-        Container(
-          width: 52, height: 52,
-          decoration: BoxDecoration(
-            color: isEarned ? GameTokens.accent.withValues(alpha: 0.12) : GameTokens.background,
-            border: Border.all(color: isEarned ? GameTokens.accent : GameTokens.accentDim),
-            borderRadius: GameTokens.borderRadiusSm,
-          ),
-          child: Icon(isEarned ? def.icon : Icons.lock_outline, color: isEarned ? GameTokens.accent : GameTokens.accentDim, size: 24),
-        ),
-        const SizedBox(width: GameTokens.spaceMd),
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(def.title, style: GameTokens.headlineMedium.copyWith(color: isEarned ? GameTokens.primaryText : GameTokens.accentDim)),
-            const SizedBox(height: 2),
-            Text(
-              isEarned ? def.description : def.unlockCondition,
-              style: GameTokens.bodySmall.copyWith(color: isEarned ? GameTokens.secondaryText : GameTokens.accentDim.withValues(alpha: 0.75), fontSize: 11),
-              maxLines: 2, overflow: TextOverflow.ellipsis,
+      borderColorOverride: widget.isEarned ? GameTokens.accent : GameTokens.accentDim,
+      colorOverride: widget.isEarned ? GameTokens.accent.withValues(alpha: 0.1) : GameTokens.surface,
+      padding: const EdgeInsets.all(GameTokens.spaceMd),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: widget.isEarned ? GameTokens.accent.withValues(alpha: 0.2) : GameTokens.background,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: widget.isEarned ? GameTokens.accent : GameTokens.accentDim,
+                width: 2,
+              ),
+              boxShadow: widget.isEarned
+                  ? [
+                      BoxShadow(
+                        color: GameTokens.accent.withValues(alpha: 0.5),
+                        blurRadius: 15,
+                        spreadRadius: -5,
+                      )
+                    ]
+                  : null,
             ),
-            if (isEarned && earnedAt != null) ...[
-              const SizedBox(height: 4),
-              Row(children: [
-                const Icon(Icons.check_circle_outline, color: GameTokens.success, size: 11),
-                const SizedBox(width: 4),
-                Text('Unlocked ${_formatDate(earnedAt!)}', style: GameTokens.bodySmall.copyWith(color: GameTokens.success, fontSize: 10)),
-              ]),
-            ],
-          ]),
-        ),
-        if (isEarned)
-          const Padding(padding: EdgeInsets.only(left: 8), child: Icon(Icons.check_circle, color: GameTokens.accent, size: 20))
-        else
-          IconButton(
-            onPressed: () => _showUnlockInfo(context),
-            tooltip: 'How to unlock this achievement',
-            icon: const Icon(Icons.info_outline, color: GameTokens.info, size: 20),
-            padding: const EdgeInsets.all(6),
-            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            child: Icon(
+              widget.isEarned ? widget.def.icon : Icons.lock_outline,
+              size: 40,
+              color: widget.isEarned ? GameTokens.accent : GameTokens.accentDim,
+            ),
+          ).animate(target: widget.isEarned ? 1 : 0).shimmer(duration: 2000.ms),
+          const SizedBox(height: GameTokens.spaceLg),
+          Text(
+            widget.isEarned ? widget.def.title.toUpperCase() : '???',
+            style: GameTokens.headlineMedium.copyWith(
+              color: widget.isEarned ? GameTokens.primaryText : GameTokens.disabledText,
+              letterSpacing: 1.2,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
-      ]),
-    ).animate().fadeIn(delay: animationDelay, duration: 300.ms).slideY(begin: 0.08, end: 0);
+          if (widget.isEarned) ...[
+             const SizedBox(height: GameTokens.spaceSm),
+             Text(
+               'TAP FOR DETAILS',
+               style: GameTokens.bodySmall.copyWith(color: GameTokens.accent, fontSize: 10, letterSpacing: 2),
+             ),
+          ]
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailPanel() {
+    return SlantedPanel(
+      borderColorOverride: GameTokens.accent,
+      colorOverride: GameTokens.surfaceHighlight,
+      padding: const EdgeInsets.all(GameTokens.spaceMd),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(widget.def.icon, color: GameTokens.accent, size: 24),
+              const SizedBox(width: GameTokens.spaceSm),
+              Expanded(
+                child: Text(
+                  widget.def.title.toUpperCase(),
+                  style: GameTokens.headlineMedium.copyWith(color: GameTokens.accent),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: GameTokens.spaceMd),
+          Expanded(
+            child: Text(
+              widget.def.description,
+              style: GameTokens.bodyMedium.copyWith(color: GameTokens.primaryText, height: 1.4),
+            ),
+          ),
+          const SizedBox(height: GameTokens.spaceMd),
+          if (widget.earnedAt != null)
+            Row(
+              children: [
+                const Icon(Icons.calendar_today, color: GameTokens.success, size: 14),
+                const SizedBox(width: 4),
+                Text(
+                  'Earned: ${_formatDate(widget.earnedAt!)}',
+                  style: GameTokens.bodySmall.copyWith(color: GameTokens.success),
+                ),
+              ],
+            ),
+          const SizedBox(height: GameTokens.spaceSm),
+          Row(
+            children: [
+              const Icon(Icons.bolt, color: GameTokens.warning, size: 14),
+              const SizedBox(width: 4),
+              Text(
+                'XP: +150',
+                style: GameTokens.bodySmall.copyWith(color: GameTokens.warning),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Center(
+            child: ActionButton(
+              onPressed: () {
+                // Share functionality stub
+              },
+              isPrimary: true,
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.share, size: 16),
+                  SizedBox(width: 8),
+                  Text('SHARE'),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   String _formatDate(DateTime dt) {
