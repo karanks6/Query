@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
 import '../../theming/components/action_button.dart';
@@ -37,7 +38,7 @@ class _SandboxScreenState extends State<SandboxScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _schemaController.text = _getInitialCustomSchema();
     _initDb();
     _loadSnippets();
@@ -166,6 +167,32 @@ INSERT INTO users VALUES (1, 'Player One');''';
       body: ParallaxBackground(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.all(GameTokens.spaceMd),
+              child: SlantedPanel(
+                padding: const EdgeInsets.all(GameTokens.spaceMd),
+                child: Row(
+                  children: [
+                    const Icon(Icons.terminal, color: GameTokens.accent, size: 24),
+                    const SizedBox(width: GameTokens.spaceMd),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Text(
+                            'ABI SANDBOX v3.0  QUERIES_RUN: 42    SCHEMAS: 3',
+                            style: GameTokens.code.copyWith(color: GameTokens.primaryText),
+                          ),
+                          Text(
+                            '_',
+                            style: GameTokens.code.copyWith(color: GameTokens.accent),
+                          ).animate(onPlay: (controller) => controller.repeat()).fadeIn(duration: 500.ms).fadeOut(duration: 500.ms),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             TabBar(
               controller: _tabController,
               indicatorColor: GameTokens.accent,
@@ -174,6 +201,7 @@ INSERT INTO users VALUES (1, 'Player One');''';
               tabs: const [
                 Tab(text: 'QUERY TERMINAL'),
                 Tab(text: 'SCHEMA BUILDER'),
+                Tab(text: 'PRESETS'),
               ],
             ),
             Expanded(
@@ -183,6 +211,7 @@ INSERT INTO users VALUES (1, 'Player One');''';
                 children: [
                   _buildQueryTab(context),
                   _buildSchemaTab(context),
+                  _buildPresetsTab(context),
                 ],
               ),
             ),
@@ -205,46 +234,8 @@ INSERT INTO users VALUES (1, 'Player One');''';
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Info Banner
-              SlantedPanel(
-                padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceSm),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Active Schema: \${_selectedSchema.label}',
-                        style: GameTokens.bodySmall.copyWith(color: GameTokens.accent),
-                      ),
-                    ),
-                    DropdownButton<SandboxSchema>(
-                      value: _selectedSchema,
-                      dropdownColor: GameTokens.surfaceHighlight,
-                      style: GameTokens.bodySmall.copyWith(color: GameTokens.primaryText),
-                      underline: const SizedBox(),
-                      icon: const Icon(Icons.arrow_drop_down, color: GameTokens.accent),
-                      items: SandboxSchema.values.map((schema) {
-                        return DropdownMenuItem(
-                          value: schema,
-                          child: Text(schema.label),
-                        );
-                      }).toList(),
-                      onChanged: (val) {
-                        if (val != null) {
-                          setState(() {
-                            _selectedSchema = val;
-                          });
-                          if (val != SandboxSchema.custom) {
-                            _applySchema();
-                          } else {
-                            _tabController.animateTo(1);
-                          }
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: GameTokens.spaceMd),
+              // Info Banner is moved to Presets tab now
+              // Main content area
               
               // Main content area
               Expanded(
@@ -380,13 +371,103 @@ INSERT INTO users VALUES (1, 'Player One');''';
                 children: [
                   const Icon(Icons.save, size: 16),
                   const SizedBox(width: GameTokens.spaceSm),
-                  const Text('SAVE'),
+                  const Text('SAVE PRESET'),
                 ],
               ),
             ),
           ],
         ),
       ],
+    );
+  }
+  
+  Widget _buildPresetsTab(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(GameTokens.spaceMd),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SlantedPanel(
+            padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceSm),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Active Schema: \${_selectedSchema.label}',
+                    style: GameTokens.bodySmall.copyWith(color: GameTokens.accent),
+                  ),
+                ),
+                DropdownButton<SandboxSchema>(
+                  value: _selectedSchema,
+                  dropdownColor: GameTokens.surfaceHighlight,
+                  style: GameTokens.bodySmall.copyWith(color: GameTokens.primaryText),
+                  underline: const SizedBox(),
+                  icon: const Icon(Icons.arrow_drop_down, color: GameTokens.accent),
+                  items: SandboxSchema.values.map((schema) {
+                    return DropdownMenuItem(
+                      value: schema,
+                      child: Text(schema.label),
+                    );
+                  }).toList(),
+                  onChanged: (val) {
+                    if (val != null) {
+                      setState(() {
+                        _selectedSchema = val;
+                      });
+                      if (val != SandboxSchema.custom) {
+                        _applySchema();
+                      } else {
+                        _tabController.animateTo(1);
+                      }
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: GameTokens.spaceLg),
+          Expanded(
+            child: ListView(
+              children: [
+                _buildPresetItem('SELECT ALL FROM EMPLOYEES', 'SELECT * FROM employees;'),
+                _buildPresetItem('SELECT BY DEPARTMENT', 'SELECT * FROM employees WHERE department_id = 1;'),
+                _buildPresetItem('JOIN EMPLOYEES AND DEPARTMENTS', 'SELECT e.name, d.name AS department FROM employees e JOIN departments d ON e.department_id = d.id;'),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildPresetItem(String label, String query) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: GameTokens.spaceMd),
+      child: SlantedPanel(
+        padding: const EdgeInsets.all(GameTokens.spaceMd),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: GameTokens.bodyMedium.copyWith(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: GameTokens.spaceSm),
+                  Text(query, style: GameTokens.code.copyWith(color: GameTokens.secondaryText)),
+                ],
+              ),
+            ),
+            ActionButton(
+              isPrimary: true,
+              onPressed: () {
+                _queryController.text = query;
+                _tabController.animateTo(0);
+              },
+              child: const Text('LOAD'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
