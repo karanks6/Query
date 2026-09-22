@@ -73,7 +73,7 @@ class _WeeklyCaseScreenState extends ConsumerState<WeeklyCaseScreen> {
     return Scaffold(
       backgroundColor: GameTokens.background,
       appBar: GameAppBar(
-        title: 'WEEKLY_CASE',
+        title: 'WEEKLY INTELLIGENCE DOSSIER',
         onBack: () => Navigator.of(context).pop(),
       ),
       body: ParallaxBackground(
@@ -114,6 +114,34 @@ class _WeeklyCaseScreenState extends ConsumerState<WeeklyCaseScreen> {
           padding: const EdgeInsets.all(GameTokens.spaceMd),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
+              // ── 3D Holographic Folder ──────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: GameTokens.spaceXl),
+                child: Center(
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: GameTokens.accent.withValues(alpha: 0.1),
+                          boxShadow: [
+                            BoxShadow(color: GameTokens.accent.withValues(alpha: 0.2), blurRadius: 40, spreadRadius: 10),
+                          ],
+                        ),
+                      ).animate(onPlay: (controller) => controller.repeat()).rotate(duration: 4.seconds),
+                      const Icon(Icons.folder_shared, size: 80, color: GameTokens.accent)
+                          .animate(onPlay: (controller) => controller.repeat(reverse: true))
+                          .shimmer(duration: 2.seconds)
+                          .flipH(duration: 3.seconds, curve: Curves.easeInOut),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: GameTokens.spaceLg),
+
               // ── Header ──────────────────────────────────────────────────
               _buildHeader(wcase),
               const SizedBox(height: GameTokens.spaceLg),
@@ -167,7 +195,7 @@ class _WeeklyCaseScreenState extends ConsumerState<WeeklyCaseScreen> {
             children: [
               const Icon(Icons.folder_special_outlined, color: GameTokens.warning, size: 20),
               const SizedBox(width: 8),
-              Text('WEEKLY CASE FILE',
+              Text('DOSSIER',
                   style: GameTokens.labelLarge.copyWith(color: GameTokens.warning, letterSpacing: 2)),
               const Spacer(),
               Container(
@@ -183,13 +211,28 @@ class _WeeklyCaseScreenState extends ConsumerState<WeeklyCaseScreen> {
             ],
           ),
           const SizedBox(height: GameTokens.spaceMd),
-          Text(wcase.title,
+          Text(wcase.title.toUpperCase(),
               style: GameTokens.headlineLarge.copyWith(color: GameTokens.accent)),
           const SizedBox(height: 4),
-          Text('Client: ${wcase.client}',
+          Text('CLASSIFICATION: \${wcase.client.toUpperCase()}',
               style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText)),
-          const SizedBox(height: GameTokens.spaceMd),
-          Text(wcase.narrative, style: GameTokens.bodyMedium),
+          const SizedBox(height: GameTokens.spaceLg),
+          Text(wcase.narrative, style: GameTokens.code.copyWith(color: GameTokens.primaryText, height: 1.5)),
+          const SizedBox(height: GameTokens.spaceLg),
+          // Progress bar (fake for now, since it requires db logic)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('PROGRESS: 0 / \${wcase.levels.length} CLUES FOUND', style: GameTokens.labelLarge.copyWith(color: GameTokens.secondaryText)),
+              const SizedBox(height: GameTokens.spaceSm),
+              LinearProgressIndicator(
+                value: 0.0,
+                backgroundColor: GameTokens.surfaceHighlight,
+                valueColor: const AlwaysStoppedAnimation(GameTokens.accent),
+                minHeight: 6,
+              ),
+            ],
+          ),
         ],
       ),
     ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.05, end: 0);
