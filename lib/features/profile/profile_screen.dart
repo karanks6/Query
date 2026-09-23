@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flame/game.dart';
-import 'package:flame/components.dart';
+import 'package:flame/components.dart' hide Matrix4;
 import 'package:flame/particles.dart';
 import 'dart:math';
 
