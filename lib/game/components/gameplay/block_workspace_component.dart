@@ -25,7 +25,7 @@ class BlockWorkspaceComponent extends PositionComponent with HasGameReference<Qu
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    size = gameRef.size;
+    size = game.size;
     
     // Draw the palette area at the bottom
     paletteBg = RectangleComponent(
