@@ -147,7 +147,15 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
     }
   }
 
-  LevelState _lastState = LevelState.initial;
+  enum _GameplayStatus { initial, success, failed }
+  _GameplayStatus _lastStatus = _GameplayStatus.initial;
+
+  _GameplayStatus _deriveStatus(GameplayState state) {
+    if (state.levelCompleted) return _GameplayStatus.success;
+    if (state.lastReport != null && !state.lastReport!.isComplete) return _GameplayStatus.failed;
+    if (state.sandboxError != null) return _GameplayStatus.failed;
+    return _GameplayStatus.initial;
+  }
 
   @override
   void update(double dt) {
@@ -159,12 +167,13 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
       blockWorkspace.priority = -10;
     }
 
-    if (state.levelState != _lastState) {
-      _lastState = state.levelState;
-      if (_lastState == LevelState.success) {
+    final currentStatus = _deriveStatus(state);
+    if (currentStatus != _lastStatus) {
+      _lastStatus = currentStatus;
+      if (currentStatus == _GameplayStatus.success) {
         // Success Explosion from center of screen
         add(ParticleEffects.successExplosion(gameRef.size / 2));
-      } else if (_lastState == LevelState.failed) {
+      } else if (currentStatus == _GameplayStatus.failed) {
         // Error sparks from run button
         add(ParticleEffects.errorSparks(runButton.position + runButton.size / 2));
         
