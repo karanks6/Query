@@ -115,8 +115,8 @@ class VictoryScene extends QueryScene {
       textRenderer: TextPaint(style: GameTokens.bodyMedium.copyWith(color: GameTokens.secondaryText)),
       position: xpStart,
     );
-    baseText.opacity = 0;
-    baseText.add(OpacityEffect.to(1, EffectController(duration: 0.5, startDelay: 1.5)));
+    baseText.scale = Vector2.zero();
+    baseText.add(ScaleEffect.to(Vector2.all(1.0), EffectController(duration: 0.5, startDelay: 1.5)));
     add(baseText);
 
     final totalText = TextComponent(
@@ -124,8 +124,8 @@ class VictoryScene extends QueryScene {
       textRenderer: TextPaint(style: GameTokens.headlineMedium.copyWith(color: GameTokens.accent)),
       position: xpStart + Vector2(0, 40),
     );
-    totalText.opacity = 0;
-    totalText.add(OpacityEffect.to(1, EffectController(duration: 0.5, startDelay: 2.0)));
+    totalText.scale = Vector2.zero();
+    totalText.add(ScaleEffect.to(Vector2.all(1.0), EffectController(duration: 0.5, startDelay: 2.0)));
     add(totalText);
 
     // Buttons
