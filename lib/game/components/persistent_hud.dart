@@ -58,11 +58,13 @@ class PersistentHudComponent extends PositionComponent with RiverpodComponentMix
   @override
   void onMount() {
     super.onMount();
-    listen(playerProfileProvider, (previous, next) {
-      if (next.hasValue && next.value != null) {
-        _playerName.text = next.value!.displayName;
-        _rankTitle.text = next.value!.rankTitle;
-      }
+    addToGameWidgetBuild(() {
+      ref.listen(playerProfileProvider, (previous, next) {
+        if (next.hasValue && next.value != null) {
+          _playerName.text = next.value!.displayName;
+          _rankTitle.text = next.value!.rankTitle;
+        }
+      });
     });
   }
 
