@@ -169,10 +169,14 @@ class _FeedbackHeader extends StatelessWidget {
 class _FeedbackMessage extends StatelessWidget {
   final QueryValidationReport? report;
   final SandboxException? sandboxError;
+  final bool isSuccess;
+  final LevelScore? score;
 
   const _FeedbackMessage({
     this.report,
     this.sandboxError,
+    required this.isSuccess,
+    this.score,
   });
 
   @override
