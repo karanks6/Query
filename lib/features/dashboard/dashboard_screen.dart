@@ -161,8 +161,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   void _navigateToCurrentWorld(BuildContext context, List<dynamic> worlds) {
     // Find the last unlocked world
