@@ -102,6 +102,16 @@ class LevelScore {
     this.dailyBonusApplied = false,
   });
 
+  const LevelScore.zero()
+      : completionStar = false,
+        optimalStar = false,
+        firstAttemptStar = false,
+        starCount = 0,
+        timeMedal = null,
+        xpEarned = 0,
+        hintCapApplied = false,
+        dailyBonusApplied = false;
+
   bool get isPerfect => starCount == 3;
 }
 
