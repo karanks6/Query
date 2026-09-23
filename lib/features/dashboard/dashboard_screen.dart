@@ -10,6 +10,7 @@ import '../../core/providers.dart';
 import '../../core/settings/settings_service.dart';
 import 'widgets/streak_calendar_modal.dart';
 import 'widgets/weekly_case_card.dart';
+import 'widgets/rank_progress_modal.dart';
 import '../../data/content/models/rank_system.dart';
 import '../../game/scenes/dashboard_scene.dart';
 import '../../main.dart';
@@ -156,7 +157,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   ),
                 ),
               ),
-            ],
+              ),
+            ),
           ),
         ),
       ),
