@@ -75,11 +75,11 @@ class VictoryScene extends QueryScene {
       borderColor: GameTokens.success,
     );
     panel.scale = Vector2.zero();
-    panel.add(ScaleEffect.to(Vector2.all(1.0), EffectController(duration: 0.5, delay: 0.2, curve: Curves.easeOut)));
+    panel.add(ScaleEffect.to(Vector2.all(1.0), EffectController(duration: 0.5, startDelay: 0.2, curve: Curves.easeOut)));
     add(panel);
 
     // Stars
-    final score = state.levelScore ?? LevelScore.zero(level);
+    final score = state.levelScore ?? const LevelScore.zero();
     for (int i = 0; i < 3; i++) {
       final earned = i < score.starCount;
       final starColor = earned ? GameTokens.accent : GameTokens.disabledText;
@@ -100,7 +100,7 @@ class VictoryScene extends QueryScene {
       
       star.scale = Vector2.zero();
       star.add(SequenceEffect([
-        ScaleEffect.to(Vector2.all(1.5), EffectController(duration: 0.3, delay: 0.5 + (i * 0.3))),
+        ScaleEffect.to(Vector2.all(1.5), EffectController(duration: 0.3, startDelay: 0.5 + (i * 0.3))),
         ScaleEffect.to(Vector2.all(1.0), EffectController(duration: 0.2)),
       ]));
       
@@ -115,8 +115,8 @@ class VictoryScene extends QueryScene {
       textRenderer: TextPaint(style: GameTokens.bodyMedium.copyWith(color: GameTokens.secondaryText)),
       position: xpStart,
     );
-    baseText.setOpacity(0);
-    baseText.add(OpacityEffect.to(1, EffectController(duration: 0.5, delay: 1.5)));
+    baseText.opacity = 0;
+    baseText.add(OpacityEffect.to(1, EffectController(duration: 0.5, startDelay: 1.5)));
     add(baseText);
 
     final totalText = TextComponent(
@@ -124,8 +124,8 @@ class VictoryScene extends QueryScene {
       textRenderer: TextPaint(style: GameTokens.headlineMedium.copyWith(color: GameTokens.accent)),
       position: xpStart + Vector2(0, 40),
     );
-    totalText.setOpacity(0);
-    totalText.add(OpacityEffect.to(1, EffectController(duration: 0.5, delay: 2.0)));
+    totalText.opacity = 0;
+    totalText.add(OpacityEffect.to(1, EffectController(duration: 0.5, startDelay: 2.0)));
     add(totalText);
 
     // Buttons
