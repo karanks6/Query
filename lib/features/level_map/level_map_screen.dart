@@ -126,6 +126,7 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
                     levelNotes: _levelNotes,
                     onLevelTap: (level) => _onLevelTap(context, level),
                   ),
+        ),
     );
   }
 
