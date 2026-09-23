@@ -109,7 +109,9 @@ class FeedbackOverlay extends ConsumerWidget {
 
                 // CTAs
                 _FeedbackActions(
+                  isSuccess: isSuccess,
                   onDismiss: onDismiss,
+                  onNextLevel: onNextLevel,
                   onRetry: onRetry,
                 ),
               ],
@@ -138,7 +140,10 @@ class FeedbackOverlay extends ConsumerWidget {
 }
 
 class _FeedbackHeader extends StatelessWidget {
-  const _FeedbackHeader();
+  final bool isSuccess;
+  final LevelScore? score;
+
+  const _FeedbackHeader({required this.isSuccess, this.score});
 
   @override
   Widget build(BuildContext context) {
