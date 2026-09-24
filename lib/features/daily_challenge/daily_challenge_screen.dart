@@ -6,7 +6,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
 import '../../theming/components/action_button.dart';
-import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/game_widgets.dart';
 import '../../data/content/models/level_model.dart';
 import 'daily_challenge_service.dart';
@@ -72,13 +71,12 @@ class _DailyChallengeScreenState extends ConsumerState<DailyChallengeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: GameTokens.background,
+      backgroundColor: Colors.transparent,
       appBar: GameAppBar(
         title: 'DAILY CYPHER',
         onBack: () => Navigator.of(context).pop(),
       ),
-      body: ParallaxBackground(
-        child: _isLoading
+      body: _isLoading
             ? const Center(child: CircularProgressIndicator(color: GameTokens.accent))
             : _todayChallenge == null
                 ? const Center(
@@ -175,7 +173,6 @@ class _DailyChallengeScreenState extends ConsumerState<DailyChallengeScreen> {
                         ),
                       ),
                     ),
-                  ),
       ),
     );
   }
