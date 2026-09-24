@@ -4,7 +4,6 @@ import '../../core/providers.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
 import '../../theming/components/action_button.dart';
-import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/game_widgets.dart';
 import 'codex_screen.dart';
 
@@ -16,7 +15,6 @@ class SqlReferenceScreen extends ConsumerStatefulWidget {
 }
 
 class _SqlReferenceScreenState extends ConsumerState<SqlReferenceScreen> {
-  bool _showBookmarksOnly = false;
 
   final List<Map<String, String>> _allConcepts = const [
     {
@@ -120,7 +118,7 @@ class _SqlReferenceScreenState extends ConsumerState<SqlReferenceScreen> {
     }
 
     return Scaffold(
-      backgroundColor: GameTokens.background,
+      backgroundColor: Colors.transparent,
       appBar: GameAppBar(
         title: 'SQL REFERENCE TERMINAL',
         onBack: () => Navigator.of(context).pop(),
@@ -143,8 +141,7 @@ class _SqlReferenceScreenState extends ConsumerState<SqlReferenceScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: ParallaxBackground(
-        child: Column(
+      body: Column(
           children: [
             // Search Bar
             Padding(
@@ -231,7 +228,6 @@ class _SqlReferenceScreenState extends ConsumerState<SqlReferenceScreen> {
             ),
           ],
         ),
-      ),
     );
   }
 }
