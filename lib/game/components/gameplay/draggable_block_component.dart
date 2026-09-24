@@ -63,7 +63,7 @@ class DraggableBlockComponent extends PositionComponent with DragCallbacks, TapC
     // Keyword Box
     add(RectangleComponent(
       size: Vector2(size.x * 0.3, size.y),
-      paint: Paint()..color = type.color.withOpacity(0.15),
+      paint: Paint()..color = type.color.withValues(alpha: 0.15),
     ));
     
     // Keyword Text
@@ -144,3 +144,4 @@ class DraggableBlockComponent extends PositionComponent with DragCallbacks, TapC
     }
   }
 }
+
