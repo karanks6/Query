@@ -18,7 +18,8 @@ import '../../main.dart'; // for navigatorKey
 import '../../features/hints/hints_modal.dart';
 import '../../features/gameplay/widgets/data_browser.dart';
 import '../../features/gameplay/widgets/query_history_sheet.dart';
-import '../../features/gameplay/widgets/notes_sheet.dart';
+
+enum GameplayStatus { initial, success, failed }
 
 class GameplayScene extends QueryScene with RiverpodComponentMixin {
   final LevelModel level;
@@ -37,34 +38,30 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
     // Add HUD
     hud = GameplayHudComponent(
       level: level,
-      state: ref.read(gameplayProvider),
-      onBackTap: () {
-        // Trigger back action (would need router access or provider event)
-      },
+      state: const GameplayState(),
+      onBackTap: () {},
     );
     add(hud);
 
     // Add Briefing Panel
     briefingPanel = BriefingPanelComponent(
       level: level,
-      size: Vector2(gameRef.size.x - 40, 150),
-      position: Vector2(20, 80), // Below HUD
+      size: Vector2(game.size.x - 40, 150),
+      position: Vector2(20, 80),
     );
     add(briefingPanel);
     
     // Add Tab Bar
     tabBar = TabBarComponent(
-      state: ref.read(gameplayProvider),
-      onToggle: () {
-        ref.read(gameplayProvider.notifier).toggleQueryMode();
-      },
+      state: const GameplayState(),
+      onToggle: () {},
       size: Vector2(160, 40),
-      position: Vector2(gameRef.size.x / 2 - 80, 80), // Centered below HUD
+      position: Vector2(game.size.x / 2 - 80, 80),
     );
     add(tabBar);
 
     // Action buttons (left side bottom)
-    final btnY = gameRef.size.y - 70;
+    final btnY = game.size.y - 70;
     add(IconButtonComponent(
       label: 'HINT',
       onTap: () {
@@ -131,9 +128,18 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
         ref.read(gameplayProvider.notifier).runQuery();
       },
       size: Vector2(160, 48),
-      position: Vector2(gameRef.size.x - 180, gameRef.size.y - 70), // Bottom right
+      position: Vector2(game.size.x - 180, game.size.y - 70),
     );
     add(runButton);
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+    // Wire up tab bar toggle now that ref is available
+    tabBar.onToggleCallback = () {
+      ref.read(gameplayProvider.notifier).toggleQueryMode();
+    };
   }
 
   @override
@@ -147,14 +153,13 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
     }
   }
 
-  enum _GameplayStatus { initial, success, failed }
-  _GameplayStatus _lastStatus = _GameplayStatus.initial;
+  GameplayStatus _lastStatus = GameplayStatus.initial;
 
-  _GameplayStatus _deriveStatus(GameplayState state) {
-    if (state.levelCompleted) return _GameplayStatus.success;
-    if (state.lastReport != null && !state.lastReport!.isComplete) return _GameplayStatus.failed;
-    if (state.sandboxError != null) return _GameplayStatus.failed;
-    return _GameplayStatus.initial;
+  GameplayStatus _deriveStatus(GameplayState state) {
+    if (state.levelCompleted) return GameplayStatus.success;
+    if (state.lastReport != null && !state.lastReport!.isComplete) return GameplayStatus.failed;
+    if (state.sandboxError != null) return GameplayStatus.failed;
+    return GameplayStatus.initial;
   }
 
   @override
@@ -170,10 +175,10 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
     final currentStatus = _deriveStatus(state);
     if (currentStatus != _lastStatus) {
       _lastStatus = currentStatus;
-      if (currentStatus == _GameplayStatus.success) {
+      if (currentStatus == GameplayStatus.success) {
         // Success Explosion from center of screen
-        add(ParticleEffects.successExplosion(gameRef.size / 2));
-      } else if (currentStatus == _GameplayStatus.failed) {
+        add(ParticleEffects.successExplosion(game.size / 2));
+      } else if (currentStatus == GameplayStatus.failed) {
         // Error sparks from run button
         add(ParticleEffects.errorSparks(runButton.position + runButton.size / 2));
         
@@ -192,3 +197,4 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
     }
   }
 }
+
