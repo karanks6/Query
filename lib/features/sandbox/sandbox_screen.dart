@@ -5,7 +5,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
 import '../../theming/components/action_button.dart';
-import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/game_widgets.dart';
 
 enum SandboxSchema {
@@ -159,13 +158,12 @@ INSERT INTO users VALUES (1, 'Player One');''';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: GameTokens.background,
+      backgroundColor: Colors.transparent,
       appBar: GameAppBar(
         title: 'SANDBOX TERMINAL',
         onBack: () => Navigator.of(context).pop(),
       ),
-      body: ParallaxBackground(
-        child: Column(
+      body: Column(
           children: [
             Padding(
               padding: const EdgeInsets.all(GameTokens.spaceMd),
@@ -217,7 +215,6 @@ INSERT INTO users VALUES (1, 'Player One');''';
             ),
           ],
         ),
-      ),
     );
   }
 
