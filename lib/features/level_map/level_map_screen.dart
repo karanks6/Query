@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
 import '../../theming/components/action_button.dart';
-import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/game_widgets.dart';
 import '../../data/content/level_loader.dart';
 import '../../data/content/models/level_model.dart';
@@ -109,8 +108,7 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
           child: Container(height: 1, color: GameTokens.accentDim),
         ),
       ),
-      body: ParallaxBackground(
-        child: _loading
+      body: _loading
             ? const Center(
                 child: CircularProgressIndicator(
                   valueColor:
@@ -126,7 +124,6 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
                     levelNotes: _levelNotes,
                     onLevelTap: (level) => _onLevelTap(context, level),
                   ),
-        ),
     );
   }
 
