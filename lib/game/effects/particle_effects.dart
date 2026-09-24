@@ -26,7 +26,7 @@ class ParticleEffects {
             child: ComputedParticle(
               renderer: (canvas, particle) {
                 final paint = Paint()
-                  ..color = const Color(0xFF39FF6A).withOpacity(1 - particle.progress)
+                  ..color = const Color(0xFF39FF6A).withValues(alpha: 1 - particle.progress)
                   ..style = PaintingStyle.fill;
                 canvas.drawCircle(Offset.zero, 3 * (1 - particle.progress), paint);
               },
@@ -57,7 +57,7 @@ class ParticleEffects {
             child: ComputedParticle(
               renderer: (canvas, particle) {
                 final paint = Paint()
-                  ..color = const Color(0xFFFF4A4A).withOpacity(1 - particle.progress)
+                  ..color = const Color(0xFFFF4A4A).withValues(alpha: 1 - particle.progress)
                   ..style = PaintingStyle.fill;
                 canvas.drawRect(
                   Rect.fromCenter(center: Offset.zero, width: 4 * (1 - particle.progress), height: 4), 
@@ -90,7 +90,7 @@ class ParticleEffects {
             child: ComputedParticle(
               renderer: (canvas, particle) {
                 final paint = Paint()
-                  ..color = const Color(0xFFFFCC00).withOpacity(min(1.0, (1 - particle.progress) * 1.5))
+                  ..color = const Color(0xFFFFCC00).withValues(alpha: min(1.0, (1 - particle.progress) * 1.5))
                   ..style = PaintingStyle.fill;
                 
                 // Draw little rectangular confetti
@@ -109,3 +109,4 @@ class ParticleEffects {
     );
   }
 }
+
