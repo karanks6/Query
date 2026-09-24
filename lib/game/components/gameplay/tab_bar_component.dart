@@ -6,6 +6,8 @@ import '../../../../features/gameplay/gameplay_provider.dart';
 class TabBarComponent extends PositionComponent with TapCallbacks {
   final GameplayState state;
   final VoidCallback onToggle;
+  // Settable after mount when Riverpod is available
+  VoidCallback? onToggleCallback;
   
   late final RectangleComponent _bg;
   late final RectangleComponent _indicator;
@@ -79,7 +81,7 @@ class TabBarComponent extends PositionComponent with TapCallbacks {
 
   @override
   void onTapUp(TapUpEvent event) {
-    onToggle();
+    (onToggleCallback ?? onToggle)();
   }
 
   @override
