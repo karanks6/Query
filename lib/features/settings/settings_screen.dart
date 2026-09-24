@@ -5,7 +5,6 @@ import '../../theming/app_theme.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
 import '../../shared/widgets/game_widgets.dart';
-import '../gameplay/widgets/parallax_background.dart';
 import '../../core/settings/settings_service.dart';
 import 'settings_providers.dart';
 
@@ -21,13 +20,12 @@ class SettingsScreen extends ConsumerWidget {
     final settingsNotifier = ref.read(settingsProvider.notifier);
 
     return Scaffold(
-      backgroundColor: GameTokens.background,
+      backgroundColor: Colors.transparent,
       appBar: GameAppBar(
         title: 'SYSTEM CONFIGURATION',
         onBack: () => Navigator.of(context).pop(),
       ),
-      body: ParallaxBackground(
-        child: ListView(
+      body: ListView(
           padding: const EdgeInsets.all(GameTokens.spaceLg),
           children: [
             Text(
@@ -205,7 +203,6 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: GameTokens.spaceXl),
           ],
         ),
-      ),
     );
   }
 }
