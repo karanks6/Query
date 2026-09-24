@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flame/game.dart';
+import 'package:flame_riverpod/flame_riverpod.dart';
 
 import 'theming/app_theme.dart';
 import 'features/splash/splash_screen.dart';
@@ -52,13 +52,27 @@ void main() async {
   );
 }
 
-class GameRoot extends ConsumerWidget {
+class GameRoot extends ConsumerStatefulWidget {
   const GameRoot({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GameRoot> createState() => _GameRootState();
+}
+
+class _GameRootState extends ConsumerState<GameRoot> {
+  late final GlobalKey<RiverpodAwareGameWidgetState<QueryGame>> gameWidgetKey;
+
+  @override
+  void initState() {
+    super.initState();
+    gameWidgetKey = GlobalKey<RiverpodAwareGameWidgetState<QueryGame>>();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final game = ref.watch(queryGameProvider);
-    return GameWidget<QueryGame>(
+    return RiverpodAwareGameWidget<QueryGame>(
+      key: gameWidgetKey,
       game: game,
       overlayBuilderMap: {
         'flutter_ui': (context, game) => const QueryApp(),
