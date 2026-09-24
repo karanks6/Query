@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
@@ -50,9 +49,9 @@ class HudBarComponent extends PositionComponent {
   }
 
   @override
-  void onGameResize(Vector2 gameSize) {
-    super.onGameResize(gameSize);
-    size = Vector2(gameSize.x, 60);
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
+    size = Vector2(size.x, 60);
     if (isMounted) {
       _statsText.position = Vector2(size.x - 16, 16);
     }
