@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'dart:ui' as ui;
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
 
 import 'query_scene.dart';
-import '../query_game.dart';
-import '../components/persistent_hud.dart';
 import '../components/game_button.dart';
 import '../components/game_panel.dart';
 import '../effects/particle_effects.dart';
@@ -35,13 +32,13 @@ class VictoryScene extends QueryScene {
     // Background dimming
     add(
       RectangleComponent(
-        size: gameRef.size,
-        paint: Paint()..color = Colors.black.withOpacity(0.7),
+        size: game.size,
+        paint: Paint()..color = Colors.black.withValues(alpha: 0.7),
       ),
     );
 
     // Gold Rain Particles
-    add(ParticleEffects.goldRain(gameRef.size));
+    add(ParticleEffects.goldRain(game.size));
 
     // Title
     final title = TextComponent(
@@ -52,14 +49,14 @@ class VictoryScene extends QueryScene {
           fontSize: 48,
           shadows: [
             Shadow(
-              color: GameTokens.success.withOpacity(0.5),
+              color: GameTokens.success.withValues(alpha: 0.5),
               blurRadius: 12,
             )
           ],
         ),
       ),
       anchor: Anchor.center,
-      position: Vector2(gameRef.size.x / 2, 100),
+      position: Vector2(game.size.x / 2, 100),
     );
     title.scale = Vector2.zero();
     title.add(ScaleEffect.to(Vector2.all(1.0), EffectController(duration: 0.5, curve: Curves.bounceOut)));
@@ -70,7 +67,7 @@ class VictoryScene extends QueryScene {
     final panelHeight = 250.0;
     final panel = GamePanelComponent(
       size: Vector2(panelWidth, panelHeight),
-      position: Vector2(gameRef.size.x / 2 - panelWidth / 2, 180),
+      position: Vector2(game.size.x / 2 - panelWidth / 2, 180),
       backgroundColor: GameTokens.surface,
       borderColor: GameTokens.success,
     );
@@ -83,7 +80,7 @@ class VictoryScene extends QueryScene {
     for (int i = 0; i < 3; i++) {
       final earned = i < score.starCount;
       final starColor = earned ? GameTokens.accent : GameTokens.disabledText;
-      final starX = gameRef.size.x / 2 - 80 + (i * 80);
+      final starX = game.size.x / 2 - 80 + (i * 80);
       
       final star = TextComponent(
         text: '★',
@@ -91,7 +88,7 @@ class VictoryScene extends QueryScene {
           style: TextStyle(
             fontSize: 64,
             color: starColor,
-            shadows: earned ? [Shadow(color: starColor.withOpacity(0.8), blurRadius: 10)] : [],
+            shadows: earned ? [Shadow(color: starColor.withValues(alpha: 0.8), blurRadius: 10)] : [],
           ),
         ),
         anchor: Anchor.center,
@@ -108,7 +105,7 @@ class VictoryScene extends QueryScene {
     }
 
     // XP Breakdown
-    final xpStart = Vector2(gameRef.size.x / 2 - 120, 240);
+    final xpStart = Vector2(game.size.x / 2 - 120, 240);
     
     final baseText = TextComponent(
       text: '+ ${score.xpEarned} XP BASE',
@@ -132,7 +129,7 @@ class VictoryScene extends QueryScene {
     final btnWidth = 140.0;
     final btnSpacing = 20.0;
     final totalBtnsWidth = (btnWidth * 3) + (btnSpacing * 2);
-    final startX = gameRef.size.x / 2 - totalBtnsWidth / 2 + btnWidth / 2;
+    final startX = game.size.x / 2 - totalBtnsWidth / 2 + btnWidth / 2;
 
     add(GameButtonComponent(
       text: 'MAP',
@@ -156,3 +153,5 @@ class VictoryScene extends QueryScene {
     ));
   }
 }
+
+
