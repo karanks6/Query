@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
-import 'widgets/parallax_background.dart';
 import '../../data/content/models/level_model.dart';
 
 class ReplayScreen extends StatefulWidget {
@@ -59,10 +58,9 @@ class _ReplayScreenState extends State<ReplayScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: ParallaxBackground(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
             children: [
               Text(
                 widget.level.title,
@@ -118,7 +116,6 @@ class _ReplayScreenState extends State<ReplayScreen> {
             ],
           ),
         ),
-      ),
     );
   }
 }
