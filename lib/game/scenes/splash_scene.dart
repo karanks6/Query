@@ -1,4 +1,3 @@
-import 'package:flame/components.dart';
 import 'query_scene.dart';
 import '../components/glitch_overlay.dart';
 
