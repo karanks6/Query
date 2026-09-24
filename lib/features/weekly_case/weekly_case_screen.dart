@@ -5,7 +5,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
 import '../../theming/components/action_button.dart';
-import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/game_widgets.dart';
 import '../../data/content/models/level_model.dart';
 import '../../core/providers.dart';
@@ -71,13 +70,12 @@ class _WeeklyCaseScreenState extends ConsumerState<WeeklyCaseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: GameTokens.background,
+      backgroundColor: Colors.transparent,
       appBar: GameAppBar(
         title: 'WEEKLY INTELLIGENCE DOSSIER',
         onBack: () => Navigator.of(context).pop(),
       ),
-      body: ParallaxBackground(
-        child: _isLoading
+      body: _isLoading
             ? const Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation(GameTokens.accent),
@@ -86,7 +84,6 @@ class _WeeklyCaseScreenState extends ConsumerState<WeeklyCaseScreen> {
             : _error != null || _currentCase == null
                 ? _buildErrorState()
                 : _buildCaseContent(_currentCase!),
-      ),
     );
   }
 
