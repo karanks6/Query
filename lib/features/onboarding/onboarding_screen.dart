@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
 import '../../theming/components/action_button.dart';
-import '../gameplay/widgets/parallax_background.dart';
 import '../../core/providers.dart';
 import '../../game/scenes/onboarding_scene.dart';
 import '../../main.dart';
