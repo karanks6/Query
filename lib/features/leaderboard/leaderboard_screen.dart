@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../theming/tokens/game_tokens.dart';
 import '../../theming/components/slanted_panel.dart';
-import '../gameplay/widgets/parallax_background.dart';
 import '../../shared/widgets/game_widgets.dart';
 import '../../data/remote/leaderboard_service.dart';
 
