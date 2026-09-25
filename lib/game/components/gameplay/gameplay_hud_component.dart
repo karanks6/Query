@@ -55,25 +55,25 @@ class GameplayHudComponent extends PositionComponent with TapCallbacks {
       position: Vector2(10, 10),
       paint: Paint()..color = Colors.transparent,
     );
-    // Draw an arrow using path in render or just simple text for now
     backBtn.add(TextComponent(
-      text: '<',
+      text: '←',
       textRenderer: TextPaint(
         style: const TextStyle(
-          color: Colors.white,
-          fontSize: 24,
+          color: Color(0xFFFFCC00),
+          fontSize: 22,
           fontWeight: FontWeight.bold,
         ),
       ),
-      position: Vector2(10, 5),
+      position: Vector2(8, 4),
     ));
     add(backBtn);
   }
   
   @override
-  void onGameResize(Vector2 size) {
-    super.onGameResize(size);
-    size = Vector2(size.x, 60);
+  // ignore: avoid_renaming_method_parameters
+  void onGameResize(Vector2 s) {
+    super.onGameResize(s);
+    size = Vector2(s.x, 60);
   }
 
   @override
