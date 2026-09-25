@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 class IconButtonComponent extends PositionComponent with TapCallbacks {
   final String label;
   final VoidCallback onTap;
-  
+
+  late final RectangleComponent _bg;
+
   IconButtonComponent({
     required this.label,
     required this.onTap,
@@ -16,33 +18,34 @@ class IconButtonComponent extends PositionComponent with TapCallbacks {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    
-    // Background
-    add(RectangleComponent(
+
+    // Dark background fill
+    _bg = RectangleComponent(
       size: size,
       paint: Paint()
-        ..color = const Color(0xFF15171E)
+        ..color = const Color(0xFF1E2130)
         ..style = PaintingStyle.fill,
-    ));
-    
-    // Border
+    );
+    add(_bg);
+
+    // Accent border
     add(RectangleComponent(
       size: size,
       paint: Paint()
-        ..color = const Color(0xFF333333)
+        ..color = const Color(0xFFFFCC00).withValues(alpha: 0.5)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1,
+        ..strokeWidth = 1.5,
     ));
-    
-    // Text
+
+    // Gold label text
     add(TextComponent(
       text: label,
       textRenderer: TextPaint(
         style: const TextStyle(
-          color: Colors.white70,
+          color: Color(0xFFFFCC00),
           fontSize: 10,
           fontWeight: FontWeight.bold,
-          letterSpacing: 1.0,
+          letterSpacing: 1.2,
         ),
       ),
       position: Vector2(size.x / 2, size.y / 2),
@@ -52,17 +55,26 @@ class IconButtonComponent extends PositionComponent with TapCallbacks {
 
   @override
   void onTapDown(TapDownEvent event) {
-    scale = Vector2.all(0.9);
+    _bg.paint = Paint()
+      ..color = const Color(0xFFFFCC00).withValues(alpha: 0.15)
+      ..style = PaintingStyle.fill;
+    scale = Vector2.all(0.92);
   }
 
   @override
   void onTapUp(TapUpEvent event) {
+    _bg.paint = Paint()
+      ..color = const Color(0xFF1E2130)
+      ..style = PaintingStyle.fill;
     scale = Vector2.all(1.0);
     onTap();
   }
 
   @override
   void onTapCancel(TapCancelEvent event) {
+    _bg.paint = Paint()
+      ..color = const Color(0xFF1E2130)
+      ..style = PaintingStyle.fill;
     scale = Vector2.all(1.0);
   }
 }
