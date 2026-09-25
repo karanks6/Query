@@ -87,7 +87,8 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: GameTokens.surface,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new,
               color: GameTokens.accent, size: 16),
@@ -102,7 +103,6 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
                 ],
               )
             : Text('CASE FILE', style: GameTokens.titleLarge),
-        elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(height: 1, color: GameTokens.accentDim),
