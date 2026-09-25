@@ -154,7 +154,7 @@ class QueryApp extends ConsumerWidget {
         return FadeTransition(opacity: animation, child: child);
       },
       transitionDuration: const Duration(milliseconds: 220),
-      opaque: false, // Important: Allow Flame game behind route
+      opaque: true, // Hide previous routes in the Navigator stack
     );
   }
 
@@ -168,7 +168,7 @@ class QueryApp extends ConsumerWidget {
         return SlideTransition(position: animation.drive(tween), child: child);
       },
       transitionDuration: const Duration(milliseconds: 300),
-      opaque: false, // Important: Allow Flame game behind route
+      opaque: true, // Hide previous routes in the Navigator stack
     );
   }
 }
