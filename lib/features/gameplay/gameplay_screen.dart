@@ -106,19 +106,27 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final h = constraints.maxHeight;
-            final hudBottom = h * 0.36; // ~36% from top for HUD+briefing+tabbar
-            final resultsHeight = h * 0.32; // result pane is ~32% of height
+            // Hardcode offsets to perfectly align with Flame scene fixed pixel positions
+            // Briefing panel ends at y=260 (120 + 140)
+            const topFlameUIBottom = 270.0; 
+            // Action buttons are at y = size.y - 70. Block palette is at size.y - 100.
+            const bottomFlameUITop = 110.0; 
+
+            final availableHeight = constraints.maxHeight - topFlameUIBottom - bottomFlameUITop;
+            // The result pane takes about 40% of the middle space
+            final resultsHeight = (availableHeight * 0.4).clamp(100.0, 300.0);
 
             return Stack(
               children: [
                 // Only show Flutter Code Editor if in Code mode
                 if (state.queryMode == QueryMode.code)
                   Positioned(
-                    top: hudBottom,
+                    top: topFlameUIBottom,
                     left: 16,
                     right: 16,
-                    bottom: resultsHeight + 60, // leave room for result pane + run btn
+                    bottom: (state.lastReport?.resultRows != null) 
+                        ? bottomFlameUITop + resultsHeight + 16 // Leave gap above results
+                        : bottomFlameUITop + 16, 
                     child: CodeModeWorkspace(
                       key: const ValueKey('code'),
                       schema: widget.level.schema,
@@ -131,9 +139,9 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
                 // Only show Result Pane if we have results
                 if (state.lastReport?.resultRows != null)
                   Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
+                    bottom: bottomFlameUITop,
+                    left: 16,
+                    right: 16,
                     height: resultsHeight,
                     child: ResultPane(rows: state.lastReport!.resultRows!),
                   ),
