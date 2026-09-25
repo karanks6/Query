@@ -104,34 +104,42 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
-        child: Stack(
-          children: [
-            // Only show Flutter Code Editor if in Code mode
-            if (state.queryMode == QueryMode.code)
-              Positioned(
-                top: 250, // Leave space for Flame HUD and Narrative
-                left: 16,
-                right: 16,
-                bottom: 250,
-                child: CodeModeWorkspace(
-                  key: const ValueKey('code'),
-                  schema: widget.level.schema,
-                  currentQuery: state.currentQuery,
-                  onQueryChanged: (q) =>
-                      ref.read(gameplayProvider.notifier).updateQuery(q),
-                ),
-              ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final h = constraints.maxHeight;
+            final hudBottom = h * 0.36; // ~36% from top for HUD+briefing+tabbar
+            final resultsHeight = h * 0.32; // result pane is ~32% of height
 
-            // Only show Result Pane if we have results
-            if (state.lastReport?.resultRows != null)
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                height: 250, // Fixed height for results at bottom
-                child: ResultPane(rows: state.lastReport!.resultRows!),
-              ),
-          ],
+            return Stack(
+              children: [
+                // Only show Flutter Code Editor if in Code mode
+                if (state.queryMode == QueryMode.code)
+                  Positioned(
+                    top: hudBottom,
+                    left: 16,
+                    right: 16,
+                    bottom: resultsHeight + 60, // leave room for result pane + run btn
+                    child: CodeModeWorkspace(
+                      key: const ValueKey('code'),
+                      schema: widget.level.schema,
+                      currentQuery: state.currentQuery,
+                      onQueryChanged: (q) =>
+                          ref.read(gameplayProvider.notifier).updateQuery(q),
+                    ),
+                  ),
+
+                // Only show Result Pane if we have results
+                if (state.lastReport?.resultRows != null)
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: resultsHeight,
+                    child: ResultPane(rows: state.lastReport!.resultRows!),
+                  ),
+              ],
+            );
+          },
         ),
       ),
     );
