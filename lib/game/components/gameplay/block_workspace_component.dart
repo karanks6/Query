@@ -75,17 +75,18 @@ class BlockWorkspaceComponent extends PositionComponent with HasGameReference<Qu
   }
 
   @override
-  void onGameResize(Vector2 size) {
-    super.onGameResize(size);
-    size = size;
+  // ignore: avoid_renaming_method_parameters
+  void onGameResize(Vector2 s) {
+    super.onGameResize(s);
+    size = s;
     if (isLoaded) {
-      paletteBg.size = Vector2(size.x, 100);
-      paletteBg.position = Vector2(0, size.y - 100);
+      paletteBg.size = Vector2(s.x, 100);
+      paletteBg.position = Vector2(0, s.y - 100);
       // Re-position palette blocks
       for (int i = 0; i < activeBlocks.length; i++) {
         final b = activeBlocks[i];
-        if (b.originalPosition != null && b.originalPosition!.y > size.y - 120) {
-          b.position = Vector2(20.0 + (i * 140.0), size.y - 80);
+        if (b.originalPosition != null && b.originalPosition!.y > s.y - 120) {
+          b.position = Vector2(20.0 + (i * 140.0), s.y - 80);
           b.originalPosition = b.position.clone();
         }
       }
