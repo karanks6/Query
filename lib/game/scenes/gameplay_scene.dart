@@ -43,22 +43,22 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
     );
     add(hud);
 
-    // Add Briefing Panel
-    briefingPanel = BriefingPanelComponent(
-      level: level,
-      size: Vector2(game.size.x - 40, 150),
-      position: Vector2(20, 80),
-    );
-    add(briefingPanel);
-    
-    // Add Tab Bar
+    // Add Tab Bar (centered, at top)
     tabBar = TabBarComponent(
       state: const GameplayState(),
       onToggle: () {},
       size: Vector2(160, 40),
-      position: Vector2(game.size.x / 2 - 80, 80),
+      position: Vector2(game.size.x / 2 - 80, 68),
     );
     add(tabBar);
+
+    // Add Briefing Panel (below HUD + tab bar)
+    briefingPanel = BriefingPanelComponent(
+      level: level,
+      size: Vector2(game.size.x - 40, 140),
+      position: Vector2(20, 120),
+    );
+    add(briefingPanel);
 
     // Action buttons (left side bottom)
     final btnY = game.size.y - 70;
@@ -146,8 +146,9 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
     if (isLoaded) {
-      briefingPanel.size = Vector2(size.x - 40, 150);
-      tabBar.position = Vector2(size.x / 2 - 80, 80);
+      briefingPanel.size = Vector2(size.x - 40, 140);
+      briefingPanel.position = Vector2(20, 120);
+      tabBar.position = Vector2(size.x / 2 - 80, 68);
       runButton.position = Vector2(size.x - 180, size.y - 70);
       // Ideally update icon buttons positions here too
     }
