@@ -130,25 +130,26 @@ class VictoryScene extends QueryScene {
     final btnSpacing = 20.0;
     final totalBtnsWidth = (btnWidth * 3) + (btnSpacing * 2);
     final startX = game.size.x / 2 - totalBtnsWidth / 2 + btnWidth / 2;
+    final btnY = game.size.y - 80; // Always relative to screen bottom
 
     add(GameButtonComponent(
       text: 'MAP',
       size: Vector2(btnWidth, 50),
-      position: Vector2(startX, 480),
+      position: Vector2(startX, btnY),
       onPressed: onMap,
     ));
 
     add(GameButtonComponent(
       text: 'REPLAY',
       size: Vector2(btnWidth, 50),
-      position: Vector2(startX + btnWidth + btnSpacing, 480),
+      position: Vector2(startX + btnWidth + btnSpacing, btnY),
       onPressed: onReplay,
     ));
 
     add(GameButtonComponent(
       text: 'NEXT LEVEL',
       size: Vector2(btnWidth, 50),
-      position: Vector2(startX + (btnWidth + btnSpacing) * 2, 480),
+      position: Vector2(startX + (btnWidth + btnSpacing) * 2, btnY),
       onPressed: onNextLevel,
     ));
   }
