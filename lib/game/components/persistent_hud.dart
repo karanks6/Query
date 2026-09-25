@@ -69,11 +69,12 @@ class PersistentHudComponent extends PositionComponent with RiverpodComponentMix
   }
 
   @override
-  void onGameResize(Vector2 size) {
-    super.onGameResize(size);
-    size = Vector2(size.x, 60);
-    _playerName.position = Vector2(size.x - 100, 16);
-    _rankTitle.position = Vector2(size.x - 100, 34);
+  // ignore: avoid_renaming_method_parameters
+  void onGameResize(Vector2 s) {
+    super.onGameResize(s);
+    size = Vector2(s.x, 60);
+    _playerName.position = Vector2(s.x - 16, 16);
+    _rankTitle.position = Vector2(s.x - 16, 34);
   }
 
   @override
