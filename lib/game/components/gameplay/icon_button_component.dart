@@ -1,16 +1,19 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Image;
+import 'package:google_fonts/google_fonts.dart';
 
 class IconButtonComponent extends PositionComponent with TapCallbacks {
   final String label;
   final VoidCallback onTap;
+  final Color primaryColor;
 
   late final RectangleComponent _bg;
 
   IconButtonComponent({
     required this.label,
     required this.onTap,
+    this.primaryColor = const Color(0xFFFFB800), // Warning Amber by default
     super.position,
     super.size,
   });
@@ -23,7 +26,7 @@ class IconButtonComponent extends PositionComponent with TapCallbacks {
     _bg = RectangleComponent(
       size: size,
       paint: Paint()
-        ..color = const Color(0xFF1E2130)
+        ..color = const Color(0xFF121820)
         ..style = PaintingStyle.fill,
     );
     add(_bg);
@@ -32,20 +35,20 @@ class IconButtonComponent extends PositionComponent with TapCallbacks {
     add(RectangleComponent(
       size: size,
       paint: Paint()
-        ..color = const Color(0xFFFFCC00).withValues(alpha: 0.5)
+        ..color = primaryColor.withValues(alpha: 0.5)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.5,
     ));
 
-    // Gold label text
+    // Label text
     add(TextComponent(
       text: label,
       textRenderer: TextPaint(
-        style: const TextStyle(
-          color: Color(0xFFFFCC00),
-          fontSize: 10,
+        style: GoogleFonts.rajdhani(
+          color: primaryColor,
+          fontSize: 12,
           fontWeight: FontWeight.bold,
-          letterSpacing: 1.2,
+          letterSpacing: 1.5,
         ),
       ),
       position: Vector2(size.x / 2, size.y / 2),
@@ -56,7 +59,7 @@ class IconButtonComponent extends PositionComponent with TapCallbacks {
   @override
   void onTapDown(TapDownEvent event) {
     _bg.paint = Paint()
-      ..color = const Color(0xFFFFCC00).withValues(alpha: 0.15)
+      ..color = primaryColor.withValues(alpha: 0.2)
       ..style = PaintingStyle.fill;
     scale = Vector2.all(0.92);
   }
@@ -64,7 +67,7 @@ class IconButtonComponent extends PositionComponent with TapCallbacks {
   @override
   void onTapUp(TapUpEvent event) {
     _bg.paint = Paint()
-      ..color = const Color(0xFF1E2130)
+      ..color = const Color(0xFF121820)
       ..style = PaintingStyle.fill;
     scale = Vector2.all(1.0);
     onTap();
@@ -73,7 +76,7 @@ class IconButtonComponent extends PositionComponent with TapCallbacks {
   @override
   void onTapCancel(TapCancelEvent event) {
     _bg.paint = Paint()
-      ..color = const Color(0xFF1E2130)
+      ..color = const Color(0xFF121820)
       ..style = PaintingStyle.fill;
     scale = Vector2.all(1.0);
   }
