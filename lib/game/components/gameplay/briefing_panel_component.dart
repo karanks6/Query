@@ -1,6 +1,8 @@
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Image;
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../data/content/models/level_model.dart';
+import '../ui/holo_panel.dart';
 
 class BriefingPanelComponent extends PositionComponent {
   final LevelModel level;
@@ -15,52 +17,42 @@ class BriefingPanelComponent extends PositionComponent {
   Future<void> onLoad() async {
     await super.onLoad();
     
-    // Background
-    add(RectangleComponent(
+    // Background using HoloPanel
+    final panel = HoloPanelComponent(
       size: size,
-      paint: Paint()
-        ..color = const Color(0xFF15171E).withValues(alpha: 0.9)
-        ..style = PaintingStyle.fill,
-    ));
-    
-    // Border
-    add(RectangleComponent(
-      size: size,
-      paint: Paint()
-        ..color = const Color(0xFF00FF9D).withValues(alpha: 0.3)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1,
-    ));
+      borderColor: const Color(0xFF00FF66),
+    );
+    add(panel);
 
     // "TARGET" header
     add(TextComponent(
-      text: 'TARGET',
+      text: 'MISSION BRIEFING',
       textRenderer: TextPaint(
-        style: const TextStyle(
-          color: Color(0xFF00FF9D),
-          fontSize: 12,
+        style: GoogleFonts.rajdhani(
+          color: const Color(0xFF00FF66),
+          fontSize: 16,
           fontWeight: FontWeight.bold,
           letterSpacing: 2.0,
         ),
       ),
-      position: Vector2(10, 10),
+      position: Vector2(16, 12),
     ));
 
     // Narrative text
     add(TextBoxComponent(
       text: level.narrative,
       textRenderer: TextPaint(
-        style: const TextStyle(
-          color: Colors.white70,
+        style: GoogleFonts.firaCode(
+          color: const Color(0xFFE0E6ED),
           fontSize: 14,
           height: 1.4,
         ),
       ),
       boxConfig: TextBoxConfig(
-        maxWidth: size.x - 20,
+        maxWidth: size.x - 32,
         timePerChar: 0.02, // Typewriter effect
       ),
-      position: Vector2(10, 35),
+      position: Vector2(16, 40),
     ));
   }
 }
