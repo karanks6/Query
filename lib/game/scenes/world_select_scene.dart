@@ -1,63 +1,68 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'query_scene.dart';
+import 'level_map_scene.dart';
+import '../components/ui/game_button_component.dart';
 
 class WorldSelectScene extends QueryScene {
   @override
   Future<void> onLoad() async {
-    // Basic isometric layout for world nodes
-    for (int i = 0; i < 10; i++) {
-      // Staggered positions for isometric look
-      final double dx = 150.0 + (i % 2) * 50.0;
-      final double dy = 100.0 + i * 40.0;
-      add(IsometricTile(Vector2(dx, dy), i + 1));
-    }
-  }
-
-  @override
-  Future<void> onEnter() async {
-    // Entry animation logic here
-  }
-}
-
-class IsometricTile extends PositionComponent {
-  final int worldIndex;
-
-  IsometricTile(Vector2 pos, this.worldIndex) {
-    position = pos;
-    size = Vector2(120, 60);
-    anchor = Anchor.center;
-  }
-
-  @override
-  void render(Canvas canvas) {
-    final paint = Paint()
-      ..color = const Color(0xFF00FFCC)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-      
-    final fillPaint = Paint()
-      ..color = const Color(0x3300FFCC)
-      ..style = PaintingStyle.fill;
-      
-    final path = Path()
-      ..moveTo(size.x / 2, 0)
-      ..lineTo(size.x, size.y / 2)
-      ..lineTo(size.x / 2, size.y)
-      ..lineTo(0, size.y / 2)
-      ..close();
-      
-    canvas.drawPath(path, fillPaint);
-    canvas.drawPath(path, paint);
-
-    final textPaint = TextPaint(
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 14,
-        fontWeight: FontWeight.bold,
-        fontFamily: 'JetBrainsMono',
+    final title = TextComponent(
+      text: 'WORLD SELECT',
+      position: Vector2(40, 60),
+      textRenderer: TextPaint(
+        style: const TextStyle(
+          color: Color(0xFF8B92A5),
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 2,
+          fontFamily: 'Courier',
+        ),
       ),
     );
-    textPaint.render(canvas, 'W$worldIndex', Vector2(size.x / 2 - 12, size.y / 2 - 8));
+    add(title);
+
+    final backBtn = GameButtonComponent(
+      title: 'BACK',
+      size: Vector2(100, 40),
+      position: Vector2(40, 100),
+      onPressed: () {
+        game.popScene();
+      },
+    );
+    add(backBtn);
+
+    final world1 = GameButtonComponent(
+      title: 'World 1: The Archive Vaults',
+      subtitle: 'Fundamentals of Selection',
+      position: Vector2(40, 160),
+      onPressed: () {
+        game.pushScene(LevelMapScene(worldId: 'world_01'));
+      },
+    );
+    add(world1);
+
+    final world2 = GameButtonComponent(
+      title: 'World 2: Filter District',
+      subtitle: 'Advanced WHERE clauses',
+      position: Vector2(40, 250),
+      onPressed: () {
+        game.pushScene(LevelMapScene(worldId: 'world_02'));
+      },
+    );
+    add(world2);
+
+    final world3 = GameButtonComponent(
+      title: 'World 3: Aggregation Exchange',
+      subtitle: 'GROUP BY and HAVING',
+      position: Vector2(40, 340),
+      onPressed: () {
+        game.pushScene(LevelMapScene(worldId: 'world_03'));
+      },
+    );
+    add(world3);
   }
+
+  @override
+  List<String> get activeOverlays => [];
 }
