@@ -9,7 +9,7 @@ import 'components/scan_line_component.dart';
 import 'components/parallax_world.dart';
 
 class QueryGame extends FlameGame with RiverpodGameMixin, HasKeyboardHandlerComponents {
-  QueryScene? currentScene;
+  final List<QueryScene> sceneStack = [];
 
   late final ScanLineComponent scanLines;
   late final ParallaxWorldComponent parallax;
@@ -33,23 +33,37 @@ class QueryGame extends FlameGame with RiverpodGameMixin, HasKeyboardHandlerComp
   }
 
   Future<void> pushScene(QueryScene next) async {
-    if (currentScene != null) {
-      await currentScene!.onExit();
-      remove(currentScene!);
+    if (sceneStack.isNotEmpty) {
+      await sceneStack.last.onExit();
+      remove(sceneStack.last);
     }
     
-    currentScene = next;
-    add(currentScene!);
-    await currentScene!.onEnter();
+    sceneStack.add(next);
+    add(next);
+    await next.onEnter();
     
-    // Update active overlays
-    overlays.clear();
-    for (final overlay in next.activeOverlays) {
-      overlays.add(overlay);
-    }
+    _updateOverlays();
   }
 
   Future<void> popScene() async {
-    // Basic pop scene functionality if needed
+    if (sceneStack.length > 1) {
+      final old = sceneStack.removeLast();
+      await old.onExit();
+      remove(old);
+
+      final current = sceneStack.last;
+      add(current);
+      await current.onEnter();
+      _updateOverlays();
+    }
+  }
+
+  void _updateOverlays() {
+    overlays.clear();
+    if (sceneStack.isNotEmpty) {
+      for (final overlay in sceneStack.last.activeOverlays) {
+        overlays.add(overlay);
+      }
+    }
   }
 }
