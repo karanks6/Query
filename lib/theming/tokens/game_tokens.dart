@@ -12,27 +12,27 @@ class GameTokens {
   GameTokens._();
 
   // ─── Color palette ──────────────────────────────────────────────────────────
-  static const background = Color(0xFF15171E);
-  static const surface = Color(0xFF22252F);
-  static const surfaceVariant = Color(0xFF2F3340);
-  static const surfaceHighlight = Color(0xFF3F4455);
+  static const background = Color(0xFF0B0C10); // Deep Void
+  static const surface = Color(0xFF121820); // Terminal Dark
+  static const surfaceVariant = Color(0xFF1A212D);
+  static const surfaceHighlight = Color(0xFF232D3B);
 
-  static const primaryText = Color(0xFFFFFFFF);
-  static const secondaryText = Color(0xFFA0A5B5);
-  static const disabledText = Color(0xFF606575);
-  static const hintText = Color(0xFF707688);
+  static const primaryText = Color(0xFFE0E6ED); // Ice White
+  static const secondaryText = Color(0xFF6B7A8F); // Dimmed Blue-Grey
+  static const disabledText = Color(0xFF4A5568);
+  static const hintText = Color(0xFF4A5568);
 
-  static const accent = Color(0xFFFFCC00); // Vibrant Gold/Yellow
-  static const accentDim = Color(0xFFB38F00);
-  static const accentGlow = Color(0x33FFCC00);
+  static const accent = Color(0xFF00F0FF); // Neon Cyan
+  static const accentDim = Color(0xFF008B99);
+  static const accentGlow = Color(0x3300F0FF);
 
-  static const success = Color(0xFF00FF9D);
-  static const successSurface = Color(0xFF003320);
-  static const error = Color(0xFFFF3344); // Crimson
-  static const errorSurface = Color(0xFF330A0D);
-  static const warning = Color(0xFFFF9900);
-  static const warningSurface = Color(0xFF331E00);
-  static const info = Color(0xFF00CCFF);
+  static const success = Color(0xFF00FF66); // Hacker Green
+  static const successSurface = Color(0xFF003314);
+  static const error = Color(0xFFFF0055); // Hot Magenta
+  static const errorSurface = Color(0xFF4D0019);
+  static const warning = Color(0xFFFFB800); // Warning Amber
+  static const warningSurface = Color(0xFF332500);
+  static const info = Color(0xFF00F0FF);
   static const rare = Color(0xFFD944FF);
 
   // Result table diff colors
@@ -41,8 +41,8 @@ class GameTokens {
   static const resultMissing = Color(0xFF4D0F14);
 
   // ─── Typography ──────────────────────────────────────────────────────────────
-  static String? get headerFontFamily => GoogleFonts.montserrat().fontFamily ?? GoogleFonts.exo2().fontFamily;
-  static String? get bodyFontFamily => GoogleFonts.inter().fontFamily ?? GoogleFonts.rajdhani().fontFamily;
+  static String? get headerFontFamily => GoogleFonts.orbitron().fontFamily ?? GoogleFonts.rajdhani().fontFamily;
+  static String? get bodyFontFamily => GoogleFonts.rajdhani().fontFamily ?? GoogleFonts.inter().fontFamily;
 
   static TextStyle get displayLarge => TextStyle(
     fontFamily: headerFontFamily,
@@ -116,7 +116,7 @@ class GameTokens {
   );
 
   static TextStyle get code => TextStyle(
-    fontFamily: GoogleFonts.jetBrainsMono().fontFamily,
+    fontFamily: GoogleFonts.firaCode().fontFamily,
     fontSize: 14,
     color: primaryText,
     height: 1.6,
@@ -124,7 +124,7 @@ class GameTokens {
   );
 
   static TextStyle get codeSmall => TextStyle(
-    fontFamily: GoogleFonts.jetBrainsMono().fontFamily,
+    fontFamily: GoogleFonts.firaCode().fontFamily,
     fontSize: 12,
     color: primaryText,
     height: 1.5,
