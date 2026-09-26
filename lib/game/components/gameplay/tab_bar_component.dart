@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Image;
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../features/gameplay/gameplay_provider.dart';
 
 class TabBarComponent extends PositionComponent with TapCallbacks {
@@ -28,7 +29,7 @@ class TabBarComponent extends PositionComponent with TapCallbacks {
     _bg = RectangleComponent(
       size: size,
       paint: Paint()
-        ..color = const Color(0xFF15171E)
+        ..color = const Color(0xFF0B0C10)
         ..style = PaintingStyle.fill,
     );
     add(_bg);
@@ -36,7 +37,7 @@ class TabBarComponent extends PositionComponent with TapCallbacks {
     _bg.add(RectangleComponent(
       size: size,
       paint: Paint()
-        ..color = const Color(0xFF333333)
+        ..color = const Color(0xFF00F0FF).withValues(alpha: 0.5)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1,
     ));
@@ -44,16 +45,16 @@ class TabBarComponent extends PositionComponent with TapCallbacks {
     _indicator = RectangleComponent(
       size: Vector2(size.x / 2, size.y),
       position: Vector2(state.queryMode == QueryMode.block ? 0 : size.x / 2, 0),
-      paint: Paint()..color = const Color(0xFF00FF9D).withValues(alpha: 0.2),
+      paint: Paint()..color = const Color(0xFF00F0FF).withValues(alpha: 0.2),
     );
     add(_indicator);
 
     _blockText = TextComponent(
       text: 'BLOCK',
       textRenderer: TextPaint(
-        style: TextStyle(
-          color: state.queryMode == QueryMode.block ? const Color(0xFF00FF9D) : Colors.white54,
-          fontSize: 12,
+        style: GoogleFonts.rajdhani(
+          color: state.queryMode == QueryMode.block ? const Color(0xFF00F0FF) : const Color(0xFF6B7A8F),
+          fontSize: 14,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.5,
         ),
@@ -66,9 +67,9 @@ class TabBarComponent extends PositionComponent with TapCallbacks {
     _codeText = TextComponent(
       text: 'CODE',
       textRenderer: TextPaint(
-        style: TextStyle(
-          color: state.queryMode == QueryMode.code ? const Color(0xFF00FF9D) : Colors.white54,
-          fontSize: 12,
+        style: GoogleFonts.rajdhani(
+          color: state.queryMode == QueryMode.code ? const Color(0xFF00F0FF) : const Color(0xFF6B7A8F),
+          fontSize: 14,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.5,
         ),
@@ -89,20 +90,20 @@ class TabBarComponent extends PositionComponent with TapCallbacks {
     super.update(dt);
     // Smooth animate indicator
     final targetX = state.queryMode == QueryMode.block ? 0.0 : size.x / 2;
-    _indicator.position.x += (targetX - _indicator.position.x) * 10 * dt;
+    _indicator.position.x += (targetX - _indicator.position.x) * 15 * dt;
     
     _blockText.textRenderer = TextPaint(
-      style: TextStyle(
-        color: state.queryMode == QueryMode.block ? const Color(0xFF00FF9D) : Colors.white54,
-        fontSize: 12,
+      style: GoogleFonts.rajdhani(
+        color: state.queryMode == QueryMode.block ? const Color(0xFF00F0FF) : const Color(0xFF6B7A8F),
+        fontSize: 14,
         fontWeight: FontWeight.bold,
         letterSpacing: 1.5,
       ),
     );
     _codeText.textRenderer = TextPaint(
-      style: TextStyle(
-        color: state.queryMode == QueryMode.code ? const Color(0xFF00FF9D) : Colors.white54,
-        fontSize: 12,
+      style: GoogleFonts.rajdhani(
+        color: state.queryMode == QueryMode.code ? const Color(0xFF00F0FF) : const Color(0xFF6B7A8F),
+        fontSize: 14,
         fontWeight: FontWeight.bold,
         letterSpacing: 1.5,
       ),
