@@ -28,7 +28,7 @@ class ResultPane extends ConsumerWidget {
       return Container(
         padding: const EdgeInsets.all(GameTokens.spaceMd),
         decoration: BoxDecoration(
-          color: GameTokens.surface,
+          color: GameTokens.surface.withValues(alpha: 0.9),
           border: Border(
             top: BorderSide(color: GameTokens.accentDim, width: 1),
           ),
@@ -46,7 +46,7 @@ class ResultPane extends ConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: GameTokens.surface,
+        color: GameTokens.surface.withValues(alpha: 0.9),
         border: Border(
           top: BorderSide(color: GameTokens.accentDim, width: 1),
         ),
