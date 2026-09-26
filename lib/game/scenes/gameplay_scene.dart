@@ -18,6 +18,8 @@ import '../../main.dart'; // for navigatorKey
 import '../../features/hints/hints_modal.dart';
 import '../../features/gameplay/widgets/data_browser.dart';
 import '../../features/gameplay/widgets/query_history_sheet.dart';
+import '../../features/gameplay/widgets/concept_lesson_dialog.dart';
+import 'victory_scene.dart';
 
 enum GameplayStatus { initial, success, failed }
 
@@ -134,6 +136,21 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
   }
 
   @override
+  Future<void> onEnter() async {
+    super.onEnter();
+    // Load level into state
+    ref.read(gameplayProvider.notifier).loadLevel(level);
+
+    if (level.type == LevelType.tutorial || level.levelNumber == 1) {
+      showDialog(
+        context: navigatorKey.currentContext!,
+        barrierDismissible: false,
+        builder: (ctx) => ConceptLessonDialog(level: level),
+      );
+    }
+  }
+
+  @override
   void onMount() {
     super.onMount();
     // Wire up tab bar toggle now that ref is available
@@ -179,6 +196,29 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
       if (currentStatus == GameplayStatus.success) {
         // Success Explosion from center of screen
         add(ParticleEffects.successExplosion(game.size / 2));
+        
+        // Push VictoryScene after a short delay to see explosion
+        Future.delayed(const Duration(seconds: 1), () {
+          if (!isMounted) return;
+          game.pushScene(
+            VictoryScene(
+              level: level,
+              state: state,
+              onNextLevel: () async {
+                 // Dummy transition for now since we removed Flutter Navigator
+                 game.popScene();
+              },
+              onReplay: () {
+                game.popScene();
+                ref.read(gameplayProvider.notifier).dismissFeedback();
+              },
+              onMap: () {
+                game.popScene(); // Pop Victory
+                game.popScene(); // Pop Gameplay to go back to LevelMap
+              },
+            ),
+          );
+        });
       } else if (currentStatus == GameplayStatus.failed) {
         // Error sparks from run button
         add(ParticleEffects.errorSparks(runButton.position + runButton.size / 2));
@@ -197,5 +237,8 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
       }
     }
   }
+
+  @override
+  List<String> get activeOverlays => ['flutter_code_editor'];
 }
 
