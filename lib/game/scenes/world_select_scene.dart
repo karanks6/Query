@@ -1,61 +1,69 @@
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Image;
+import 'package:google_fonts/google_fonts.dart';
+
 import 'query_scene.dart';
 import 'level_map_scene.dart';
-import '../components/ui/game_button_component.dart';
+import '../components/ui/cyber_button.dart';
+import '../components/hex_grid_background.dart';
 
 class WorldSelectScene extends QueryScene {
   @override
   Future<void> onLoad() async {
+    add(HexGridBackground(hexColor: const Color(0xFFFF0055)));
+
     final title = TextComponent(
-      text: 'WORLD SELECT',
-      position: Vector2(40, 60),
+      text: 'GLOBAL ARCHIVE',
+      position: Vector2(60, 60),
       textRenderer: TextPaint(
-        style: const TextStyle(
-          color: Color(0xFF8B92A5),
-          fontSize: 24,
+        style: GoogleFonts.orbitron(
+          color: const Color(0xFFFF0055),
+          fontSize: 32,
           fontWeight: FontWeight.bold,
-          letterSpacing: 2,
-          fontFamily: 'Courier',
+          letterSpacing: 4,
         ),
       ),
     );
     add(title);
 
-    final backBtn = GameButtonComponent(
-      title: 'BACK',
-      size: Vector2(100, 40),
-      position: Vector2(40, 100),
+    final backBtn = CyberButton(
+      text: '< BACK',
+      size: Vector2(150, 40),
+      position: Vector2(60, 120),
+      primaryColor: const Color(0xFF6B7A8F),
       onPressed: () {
         game.popScene();
       },
     );
     add(backBtn);
 
-    final world1 = GameButtonComponent(
-      title: 'World 1: The Archive Vaults',
-      subtitle: 'Fundamentals of Selection',
-      position: Vector2(40, 160),
+    final world1 = CyberButton(
+      text: 'W1: The Archive Vaults',
+      secondaryText: 'Fundamentals of Selection',
+      position: Vector2(60, 180),
+      primaryColor: const Color(0xFF00F0FF),
       onPressed: () {
         game.pushScene(LevelMapScene(worldId: 'world_01'));
       },
     );
     add(world1);
 
-    final world2 = GameButtonComponent(
-      title: 'World 2: Filter District',
-      subtitle: 'Advanced WHERE clauses',
-      position: Vector2(40, 250),
+    final world2 = CyberButton(
+      text: 'W2: Filter District',
+      secondaryText: 'Advanced WHERE clauses',
+      position: Vector2(60, 260),
+      primaryColor: const Color(0xFF00FF66),
       onPressed: () {
         game.pushScene(LevelMapScene(worldId: 'world_02'));
       },
     );
     add(world2);
 
-    final world3 = GameButtonComponent(
-      title: 'World 3: Aggregation Exchange',
-      subtitle: 'GROUP BY and HAVING',
-      position: Vector2(40, 340),
+    final world3 = CyberButton(
+      text: 'W3: Aggregation Exchange',
+      secondaryText: 'GROUP BY and HAVING',
+      position: Vector2(60, 340),
+      primaryColor: const Color(0xFFFFB800),
       onPressed: () {
         game.pushScene(LevelMapScene(worldId: 'world_03'));
       },
