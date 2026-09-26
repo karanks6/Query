@@ -13,6 +13,7 @@ import '../components/gameplay/icon_button_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/effects.dart';
 import '../effects/particle_effects.dart';
+import '../components/hex_grid_background.dart';
 
 import '../../main.dart'; // for navigatorKey
 import '../../features/hints/hints_modal.dart';
@@ -37,6 +38,9 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
   Future<void> onLoad() async {
     await super.onLoad();
     
+    // Background
+    add(HexGridBackground(hexColor: const Color(0xFF00FF66)));
+
     // Add HUD
     hud = GameplayHudComponent(
       level: level,
