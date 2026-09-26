@@ -174,20 +174,24 @@ class _CodeModeWorkspaceState extends State<CodeModeWorkspace> {
 
                   // Text field
                   Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      focusNode: _focusNode,
-                      maxLines: null,
-                      expands: true,
-                      textAlignVertical: TextAlignVertical.top,
-                      style: GameTokens.code,
-                      cursorColor: GameTokens.accent,
-                      cursorWidth: 8,
-                      cursorHeight: 16,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.all(GameTokens.spaceSm),
-                        isDense: true,
+                    child: Container(
+                      color: GameTokens.background.withValues(alpha: 0.6), // Glassmorphism backdrop
+                      child: TextField(
+                        controller: _controller,
+                        focusNode: _focusNode,
+                        maxLines: null,
+                        expands: true,
+                        textAlignVertical: TextAlignVertical.top,
+                        style: GameTokens.code,
+                        cursorColor: GameTokens.accent,
+                        cursorWidth: 8,
+                        cursorHeight: 16,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(GameTokens.spaceSm),
+                          isDense: true,
+                          filled: false,
+                        ),
                       ),
                     ),
                   ),
