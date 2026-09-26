@@ -37,7 +37,7 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
     super.initState();
     _loadWorld();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(queryGameProvider).pushScene(LevelMapScene());
+      ref.read(queryGameProvider).pushScene(LevelMapScene(worldId: widget.worldId));
     });
   }
 
