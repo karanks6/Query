@@ -1,71 +1,89 @@
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Image;
+import 'package:google_fonts/google_fonts.dart';
+
 import 'query_scene.dart';
-import '../components/ui/game_button_component.dart';
+import '../components/ui/cyber_button.dart';
+import '../components/ui/holo_panel.dart';
+import '../components/hex_grid_background.dart';
 
 class DailyChallengeScene extends QueryScene {
   @override
   Future<void> onLoad() async {
+    add(HexGridBackground(hexColor: const Color(0xFF00FF66)));
+
     final title = TextComponent(
       text: 'DAILY CYPHER',
-      position: Vector2(40, 60),
+      position: Vector2(60, 60),
       textRenderer: TextPaint(
-        style: const TextStyle(
-          color: Color(0xFF8B92A5),
-          fontSize: 24,
+        style: GoogleFonts.orbitron(
+          color: const Color(0xFF00FF66),
+          fontSize: 32,
           fontWeight: FontWeight.bold,
-          letterSpacing: 2,
-          fontFamily: 'Courier',
+          letterSpacing: 4,
+          shadows: [
+            const Shadow(
+              color: Color(0xFF00FF66),
+              blurRadius: 10,
+            )
+          ]
         ),
       ),
     );
     add(title);
 
-    final backBtn = GameButtonComponent(
-      title: 'BACK',
-      size: Vector2(100, 40),
-      position: Vector2(40, 100),
+    final backBtn = CyberButton(
+      text: '< BACK',
+      size: Vector2(150, 40),
+      position: Vector2(60, 120),
+      primaryColor: const Color(0xFF6B7A8F),
       onPressed: () {
         game.popScene();
       },
     );
     add(backBtn);
 
+    final challengePanel = HoloPanelComponent(
+      position: Vector2(60, 200),
+      size: Vector2(500, 250),
+      borderColor: const Color(0xFF00FF66),
+    );
+    add(challengePanel);
+
     final challengeTitle = TextComponent(
       text: 'SECURITY AUDIT',
-      position: Vector2(40, 200),
+      position: Vector2(80, 220),
       textRenderer: TextPaint(
-        style: const TextStyle(
-          color: Color(0xFFFFD54F),
+        style: GoogleFonts.rajdhani(
+          color: const Color(0xFFE0E6ED),
           fontSize: 28,
           fontWeight: FontWeight.bold,
           letterSpacing: 2,
-          fontFamily: 'Courier',
         ),
       ),
     );
     add(challengeTitle);
     
     final desc = TextComponent(
-      text: 'We need to check who had failed login\nattempts recently.',
-      position: Vector2(40, 250),
+      text: 'We need to check who had failed login\nattempts recently. Trace the logs in the\nauth_records table.',
+      position: Vector2(80, 270),
       textRenderer: TextPaint(
-        style: const TextStyle(
-          color: Color(0xFF8B92A5),
+        style: GoogleFonts.firaCode(
+          color: const Color(0xFF8B92A5),
           fontSize: 16,
           height: 1.5,
-          fontFamily: 'Courier',
         ),
       ),
     );
     add(desc);
 
-    final startBtn = GameButtonComponent(
-      title: 'START CHALLENGE',
-      position: Vector2(40, 320),
+    final startBtn = CyberButton(
+      text: 'INITIATE HACK',
+      position: Vector2(80, 360),
+      size: Vector2(250, 60),
+      primaryColor: const Color(0xFF00FF66),
       onPressed: () {
-        // We need a LevelModel for daily challenge, for now just placeholder
-        // game.pushScene(GameplayScene(level: ...));
+        // Placeholder for daily challenge push
       },
     );
     add(startBtn);
