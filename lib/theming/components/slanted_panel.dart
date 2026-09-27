@@ -4,18 +4,15 @@ import '../tokens/game_tokens.dart';
 
 class SlantedClipper extends CustomClipper<Path> {
   final double clipSize;
-  SlantedClipper({this.clipSize = 16.0});
+  SlantedClipper({this.clipSize = 12.0});
 
   @override
   Path getClip(Size size) {
     final path = Path();
-    path.moveTo(0, clipSize);
-    path.lineTo(clipSize, 0);
-    path.lineTo(size.width, 0);
-    path.lineTo(size.width, size.height - clipSize);
-    path.lineTo(size.width - clipSize, size.height);
-    path.lineTo(0, size.height);
-    path.close();
+    path.addRRect(RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Radius.circular(clipSize),
+    ));
     return path;
   }
 
@@ -29,7 +26,7 @@ class SlantedBorderPainter extends CustomPainter {
   final double strokeWidth;
 
   SlantedBorderPainter({
-    this.clipSize = 16.0,
+    this.clipSize = 12.0,
     required this.borderColor,
     this.strokeWidth = 2.0,
   });
@@ -42,13 +39,10 @@ class SlantedBorderPainter extends CustomPainter {
       ..strokeWidth = strokeWidth;
 
     final path = Path();
-    path.moveTo(0, clipSize);
-    path.lineTo(clipSize, 0);
-    path.lineTo(size.width, 0);
-    path.lineTo(size.width, size.height - clipSize);
-    path.lineTo(size.width - clipSize, size.height);
-    path.lineTo(0, size.height);
-    path.close();
+    path.addRRect(RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Radius.circular(clipSize),
+    ));
 
     canvas.drawPath(path, paint);
   }
@@ -57,7 +51,7 @@ class SlantedBorderPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-/// A stylized panel with clipped corners (top-left, bottom-right) and a frosted glass effect.
+/// A stylized rounded panel with a frosted glass effect matching the earthy organic theme.
 class SlantedPanel extends StatelessWidget {
   final Widget child;
   final Color? colorOverride;

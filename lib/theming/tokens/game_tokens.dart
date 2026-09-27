@@ -12,44 +12,44 @@ class GameTokens {
   GameTokens._();
 
   // ─── Color palette ──────────────────────────────────────────────────────────
-  static const background = Color(0xFF0B0C10); // Deep Void
-  static const surface = Color(0xFF121820); // Terminal Dark
-  static const surfaceVariant = Color(0xFF1A212D);
-  static const surfaceHighlight = Color(0xFF232D3B);
+  static const background = Color(0xFF2A180E); // Deep Wood
+  static const surface = Color(0xFFF9F5EA); // Parchment Base
+  static const surfaceVariant = Color(0xFFEFE6D5); // Parchment Darker
+  static const surfaceHighlight = Color(0xFFFDFBF7); // Parchment Lighter
 
-  static const primaryText = Color(0xFFE0E6ED); // Ice White
-  static const secondaryText = Color(0xFF6B7A8F); // Dimmed Blue-Grey
-  static const disabledText = Color(0xFF4A5568);
-  static const hintText = Color(0xFF4A5568);
+  static const primaryText = Color(0xFF2A180E); // Deep Wood (for text on parchment)
+  static const secondaryText = Color(0xFF5C3D2E); // Medium Wood
+  static const disabledText = Color(0xFF8C7A6B);
+  static const hintText = Color(0xFF8C7A6B);
 
-  static const accent = Color(0xFF00F0FF); // Neon Cyan
-  static const accentDim = Color(0xFF008B99);
-  static const accentGlow = Color(0x3300F0FF);
+  static const accent = Color(0xFF4A7C59); // Forest Green
+  static const accentDim = Color(0xFF2D5A3A); // Deep Forest
+  static const accentGlow = Color(0x334A7C59);
 
-  static const success = Color(0xFF00FF66); // Hacker Green
-  static const successSurface = Color(0xFF003314);
-  static const error = Color(0xFFFF0055); // Hot Magenta
-  static const errorSurface = Color(0xFF4D0019);
-  static const warning = Color(0xFFFFB800); // Warning Amber
-  static const warningSurface = Color(0xFF332500);
-  static const info = Color(0xFF00F0FF);
-  static const rare = Color(0xFFD944FF);
+  static const success = Color(0xFF4A7C59); // Forest Green
+  static const successSurface = Color(0xFFD4E5D9);
+  static const error = Color(0xFFB83A24); // Brick Red
+  static const errorSurface = Color(0xFFF0D5D1);
+  static const warning = Color(0xFFE59B28); // Amber Gold
+  static const warningSurface = Color(0xFFFBEBD5);
+  static const info = Color(0xFF2B5B84);
+  static const rare = Color(0xFF7A4A8C);
 
   // Result table diff colors
-  static const resultMatch = Color(0xFF004D2F);
-  static const resultExtra = Color(0xFF4D2E00);
-  static const resultMissing = Color(0xFF4D0F14);
+  static const resultMatch = Color(0xFFD4E5D9);
+  static const resultExtra = Color(0xFFFBEBD5);
+  static const resultMissing = Color(0xFFF0D5D1);
 
   // ─── Typography ──────────────────────────────────────────────────────────────
-  static String? get headerFontFamily => GoogleFonts.orbitron().fontFamily ?? GoogleFonts.rajdhani().fontFamily;
-  static String? get bodyFontFamily => GoogleFonts.rajdhani().fontFamily ?? GoogleFonts.inter().fontFamily;
+  static String? get headerFontFamily => GoogleFonts.nunitoSans().fontFamily;
+  static String? get bodyFontFamily => GoogleFonts.quicksand().fontFamily;
 
   static TextStyle get displayLarge => TextStyle(
     fontFamily: headerFontFamily,
     fontSize: 32,
-    fontWeight: FontWeight.w900, // Black weight
+    fontWeight: FontWeight.w900, 
     color: primaryText,
-    letterSpacing: 1.5,
+    letterSpacing: 1.0,
     height: 1.1,
   );
 
@@ -58,7 +58,7 @@ class GameTokens {
     fontSize: 26,
     fontWeight: FontWeight.w800,
     color: primaryText,
-    letterSpacing: 1.2,
+    letterSpacing: 0.5,
     height: 1.2,
   );
 
@@ -67,7 +67,7 @@ class GameTokens {
     fontSize: 22,
     fontWeight: FontWeight.w800,
     color: primaryText,
-    letterSpacing: 1.0,
+    letterSpacing: 0.2,
   );
 
   static TextStyle get headlineMedium => TextStyle(
@@ -75,7 +75,7 @@ class GameTokens {
     fontSize: 18,
     fontWeight: FontWeight.w700,
     color: primaryText,
-    letterSpacing: 0.8,
+    letterSpacing: 0.1,
   );
 
   static TextStyle get titleLarge => TextStyle(
@@ -83,12 +83,13 @@ class GameTokens {
     fontSize: 16,
     fontWeight: FontWeight.w800,
     color: accent,
-    letterSpacing: 0.5,
+    letterSpacing: 0.1,
   );
 
   static TextStyle get bodyLarge => TextStyle(
     fontFamily: bodyFontFamily,
     fontSize: 16,
+    fontWeight: FontWeight.w600,
     color: primaryText,
     height: 1.6,
   );
@@ -96,6 +97,7 @@ class GameTokens {
   static TextStyle get bodyMedium => TextStyle(
     fontFamily: bodyFontFamily,
     fontSize: 14,
+    fontWeight: FontWeight.w600,
     color: primaryText,
     height: 1.5,
   );
@@ -103,6 +105,7 @@ class GameTokens {
   static TextStyle get bodySmall => TextStyle(
     fontFamily: bodyFontFamily,
     fontSize: 12,
+    fontWeight: FontWeight.w600,
     color: secondaryText,
     height: 1.4,
   );
@@ -111,21 +114,23 @@ class GameTokens {
     fontFamily: headerFontFamily,
     fontSize: 14,
     fontWeight: FontWeight.bold,
-    color: background, // Black text on yellow buttons usually
-    letterSpacing: 1.5,
+    color: surface, 
+    letterSpacing: 0.5,
   );
 
   static TextStyle get code => TextStyle(
     fontFamily: GoogleFonts.firaCode().fontFamily,
     fontSize: 14,
+    fontWeight: FontWeight.w500,
     color: primaryText,
     height: 1.6,
-    letterSpacing: 0.3,
+    letterSpacing: 0.1,
   );
 
   static TextStyle get codeSmall => TextStyle(
     fontFamily: GoogleFonts.firaCode().fontFamily,
     fontSize: 12,
+    fontWeight: FontWeight.w500,
     color: primaryText,
     height: 1.5,
   );
@@ -140,8 +145,8 @@ class GameTokens {
 
   // ─── Border radius (Sleek/Clipping) ──────────────────────────────────────────
   static const double radiusNone = 0.0;
-  static const double radiusSm = 2.0;
-  static const double radiusMd = 4.0;
+  static const double radiusSm = 4.0;
+  static const double radiusMd = 12.0;
   
   // Note: We'll use ClipPath for the large angled corners, so border radius is small
   static final BorderRadius borderRadiusNone = BorderRadius.circular(radiusNone);
@@ -180,9 +185,9 @@ class GameTokens {
   // ─── Full MaterialTheme ───────────────────────────────────────────────────────
   static ThemeData get themeData {
     return ThemeData(
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       scaffoldBackgroundColor: background,
-      colorScheme: const ColorScheme.dark(
+      colorScheme: const ColorScheme.light(
         primary: accent,
         secondary: error,
         surface: surface,

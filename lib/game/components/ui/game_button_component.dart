@@ -15,9 +15,9 @@ class GameButtonComponent extends PositionComponent with TapCallbacks {
     required this.title,
     this.subtitle = '',
     required this.onPressed,
-    Vector2? position,
+    super.position,
     Vector2? size,
-  }) : super(position: position, size: size ?? Vector2(340, 70));
+  }) : super(size: size ?? Vector2(340, 70));
 
   @override
   Future<void> onLoad() async {
@@ -32,7 +32,7 @@ class GameButtonComponent extends PositionComponent with TapCallbacks {
     final border = RectangleComponent(
       size: size,
       paint: Paint()
-        ..color = const Color(0xFF00E5FF).withOpacity(0.3)
+        ..color = const Color(0xFF00E5FF).withValues(alpha: 0.3)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2,
     );
@@ -73,7 +73,7 @@ class GameButtonComponent extends PositionComponent with TapCallbacks {
 
   @override
   void onTapDown(TapDownEvent event) {
-    _bgComponent.paint.color = const Color(0xFF00E5FF).withOpacity(0.2);
+    _bgComponent.paint.color = const Color(0xFF00E5FF).withValues(alpha: 0.2);
     scale = Vector2.all(0.95);
   }
 

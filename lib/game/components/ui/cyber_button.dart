@@ -5,8 +5,26 @@ import 'package:flutter/material.dart' hide Image;
 import 'package:google_fonts/google_fonts.dart';
 
 class CyberButton extends PositionComponent with TapCallbacks {
-  final String text;
-  final String secondaryText;
+  String _text;
+  String _secondaryText;
+  
+  String get text => _text;
+  set text(String value) {
+    _text = value;
+    if (isMounted) _textComp.text = value;
+  }
+
+  String get secondaryText => _secondaryText;
+  set secondaryText(String value) {
+    _secondaryText = value;
+    if (isMounted) {
+      _secondaryTextComp.text = value;
+      if (!_secondaryTextComp.isMounted && value.isNotEmpty) {
+        add(_secondaryTextComp);
+      }
+    }
+  }
+
   final VoidCallback onPressed;
   final Color primaryColor;
   
@@ -16,13 +34,13 @@ class CyberButton extends PositionComponent with TapCallbacks {
   bool _isPressed = false;
 
   CyberButton({
-    required this.text,
-    this.secondaryText = '',
+    required String text,
+    String secondaryText = '',
     required this.onPressed,
     this.primaryColor = const Color(0xFF00F0FF),
     super.position,
     Vector2? size,
-  }) : super(size: size ?? Vector2(300, 60));
+  }) : _text = text, _secondaryText = secondaryText, super(size: size ?? Vector2(300, 60));
 
   @override
   Future<void> onLoad() async {
@@ -53,7 +71,7 @@ class CyberButton extends PositionComponent with TapCallbacks {
     );
 
     add(_textComp);
-    if (secondaryText.isNotEmpty) {
+    if (_secondaryText.isNotEmpty) {
       add(_secondaryTextComp);
     }
   }

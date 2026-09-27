@@ -7,11 +7,11 @@ class HoloPanelComponent extends PositionComponent {
   final Color bgColor;
 
   HoloPanelComponent({
-    Vector2? position,
+    super.position,
     Vector2? size,
     this.borderColor = const Color(0xFF00F0FF),
     this.bgColor = const Color(0xFF0B0C10),
-  }) : super(position: position, size: size ?? Vector2(400, 300));
+  }) : super(size: size ?? Vector2(400, 300));
 
   @override
   void render(Canvas canvas) {
