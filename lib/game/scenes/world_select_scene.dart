@@ -1,76 +1,134 @@
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:google_fonts/google_fonts.dart';
 
 import 'query_scene.dart';
 import 'level_map_scene.dart';
-import '../components/ui/cyber_button.dart';
-import '../components/hex_grid_background.dart';
+import '../components/ui/wood_button.dart';
+import '../components/ui/dirt_trail_component.dart';
+import '../../data/content/level_loader.dart';
 
-class WorldSelectScene extends QueryScene {
+class WorldSelectScene extends QueryScene with DragCallbacks {
+  late PositionComponent scrollContainer;
+  double _scrollY = 0;
+  double _maxScroll = 0;
   @override
   Future<void> onLoad() async {
-    add(HexGridBackground(hexColor: const Color(0xFFFF0055)));
+    // Parchment background
+    final bg = RectangleComponent(
+      size: game.size,
+      paint: Paint()..color = const Color(0xFFEFE6D5),
+    );
+    add(bg);
+    
+    final compass = TextComponent(
+      text: '✧\nN\nS',
+      position: Vector2(40, game.size.y - 120),
+      textRenderer: TextPaint(
+        style: GoogleFonts.cinzel(
+          color: const Color(0xFFD4C4A8),
+          fontSize: 32,
+          fontWeight: FontWeight.w200,
+        ),
+      ),
+      anchor: Anchor.center,
+    );
+    add(compass);
+
+    scrollContainer = PositionComponent(size: game.size);
+    add(scrollContainer);
+
+    final trailPath = DirtTrailComponent();
+    scrollContainer.add(trailPath);
 
     final title = TextComponent(
-      text: 'GLOBAL ARCHIVE',
-      position: Vector2(60, 60),
+      text: 'WILD WOODS TRAIL',
+      position: Vector2(game.size.x / 2, 60),
+      anchor: Anchor.center,
       textRenderer: TextPaint(
-        style: GoogleFonts.orbitron(
-          color: const Color(0xFFFF0055),
+        style: GoogleFonts.nunitoSans(
+          color: const Color(0xFF3D2817),
           fontSize: 32,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 4,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.5,
         ),
       ),
     );
     add(title);
 
-    final backBtn = CyberButton(
-      text: '< BACK',
-      size: Vector2(150, 40),
-      position: Vector2(60, 120),
-      primaryColor: const Color(0xFF6B7A8F),
+    final backBtn = WoodButton(
+      text: 'BACK TO CAMP',
+      size: Vector2(180, 50),
+      position: Vector2((game.size.x - 180) / 2, 110),
+      primaryColor: const Color(0xFFD4C4A8),
+      textColor: const Color(0xFF3D2817),
       onPressed: () {
         game.popScene();
       },
     );
     add(backBtn);
 
-    final world1 = CyberButton(
-      text: 'W1: The Archive Vaults',
-      secondaryText: 'Fundamentals of Selection',
-      position: Vector2(60, 180),
-      primaryColor: const Color(0xFF00F0FF),
-      onPressed: () {
-        game.pushScene(LevelMapScene(worldId: 'world_01'));
-      },
-    );
-    add(world1);
+    final availableWorlds = LevelLoader.instance.availableWorlds;
+    final points = <Vector2>[];
 
-    final world2 = CyberButton(
-      text: 'W2: Filter District',
-      secondaryText: 'Advanced WHERE clauses',
-      position: Vector2(60, 260),
-      primaryColor: const Color(0xFF00FF66),
-      onPressed: () {
-        game.pushScene(LevelMapScene(worldId: 'world_02'));
-      },
-    );
-    add(world2);
+    for (int i = 0; i < availableWorlds.length; i++) {
+      final worldId = availableWorlds[i];
+      
+      // Meandering trail layout
+      final row = i;
+      final isLeft = i % 2 == 0;
+      final xOffset = isLeft ? -80.0 : 80.0;
+      
+      final x = (game.size.x / 2) + xOffset - 125.0; // center button 250 wide
+      final y = 200.0 + (row * 140.0);
+      
+      points.add(Vector2(x + 125, y + 35)); // Center of the 250x70 button
 
-    final world3 = CyberButton(
-      text: 'W3: Aggregation Exchange',
-      secondaryText: 'GROUP BY and HAVING',
-      position: Vector2(60, 340),
-      primaryColor: const Color(0xFFFFB800),
-      onPressed: () {
-        game.pushScene(LevelMapScene(worldId: 'world_03'));
-      },
-    );
-    add(world3);
+      final node = WoodButton(
+        text: worldId.toUpperCase().replaceAll('_', ' '),
+        secondaryText: 'Packing gear...',
+        position: Vector2(x, y),
+        size: Vector2(250, 70),
+        primaryColor: i % 2 == 0 ? const Color(0xFF4A7C59) : const Color(0xFFD48B3E),
+        onPressed: () {
+          game.pushScene(LevelMapScene(worldId: worldId));
+        },
+      );
+      scrollContainer.add(node);
+      
+      // Async load title
+      LevelLoader.instance.loadWorld(worldId).then((world) {
+        if (isMounted) {
+          node.text = world.title.toUpperCase();
+          node.secondaryText = 'Chapter ${world.number} • ${world.levels.length} Stages';
+        }
+      });
+    }
+
+    trailPath.setPoints(points);
+    if (points.isNotEmpty) {
+      _maxScroll = (points.last.y + 100) > game.size.y ? (points.last.y + 100) - game.size.y : 0;
+    }
   }
 
   @override
-  List<String> get activeOverlays => [];
+  void onDragUpdate(DragUpdateEvent event) {
+    if (_maxScroll <= 0) return;
+    _scrollY += event.localDelta.y;
+    _scrollY = _scrollY.clamp(-_maxScroll, 0.0);
+    scrollContainer.position.y = _scrollY;
+  }
+
+  @override
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
+    for (final child in children) {
+      if (child is RectangleComponent && child.paint.color == const Color(0xFFEFE6D5)) {
+        child.size = size;
+        break;
+      }
+    }
+  }
 }
+
