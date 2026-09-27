@@ -11,39 +11,45 @@ class AchievementDef {
   final String id;
   final String title;
   final String description;
-  final String unlockCondition;
+  final int requiredXp;
   final IconData icon;
   final String category;
   const AchievementDef({
     required this.id,
     required this.title,
     required this.description,
-    required this.unlockCondition,
+    required this.requiredXp,
     required this.icon,
-    this.category = 'General',
+    this.category = 'XP Milestones',
   });
 }
 
-const List<AchievementDef> _kAchievements = [
-  AchievementDef(id:'first_query',title:'Hello World',description:'You executed your first SQL query. Every agent starts somewhere.',unlockCondition:'Complete any level for the first time.',icon:Icons.keyboard_return,category:'Milestones'),
-  AchievementDef(id:'three_stars',title:'Star Witness',description:'A perfect 3-star solve. Clean query, first try, no hints.',unlockCondition:'Earn 3 stars on any level (first attempt + no hints + optimal query).',icon:Icons.star,category:'Milestones'),
-  AchievementDef(id:'no_hints',title:'Solo Operative',description:'Solved it without any assistance from the Bureau.',unlockCondition:'Complete any level without using any hints.',icon:Icons.psychology_outlined,category:'Milestones'),
-  AchievementDef(id:'speedrun',title:'Lightning Query',description:'You cracked the case faster than the Bureau expected.',unlockCondition:'Earn a Gold time medal by solving a level within the gold time threshold.',icon:Icons.flash_on,category:'Milestones'),
-  AchievementDef(id:'comeback',title:'Persistent Detective',description:'Five failed attempts and you still cracked the case. Respect.',unlockCondition:'Complete a level after 5 or more failed attempts.',icon:Icons.local_fire_department,category:'Milestones'),
-  AchievementDef(id:'perfect_optimization',title:'100% Efficiency',description:'Your query was perfectly optimised — not a byte wasted.',unlockCondition:'Score 100% efficiency on any performance challenge level.',icon:Icons.speed,category:'Milestones'),
-  AchievementDef(id:'world_01_complete',title:'Archivist',description:'The Archive Vaults are yours. SELECT and FROM hold no secrets.',unlockCondition:'Complete all levels in World 1 — The Archive Vaults.',icon:Icons.folder_special,category:'Worlds'),
-  AchievementDef(id:'world_02_complete',title:'Filter Specialist',description:'You have mastered the WHERE clause. Data has nowhere to hide.',unlockCondition:'Complete all levels in World 2 — Filter District.',icon:Icons.filter_alt,category:'Worlds'),
-  AchievementDef(id:'world_03_complete',title:'Aggregator',description:'GROUP BY and HAVING are old friends now.',unlockCondition:'Complete all levels in World 3 — Aggregation Alley.',icon:Icons.functions,category:'Worlds'),
-  AchievementDef(id:'world_04_complete',title:'Nexus Weaver',description:'JOINs? You speak their language fluently.',unlockCondition:'Complete all levels in World 4 — The JOIN Nexus.',icon:Icons.account_tree,category:'Worlds'),
-  AchievementDef(id:'world_05_complete',title:'Deep Diver',description:'Subqueries are no longer a mystery.',unlockCondition:'Complete all levels in World 5 — Subquery Depths.',icon:Icons.layers,category:'Worlds'),
-  AchievementDef(id:'world_06_complete',title:'CTE Architect',description:'WITH clauses structured like a master planner.',unlockCondition:'Complete all levels in World 6 — CTE Chambers.',icon:Icons.schema,category:'Worlds'),
-  AchievementDef(id:'world_07_complete',title:'Window Washer',description:'RANK, ROW_NUMBER, LAG, LEAD all in a days work.',unlockCondition:'Complete all levels in World 7 — The Window Towers.',icon:Icons.view_carousel,category:'Worlds'),
-  AchievementDef(id:'world_08_complete',title:'Optimizer',description:'Performance queries bent to your will.',unlockCondition:'Complete all levels in World 8 — Optimization Labs.',icon:Icons.memory,category:'Worlds'),
-  AchievementDef(id:'world_09_complete',title:'Debug Master',description:'Every broken query found and fixed.',unlockCondition:'Complete all levels in World 9 — The Debug Dungeon.',icon:Icons.bug_report,category:'Worlds'),
-  AchievementDef(id:'world_10_complete',title:'Grand Architect',description:'All ten worlds conquered. The Bureau finest.',unlockCondition:'Complete all levels in World 10 — The Grand Archives.',icon:Icons.emoji_events,category:'Worlds'),
-  AchievementDef(id:'daily_streak_3',title:'Consistency',description:'Three days in a row. The Bureau notes your dedication.',unlockCondition:'Maintain a 3-day daily challenge streak.',icon:Icons.local_fire_department,category:'Dedication'),
-  AchievementDef(id:'daily_streak_7',title:'Week Agent',description:'A full week without missing a case.',unlockCondition:'Maintain a 7-day daily challenge streak.',icon:Icons.whatshot,category:'Dedication'),
-  AchievementDef(id:'rank_silver',title:'Moving Up',description:'Silver Rank achieved. The Bureau promotes you.',unlockCondition:'Reach Silver Rank by earning enough XP through level completions.',icon:Icons.workspace_premium,category:'Dedication'),
+const List<AchievementDef> kAchievements = [
+  AchievementDef(id:'xp_1',title:'Sprout',description:'Your journey begins.',requiredXp:50,icon:Icons.eco),
+  AchievementDef(id:'xp_2',title:'Seedling',description:'Taking root.',requiredXp:150,icon:Icons.grass),
+  AchievementDef(id:'xp_3',title:'Forager',description:'Gathering knowledge.',requiredXp:300,icon:Icons.spa),
+  AchievementDef(id:'xp_4',title:'Pathfinder',description:'Finding your way.',requiredXp:500,icon:Icons.map),
+  AchievementDef(id:'xp_5',title:'Scout',description:'Eyes on the horizon.',requiredXp:750,icon:Icons.visibility),
+  AchievementDef(id:'xp_6',title:'Wanderer',description:'A steady pace.',requiredXp:1000,icon:Icons.directions_walk),
+  AchievementDef(id:'xp_7',title:'Explorer',description:'Venturing further.',requiredXp:1300,icon:Icons.explore),
+  AchievementDef(id:'xp_8',title:'Adventurer',description:'Seeking new challenges.',requiredXp:1600,icon:Icons.terrain),
+  AchievementDef(id:'xp_9',title:'Tracker',description:'Following the clues.',requiredXp:2000,icon:Icons.track_changes),
+  AchievementDef(id:'xp_10',title:'Ranger',description:'Guardian of the paths.',requiredXp:2500,icon:Icons.shield),
+  AchievementDef(id:'xp_11',title:'Pioneer',description:'Breaking new ground.',requiredXp:3000,icon:Icons.flag),
+  AchievementDef(id:'xp_12',title:'Trailblazer',description:'Leading the way.',requiredXp:3600,icon:Icons.local_fire_department),
+  AchievementDef(id:'xp_13',title:'Navigator',description:'Charting the unknown.',requiredXp:4200,icon:Icons.navigation),
+  AchievementDef(id:'xp_14',title:'Voyager',description:'A long journey.',requiredXp:4900,icon:Icons.sailing),
+  AchievementDef(id:'xp_15',title:'Wayfarer',description:'Walking the endless road.',requiredXp:5700,icon:Icons.hiking),
+  AchievementDef(id:'xp_16',title:'Veteran',description:'Experienced and wise.',requiredXp:6600,icon:Icons.military_tech),
+  AchievementDef(id:'xp_17',title:'Expert',description:'Mastery in motion.',requiredXp:7600,icon:Icons.psychology),
+  AchievementDef(id:'xp_18',title:'Master',description:'Unparalleled skill.',requiredXp:8700,icon:Icons.workspace_premium),
+  AchievementDef(id:'xp_19',title:'Grandmaster',description:'A true legend.',requiredXp:9900,icon:Icons.stars),
+  AchievementDef(id:'xp_20',title:'Oracle',description:'Seeing all.',requiredXp:11200,icon:Icons.visibility),
+  AchievementDef(id:'xp_21',title:'Sage',description:'Boundless wisdom.',requiredXp:12600,icon:Icons.auto_awesome),
+  AchievementDef(id:'xp_22',title:'Mythic',description:'Beyond the realm of mortals.',requiredXp:14100,icon:Icons.auto_fix_high),
+  AchievementDef(id:'xp_23',title:'Immortal',description:'Eternal legacy.',requiredXp:15700,icon:Icons.diamond),
+  AchievementDef(id:'xp_24',title:'Divine',description:'Godlike powers.',requiredXp:17400,icon:Icons.bolt),
+  AchievementDef(id:'xp_25',title:'Query God',description:'The ultimate truth.',requiredXp:19200,icon:Icons.wb_sunny),
 ];
 
 class AchievementsScreen extends ConsumerStatefulWidget {
@@ -82,12 +88,11 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> with Si
           };
           
           final earnedCount = earnedMap.length;
-          final totalCount = _kAchievements.length;
+          final totalCount = kAchievements.length;
 
           return Column(
             children: [
               const SizedBox(height: GameTokens.spaceLg),
-              _ProgressBanner(earned: earnedCount, total: totalCount),
               const SizedBox(height: GameTokens.spaceLg),
               // Custom TabBar
               Center(
@@ -116,9 +121,9 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> with Si
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    _buildGrid(_kAchievements, earnedMap),
-                    _buildGrid(_kAchievements.where((a) => earnedMap.containsKey(a.id)).toList(), earnedMap),
-                    _buildGrid(_kAchievements.where((a) => !earnedMap.containsKey(a.id)).toList(), earnedMap),
+                    _buildGrid(kAchievements, earnedMap),
+                    _buildGrid(kAchievements.where((a) => earnedMap.containsKey(a.id)).toList(), earnedMap),
+                    _buildGrid(kAchievements.where((a) => !earnedMap.containsKey(a.id)).toList(), earnedMap),
                   ],
                 ),
               ),
@@ -162,41 +167,6 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> with Si
               animationDelay: (index * 40).ms,
             );
           },
-        ),
-      ),
-    );
-  }
-}
-
-class _ProgressBanner extends StatelessWidget {
-  final int earned;
-  final int total;
-  const _ProgressBanner({required this.earned, required this.total});
-  @override
-  Widget build(BuildContext context) {
-    final pct = total == 0 ? 0.0 : earned / total;
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 600),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceLg),
-          child: SlantedPanel(
-            borderColorOverride: GameTokens.accent,
-            padding: const EdgeInsets.all(GameTokens.spaceMd),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text('BUREAU RECORD', style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText, letterSpacing: 1.5)),
-                Text('$earned / $total', style: GameTokens.headlineLarge.copyWith(color: GameTokens.accent)),
-              ]),
-              const SizedBox(height: GameTokens.spaceSm),
-              ClipRRect(
-                borderRadius: GameTokens.borderRadiusSm,
-                child: LinearProgressIndicator(value: pct, minHeight: 6, backgroundColor: GameTokens.surfaceVariant, valueColor: const AlwaysStoppedAnimation(GameTokens.accent)),
-              ),
-              const SizedBox(height: 6),
-              Text('${(pct * 100).toInt()}% complete', style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText, fontSize: 10)),
-            ]),
-          ),
         ),
       ),
     );
@@ -260,8 +230,8 @@ class _AchievementTileState extends State<_AchievementTile> {
 
   Widget _buildFrontPanel() {
     return SlantedPanel(
-      borderColorOverride: widget.isEarned ? GameTokens.accent : GameTokens.accentDim,
-      colorOverride: widget.isEarned ? GameTokens.accent.withValues(alpha: 0.1) : GameTokens.surface,
+      borderColorOverride: widget.isEarned ? GameTokens.accent : GameTokens.secondaryText,
+      colorOverride: widget.isEarned ? GameTokens.surface : GameTokens.background,
       padding: const EdgeInsets.all(GameTokens.spaceMd),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -270,16 +240,16 @@ class _AchievementTileState extends State<_AchievementTile> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: widget.isEarned ? GameTokens.accent.withValues(alpha: 0.2) : GameTokens.background,
+              color: widget.isEarned ? GameTokens.surfaceHighlight : GameTokens.surfaceVariant,
               shape: BoxShape.circle,
               border: Border.all(
-                color: widget.isEarned ? GameTokens.accent : GameTokens.accentDim,
+                color: widget.isEarned ? GameTokens.warning : GameTokens.secondaryText,
                 width: 2,
               ),
               boxShadow: widget.isEarned
                   ? [
                       BoxShadow(
-                        color: GameTokens.accent.withValues(alpha: 0.5),
+                        color: GameTokens.warning.withValues(alpha: 0.5),
                         blurRadius: 15,
                         spreadRadius: -5,
                       )
@@ -289,20 +259,27 @@ class _AchievementTileState extends State<_AchievementTile> {
             child: Icon(
               widget.isEarned ? widget.def.icon : Icons.lock_outline,
               size: 40,
-              color: widget.isEarned ? GameTokens.accent : GameTokens.accentDim,
+              color: widget.isEarned ? GameTokens.warning : GameTokens.secondaryText,
             ),
           ).animate(target: widget.isEarned ? 1 : 0).shimmer(duration: 2000.ms),
           const SizedBox(height: GameTokens.spaceLg),
           Text(
-            widget.isEarned ? widget.def.title.toUpperCase() : '???',
+            widget.def.title.toUpperCase(),
             style: GameTokens.headlineMedium.copyWith(
-              color: widget.isEarned ? GameTokens.primaryText : GameTokens.disabledText,
+              color: widget.isEarned ? GameTokens.primaryText : GameTokens.surface,
               letterSpacing: 1.2,
             ),
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
+          if (!widget.isEarned) ...[
+             const SizedBox(height: GameTokens.spaceSm),
+             Text(
+               'REQUIRES ${widget.def.requiredXp} XP',
+               style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText, fontSize: 10, letterSpacing: 2),
+             ),
+          ],
           if (widget.isEarned) ...[
              const SizedBox(height: GameTokens.spaceSm),
              Text(
@@ -359,10 +336,10 @@ class _AchievementTileState extends State<_AchievementTile> {
           const SizedBox(height: GameTokens.spaceSm),
           Row(
             children: [
-              const Icon(Icons.bolt, color: GameTokens.warning, size: 14),
+              const Icon(Icons.star, color: GameTokens.warning, size: 14),
               const SizedBox(width: 4),
               Text(
-                'XP: +150',
+                'Requires: ${widget.def.requiredXp} XP',
                 style: GameTokens.bodySmall.copyWith(color: GameTokens.warning),
               ),
             ],

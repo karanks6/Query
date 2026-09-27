@@ -31,6 +31,8 @@ class LevelLoader {
     'world_10': 'assets/levels/world_10_grand_archive',
   };
 
+  List<String> get availableWorlds => _worldDirectories.keys.toList()..sort();
+
   /// Loads and caches a world and all its levels.
   Future<WorldModel> loadWorld(String worldId) async {
     if (_worldCache.containsKey(worldId)) return _worldCache[worldId]!;

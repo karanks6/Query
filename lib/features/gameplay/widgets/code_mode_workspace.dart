@@ -174,11 +174,14 @@ class _CodeModeWorkspaceState extends State<CodeModeWorkspace> {
 
                   // Text field
                   Expanded(
-                    child: Container(
-                      color: GameTokens.background.withValues(alpha: 0.6), // Glassmorphism backdrop
-                      child: TextField(
-                        controller: _controller,
-                        focusNode: _focusNode,
+                    child: GestureDetector(
+                      onTap: () => _focusNode.requestFocus(),
+                      behavior: HitTestBehavior.opaque,
+                      child: Container(
+                        color: GameTokens.background.withValues(alpha: 0.6), // Glassmorphism backdrop
+                        child: TextField(
+                          controller: _controller,
+                          focusNode: _focusNode,
                         maxLines: null,
                         expands: true,
                         textAlignVertical: TextAlignVertical.top,
@@ -194,6 +197,7 @@ class _CodeModeWorkspaceState extends State<CodeModeWorkspace> {
                         ),
                       ),
                     ),
+                  ),
                   ),
                 ],
               ),

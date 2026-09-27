@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'gameplay_provider.dart';
@@ -19,19 +20,23 @@ class GameplayScreenOverlay extends ConsumerWidget {
         const topFlameUIBottom = 270.0; 
         const bottomFlameUITop = 110.0; 
 
-        final availableHeight = constraints.maxHeight - topFlameUIBottom - bottomFlameUITop;
+        final availableHeight = math.max(0.0, constraints.maxHeight - topFlameUIBottom - bottomFlameUITop);
         final resultsHeight = (availableHeight * 0.4).clamp(100.0, 300.0);
+        
+        final hasResults = state.lastReport?.resultRows != null;
+        final bottomOffset = hasResults ? bottomFlameUITop + resultsHeight + 16 : bottomFlameUITop + 16;
+        final codeHeight = math.max(0.0, constraints.maxHeight - topFlameUIBottom - bottomOffset);
 
-        return Stack(
+        return Material(
+          type: MaterialType.transparency,
+          child: Stack(
           children: [
             if (state.queryMode == QueryMode.code)
               Positioned(
                 top: topFlameUIBottom,
                 left: 16,
                 right: 16,
-                bottom: (state.lastReport?.resultRows != null) 
-                    ? bottomFlameUITop + resultsHeight + 16
-                    : bottomFlameUITop + 16, 
+                height: codeHeight,
                 child: CodeModeWorkspace(
                   key: const ValueKey('code'),
                   schema: state.level!.schema,
@@ -50,7 +55,7 @@ class GameplayScreenOverlay extends ConsumerWidget {
                 child: ResultPane(rows: state.lastReport!.resultRows!),
               ),
           ],
-        );
+        ));
       },
     );
   }

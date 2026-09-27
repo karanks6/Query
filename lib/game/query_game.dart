@@ -8,7 +8,7 @@ import 'scenes/query_scene.dart';
 import 'components/scan_line_component.dart';
 import 'components/parallax_world.dart';
 
-class QueryGame extends FlameGame with RiverpodGameMixin, HasKeyboardHandlerComponents {
+class QueryGame extends FlameGame with RiverpodGameMixin {
   final List<QueryScene> sceneStack = [];
 
   late final ScanLineComponent scanLines;
@@ -36,6 +36,20 @@ class QueryGame extends FlameGame with RiverpodGameMixin, HasKeyboardHandlerComp
     if (sceneStack.isNotEmpty) {
       await sceneStack.last.onExit();
       remove(sceneStack.last);
+    }
+    
+    sceneStack.add(next);
+    add(next);
+    await next.onEnter();
+    
+    _updateOverlays();
+  }
+
+  Future<void> replaceScene(QueryScene next) async {
+    if (sceneStack.isNotEmpty) {
+      final old = sceneStack.removeLast();
+      await old.onExit();
+      remove(old);
     }
     
     sceneStack.add(next);

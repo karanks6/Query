@@ -5,6 +5,7 @@ import '../../core/sandbox_engine/sandbox_engine.dart';
 import '../../core/scoring/level_scorer.dart';
 import '../../data/content/models/level_model.dart';
 import '../../core/providers.dart';
+import '../achievements/achievements_screen.dart';
 
 // ─── Query mode ───────────────────────────────────────────────────────────────
 
@@ -279,26 +280,13 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
       if (!hadBefore) newAchievements.add(id);
     }
 
-    await maybeAward('first_query');
+    final updatedProfile = await playerDao.getProfile();
+    final totalXp = updatedProfile?.totalXp ?? 0;
 
-    if (level.performanceActive && (report.efficiencyScore ?? 0.0) >= 1.0) {
-      await maybeAward('perfect_optimization');
-    }
-    if (score.starCount == 3) {
-      await maybeAward('three_stars');
-    }
-    if (state.highestHintUsed == HintTier.none) {
-      await maybeAward('no_hints');
-    }
-    if (score.timeMedal == TimeMedal.gold) {
-      await maybeAward('speedrun');
-    }
-    if (attemptCount >= 5) {
-      await maybeAward('comeback');
-    }
-    if (currentWorldProg != null &&
-        currentWorldProg.levelsCompleted >= currentWorldProg.totalLevels) {
-      await maybeAward('${level.worldId}_complete');
+    for (final ach in kAchievements) {
+      if (totalXp >= ach.requiredXp) {
+        await maybeAward(ach.id);
+      }
     }
 
     state = state.copyWith(

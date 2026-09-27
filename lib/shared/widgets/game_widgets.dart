@@ -114,7 +114,7 @@ class GameAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               if (onBack != null)
                 IconButton(
-                  icon: const Icon(Icons.chevron_left, color: GameTokens.primaryText, size: 28),
+                  icon: const Icon(Icons.chevron_left, color: GameTokens.surface, size: 28),
                   onPressed: onBack,
                 )
               else
@@ -123,7 +123,7 @@ class GameAppBar extends StatelessWidget implements PreferredSizeWidget {
                 child: Text(
                   title.toUpperCase(),
                   style: GameTokens.displayMedium.copyWith(
-                    color: GameTokens.primaryText,
+                    color: GameTokens.surface,
                   ),
                 ),
               ),

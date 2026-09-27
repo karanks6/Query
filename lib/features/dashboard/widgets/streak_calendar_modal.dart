@@ -23,7 +23,7 @@ class StreakCalendarModal extends ConsumerWidget {
 
     return Container(
       decoration: const BoxDecoration(
-        color: GameTokens.surface,
+        color: GameTokens.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: profileAsync.when(
@@ -68,7 +68,7 @@ class StreakCalendarModal extends ConsumerWidget {
                       width: 36,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: GameTokens.secondaryText.withValues(alpha: 0.3),
+                        color: GameTokens.disabledText.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -141,7 +141,7 @@ class StreakCalendarModal extends ConsumerWidget {
                       Text(
                         'LAST 12 WEEKS',
                         style: GameTokens.bodySmall.copyWith(
-                          color: GameTokens.secondaryText,
+                          color: GameTokens.disabledText,
                           letterSpacing: 1.5,
                           fontSize: 10,
                         ),
@@ -150,7 +150,7 @@ class StreakCalendarModal extends ConsumerWidget {
                         children: [
                           Text('Less',
                               style: GameTokens.bodySmall
-                                  .copyWith(fontSize: 9, color: GameTokens.secondaryText)),
+                                  .copyWith(fontSize: 9, color: GameTokens.disabledText)),
                           const SizedBox(width: 4),
                           for (final a in [0.15, 0.4, 0.65, 1.0])
                             Container(
@@ -167,7 +167,7 @@ class StreakCalendarModal extends ConsumerWidget {
                           const SizedBox(width: 4),
                           Text('More',
                               style: GameTokens.bodySmall
-                                  .copyWith(fontSize: 9, color: GameTokens.secondaryText)),
+                                  .copyWith(fontSize: 9, color: GameTokens.disabledText)),
                         ],
                       ),
                     ],
@@ -192,7 +192,7 @@ class StreakCalendarModal extends ConsumerWidget {
                     child: Text(
                       'RECENT ACTIVITY',
                       style: GameTokens.bodySmall.copyWith(
-                        color: GameTokens.secondaryText,
+                        color: GameTokens.disabledText,
                         letterSpacing: 1.5,
                         fontSize: 10,
                       ),
@@ -252,7 +252,7 @@ class _FlameHeader extends StatelessWidget {
                     : Icons.local_fire_department_outlined,
                 color: currentStreak > 0
                     ? GameTokens.warning
-                    : GameTokens.secondaryText,
+                    : GameTokens.disabledText,
                 size: 48,
               ),
             ],
@@ -289,7 +289,7 @@ class _FlameHeader extends StatelessWidget {
                         fontSize: 48,
                         color: currentStreak > 0
                             ? GameTokens.warning
-                            : GameTokens.secondaryText,
+                            : GameTokens.disabledText,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -297,7 +297,7 @@ class _FlameHeader extends StatelessWidget {
                     Text(
                       'day streak',
                       style: GameTokens.bodyMedium.copyWith(
-                        color: GameTokens.secondaryText,
+                        color: GameTokens.disabledText,
                       ),
                     ),
                   ],
@@ -312,7 +312,7 @@ class _FlameHeader extends StatelessWidget {
                         shape: BoxShape.circle,
                         color: isActiveToday
                             ? GameTokens.success
-                            : GameTokens.secondaryText,
+                            : GameTokens.disabledText,
                       ),
                     ),
                     const SizedBox(width: 6),
@@ -379,7 +379,7 @@ class _StatCard extends StatelessWidget {
           Text(
             unit,
             style: GameTokens.bodySmall
-                .copyWith(color: GameTokens.secondaryText, fontSize: 10),
+                .copyWith(color: GameTokens.disabledText, fontSize: 10),
           ),
           const SizedBox(height: 2),
           Text(
@@ -419,7 +419,7 @@ class _MilestoneBadges extends StatelessWidget {
         Text(
           'STREAK MILESTONES',
           style: GameTokens.bodySmall.copyWith(
-            color: GameTokens.secondaryText,
+            color: GameTokens.disabledText,
             letterSpacing: 1.5,
             fontSize: 10,
           ),
@@ -513,7 +513,7 @@ class _ActivityHeatmap extends StatelessWidget {
                     d,
                     style: GameTokens.bodySmall.copyWith(
                       fontSize: 9,
-                      color: GameTokens.secondaryText,
+                      color: GameTokens.disabledText,
                     ),
                   ),
                 ),
@@ -542,7 +542,7 @@ class _ActivityHeatmap extends StatelessWidget {
                     monthLabel,
                     style: GameTokens.bodySmall.copyWith(
                       fontSize: 9,
-                      color: GameTokens.secondaryText,
+                      color: GameTokens.disabledText,
                     ),
                   ),
                 ),
@@ -572,7 +572,7 @@ class _ActivityHeatmap extends StatelessWidget {
                                   : GameTokens.surfaceVariant,
                           border: isToday
                               ? Border.all(
-                                  color: GameTokens.primaryText, width: 1.5)
+                                  color: GameTokens.surface, width: 1.5)
                               : null,
                           borderRadius: BorderRadius.circular(2),
                         ),
@@ -653,14 +653,14 @@ class _RecentActivityLog extends StatelessWidget {
                     Text(
                       _fullDate(date),
                       style: GameTokens.bodySmall.copyWith(
-                        color: GameTokens.primaryText,
+                        color: GameTokens.surface,
                         fontSize: 12,
                       ),
                     ),
                     Text(
                       relLabel,
                       style: GameTokens.bodySmall.copyWith(
-                        color: GameTokens.secondaryText,
+                        color: GameTokens.disabledText,
                         fontSize: 10,
                       ),
                     ),
