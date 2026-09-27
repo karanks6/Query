@@ -1,85 +1,106 @@
 import 'dart:ui';
+import 'dart:math' as math;
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:google_fonts/google_fonts.dart';
 
 import 'query_scene.dart';
-import '../components/glitch_overlay.dart';
 import 'dashboard_scene.dart';
 
+
 class SplashScene extends QueryScene with TapCallbacks {
-  late GlitchOverlayComponent glitchOverlay;
-  
-  late TextComponent _terminalText;
   late TextComponent _logoText;
+  late TextComponent _subtitleText;
   late TextComponent _tapToContinue;
   
   double _timeElapsed = 0;
   bool _isLogoRevealed = false;
   
-  final String _targetText = "> initializing QUERY protocol...\n> establishing secure connection...\n> ACCESS GRANTED.";
-  int _charCount = 0;
+  final Color _logoBaseColor = const Color(0xFFEFE6D5);
+  final Color _subtitleBaseColor = const Color(0xFFE59B28);
+  final Color _tapBaseColor = const Color(0xFFF9F5EA);
+
+  @override
+  bool containsLocalPoint(Vector2 point) => true; // Essential to receive taps on this Component!
 
   @override
   Future<void> onLoad() async {
-    glitchOverlay = GlitchOverlayComponent();
-    
-    _terminalText = TextComponent(
-      text: "",
-      position: Vector2(40, 40),
-      textRenderer: TextPaint(
-        style: GoogleFonts.firaCode(
-          color: const Color(0xFF00FF66),
-          fontSize: 16,
-        ),
-      ),
-    );
-    
     _logoText = TextComponent(
-      text: "QUERY",
+      text: "QUERY", // App name
       anchor: Anchor.center,
       textRenderer: TextPaint(
-        style: GoogleFonts.orbitron(
-          color: const Color(0xFF00F0FF),
+        style: GoogleFonts.nunitoSans(
+          color: _logoBaseColor.withValues(alpha: 0.0), // Parchment
           fontSize: 80,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w900,
           letterSpacing: 10,
           shadows: [
             const Shadow(
-              color: Color(0xFF00F0FF),
-              blurRadius: 20,
+              color: Color(0x80000000),
+              offset: Offset(0, 4),
+              blurRadius: 8,
             )
           ]
         ),
       ),
     );
-    _logoText.text = ""; // Invisible initially
 
-    _tapToContinue = TextComponent(
-      text: "TAP TO CONTINUE",
+    _subtitleText = TextComponent(
+      text: "TALES OF THE WILD",
       anchor: Anchor.center,
       textRenderer: TextPaint(
-        style: GoogleFonts.rajdhani(
-          color: const Color(0xFFE0E6ED),
+        style: GoogleFonts.quicksand(
+          color: _subtitleBaseColor.withValues(alpha: 0.0), // Amber Gold
           fontSize: 20,
-          letterSpacing: 4,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 8,
+          shadows: [
+            const Shadow(
+              color: Color(0x80000000),
+              offset: Offset(0, 2),
+              blurRadius: 4,
+            )
+          ]
         ),
       ),
     );
-    _tapToContinue.text = "";
 
-    add(_terminalText);
+    _tapToContinue = TextComponent(
+      text: "- TAP TO EXPLORE -",
+      anchor: Anchor.center,
+      textRenderer: TextPaint(
+        style: GoogleFonts.quicksand(
+          color: _tapBaseColor.withValues(alpha: 0.0),
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 2,
+        ),
+      ),
+    );
+
     add(_logoText);
+    add(_subtitleText);
     add(_tapToContinue);
-    add(glitchOverlay); // Must be added last to overlay everything
   }
 
   @override
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
-    _logoText.position = size / 2;
-    _tapToContinue.position = Vector2(size.x / 2, size.y / 2 + 100);
+    _logoText.position = Vector2(size.x / 2, size.y / 2 - 20);
+    _subtitleText.position = Vector2(size.x / 2, size.y / 2 + 40);
+    _tapToContinue.position = Vector2(size.x / 2, size.y / 2 + 120);
+  }
+
+  void _updateOpacity(TextComponent comp, Color baseColor, double opacity) {
+    if (comp.textRenderer is TextPaint) {
+      final style = (comp.textRenderer as TextPaint).style;
+      comp.textRenderer = TextPaint(
+        style: style.copyWith(
+          color: baseColor.withValues(alpha: opacity),
+        ),
+      );
+    }
   }
 
   @override
@@ -88,37 +109,29 @@ class SplashScene extends QueryScene with TapCallbacks {
     
     _timeElapsed += dt;
     
-    // Typewriter effect
+    // Smooth fade-in animation
     if (!_isLogoRevealed) {
-      int desiredChars = (_timeElapsed * 20).floor(); // 20 chars per second
-      if (desiredChars > _targetText.length) {
-        desiredChars = _targetText.length;
-      }
-      if (desiredChars > _charCount) {
-        _charCount = desiredChars;
-        _terminalText.text = _targetText.substring(0, _charCount) + (_charCount % 2 == 0 ? "_" : "");
-      }
-      
-      // After text finishes typing, trigger glitch and reveal logo
-      if (_charCount == _targetText.length && _timeElapsed > (_targetText.length / 20) + 0.5) {
+      if (_timeElapsed < 2.0) {
+        double opacity = (_timeElapsed / 2.0).clamp(0.0, 1.0);
+        _updateOpacity(_logoText, _logoBaseColor, opacity);
+        _updateOpacity(_subtitleText, _subtitleBaseColor, opacity);
+      } else {
         _isLogoRevealed = true;
-        glitchOverlay.trigger(0.5);
-        _terminalText.text = ""; // Hide terminal text
-        _logoText.text = "QUERY"; // Show logo
       }
     } else {
-      // Blinking tap to continue
-      _tapToContinue.text = (_timeElapsed * 2).floor() % 2 == 0 ? "TAP TO CONTINUE" : "";
+      // Gentle pulsing tap to continue
+      double pulse = (1.0 + math.sin(1.0 * _timeElapsed * 2.0)) / 2.0; 
+      _updateOpacity(_tapToContinue, _tapBaseColor, 0.4 + 0.6 * pulse);
     }
   }
 
   @override
   void onTapDown(TapDownEvent event) {
     if (_isLogoRevealed) {
-      game.pushScene(DashboardScene());
+      game.replaceScene(DashboardScene());
     } else {
-      // Skip typing
-      _timeElapsed = (_targetText.length / 20) + 0.5;
+      // Skip fade-in
+      _timeElapsed = 2.0;
     }
   }
 }
