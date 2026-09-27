@@ -29,6 +29,6 @@ class ScanLineComponent extends PositionComponent {
   @override
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
-    size = size; 
+    this.size = size; 
   }
 }

@@ -48,6 +48,6 @@ class GlitchOverlayComponent extends PositionComponent {
   @override
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
-    size = size; // Cover full screen
+    this.size = size; // Cover full screen
   }
 }

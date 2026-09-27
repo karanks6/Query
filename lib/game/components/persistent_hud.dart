@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/providers.dart';
 
 class PersistentHudComponent extends PositionComponent with RiverpodComponentMixin {
@@ -13,25 +14,23 @@ class PersistentHudComponent extends PositionComponent with RiverpodComponentMix
     _title = TextComponent(
       text: 'QUERY',
       textRenderer: TextPaint(
-        style: const TextStyle(
-          color: Colors.white,
-          fontFamily: 'Montserrat',
+        style: GoogleFonts.nunitoSans(
+          color: const Color(0xFFF9F5EA),
           fontWeight: FontWeight.w900,
-          fontStyle: FontStyle.italic,
-          fontSize: 24,
-          letterSpacing: 6,
-          shadows: [Shadow(color: Color(0x80FFCC00), offset: Offset(2, 2))],
+          fontSize: 20,
+          letterSpacing: 4,
+          shadows: [const Shadow(color: Color(0x80000000), offset: Offset(0, 2), blurRadius: 4)],
         ),
       ),
-      position: Vector2(16, 16),
+      position: Vector2(16, 56), // Shifted down by 40 for safe area
     );
 
     _playerName = TextComponent(
       text: '',
       textRenderer: TextPaint(
-        style: const TextStyle(
-          color: Colors.white,
-          fontFamily: 'Montserrat',
+        style: GoogleFonts.quicksand(
+          color: const Color(0xFFEFE6D5),
+          fontWeight: FontWeight.bold,
           fontSize: 14,
         ),
       ),
@@ -41,9 +40,9 @@ class PersistentHudComponent extends PositionComponent with RiverpodComponentMix
     _rankTitle = TextComponent(
       text: '',
       textRenderer: TextPaint(
-        style: const TextStyle(
-          color: Color(0xFFFFCC00),
-          fontFamily: 'JetBrainsMono',
+        style: GoogleFonts.quicksand(
+          color: const Color(0xFFE59B28), // Amber gold
+          fontWeight: FontWeight.w600,
           fontSize: 11,
         ),
       ),
@@ -72,16 +71,19 @@ class PersistentHudComponent extends PositionComponent with RiverpodComponentMix
   // ignore: avoid_renaming_method_parameters
   void onGameResize(Vector2 s) {
     super.onGameResize(s);
-    size = Vector2(s.x, 60);
-    _playerName.position = Vector2(s.x - 16, 16);
-    _rankTitle.position = Vector2(s.x - 16, 34);
+    size = Vector2(s.x, 100); // Increased height from 60 to 100 to account for 40px safe area
+    _playerName.position = Vector2(s.x - 16, 56);
+    _rankTitle.position = Vector2(s.x - 16, 74);
   }
 
   @override
   void render(Canvas canvas) {
-    final paint = Paint()..color = const Color(0xFF1E212D);
+    // Dark carved wood background
+    final paint = Paint()..color = const Color(0xFF2C1B10);
     canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), paint);
-    final borderPaint = Paint()..color = const Color(0x33FFCC00)..style = PaintingStyle.stroke;
+    
+    // Bottom border - parchment/gold
+    final borderPaint = Paint()..color = const Color(0xFFE59B28).withValues(alpha: 0.5)..style = PaintingStyle.stroke..strokeWidth = 2.0;
     canvas.drawLine(Offset(0, size.y), Offset(size.x, size.y), borderPaint);
   }
 }
