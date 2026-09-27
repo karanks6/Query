@@ -98,6 +98,7 @@ flutter:
     - assets/concept_cards/
     - assets/audio/terminal_classic/
     - assets/images/
+    - assets/images/chapters/
     - assets/reference/
 
   fonts:
