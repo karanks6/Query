@@ -26,34 +26,37 @@ class TabBarComponent extends PositionComponent with TapCallbacks {
   Future<void> onLoad() async {
     await super.onLoad();
     
+    // Parchment background
     _bg = RectangleComponent(
       size: size,
       paint: Paint()
-        ..color = const Color(0xFF0B0C10)
+        ..color = const Color(0xFFEFE6D5)
         ..style = PaintingStyle.fill,
     );
     add(_bg);
     
+    // Inner border
     _bg.add(RectangleComponent(
       size: size,
       paint: Paint()
-        ..color = const Color(0xFF00F0FF).withValues(alpha: 0.5)
+        ..color = const Color(0xFFD4C4A8)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1,
+        ..strokeWidth = 2,
     ));
 
+    // Wooden indicator
     _indicator = RectangleComponent(
       size: Vector2(size.x / 2, size.y),
       position: Vector2(state.queryMode == QueryMode.block ? 0 : size.x / 2, 0),
-      paint: Paint()..color = const Color(0xFF00F0FF).withValues(alpha: 0.2),
+      paint: Paint()..color = const Color(0xFFD48B3E).withValues(alpha: 0.3),
     );
     add(_indicator);
 
     _blockText = TextComponent(
-      text: 'BLOCK',
+      text: 'BLOCKS',
       textRenderer: TextPaint(
-        style: GoogleFonts.rajdhani(
-          color: state.queryMode == QueryMode.block ? const Color(0xFF00F0FF) : const Color(0xFF6B7A8F),
+        style: GoogleFonts.nunitoSans(
+          color: state.queryMode == QueryMode.block ? const Color(0xFF3D2817) : const Color(0xFF9E8B75),
           fontSize: 14,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.5,
@@ -65,10 +68,10 @@ class TabBarComponent extends PositionComponent with TapCallbacks {
     add(_blockText);
 
     _codeText = TextComponent(
-      text: 'CODE',
+      text: 'SCROLL',
       textRenderer: TextPaint(
-        style: GoogleFonts.rajdhani(
-          color: state.queryMode == QueryMode.code ? const Color(0xFF00F0FF) : const Color(0xFF6B7A8F),
+        style: GoogleFonts.nunitoSans(
+          color: state.queryMode == QueryMode.code ? const Color(0xFF3D2817) : const Color(0xFF9E8B75),
           fontSize: 14,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.5,
@@ -93,16 +96,16 @@ class TabBarComponent extends PositionComponent with TapCallbacks {
     _indicator.position.x += (targetX - _indicator.position.x) * 15 * dt;
     
     _blockText.textRenderer = TextPaint(
-      style: GoogleFonts.rajdhani(
-        color: state.queryMode == QueryMode.block ? const Color(0xFF00F0FF) : const Color(0xFF6B7A8F),
+      style: GoogleFonts.nunitoSans(
+        color: state.queryMode == QueryMode.block ? const Color(0xFF3D2817) : const Color(0xFF9E8B75),
         fontSize: 14,
         fontWeight: FontWeight.bold,
         letterSpacing: 1.5,
       ),
     );
     _codeText.textRenderer = TextPaint(
-      style: GoogleFonts.rajdhani(
-        color: state.queryMode == QueryMode.code ? const Color(0xFF00F0FF) : const Color(0xFF6B7A8F),
+      style: GoogleFonts.nunitoSans(
+        color: state.queryMode == QueryMode.code ? const Color(0xFF3D2817) : const Color(0xFF9E8B75),
         fontSize: 14,
         fontWeight: FontWeight.bold,
         letterSpacing: 1.5,
@@ -110,3 +113,4 @@ class TabBarComponent extends PositionComponent with TapCallbacks {
     );
   }
 }
+

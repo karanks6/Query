@@ -1,6 +1,5 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame/effects.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:google_fonts/google_fonts.dart';
 
@@ -19,82 +18,103 @@ class RunButtonComponent extends PositionComponent with TapCallbacks {
   void render(Canvas canvas) {
     if (size.x == 0 || size.y == 0) return;
 
-    final path = Path();
-    final chamfer = 12.0;
+    final RRect rrect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, 0, size.x, size.y),
+      const Radius.circular(16.0),
+    );
 
-    path.moveTo(chamfer, 0);
-    path.lineTo(size.x, 0);
-    path.lineTo(size.x, size.y - chamfer);
-    path.lineTo(size.x - chamfer, size.y);
-    path.lineTo(0, size.y);
-    path.lineTo(0, chamfer);
-    path.close();
+    // Drop shadow
+    if (!_isPressed) {
+      final shadowRRect = RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 4, size.x, size.y),
+        const Radius.circular(16.0),
+      );
+      final shadowPaint = Paint()..color = Colors.black.withValues(alpha: 0.25);
+      canvas.drawRRect(shadowRRect, shadowPaint);
+    }
 
-    final primaryColor = const Color(0xFF00FF66);
+    final primaryColor = const Color(0xFF4A7C59); // Forest green
 
     // Fill
     final bgPaint = Paint()
-      ..color = _isPressed 
-          ? primaryColor.withValues(alpha: 0.4) 
-          : primaryColor.withValues(alpha: 0.15)
+      ..color = _isPressed ? _darken(primaryColor, 0.1) : primaryColor
       ..style = PaintingStyle.fill;
     
-    canvas.drawPath(path, bgPaint);
+    if (_isPressed) {
+      canvas.save();
+      canvas.translate(0, 4);
+    }
 
-    // Stroke
-    final strokePaint = Paint()
-      ..color = primaryColor.withValues(alpha: _isPressed ? 1.0 : 0.8)
+    canvas.drawRRect(rrect, bgPaint);
+
+    final highlightPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.2)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = _isPressed ? 3.0 : 1.5;
-      
-    // Glow
-    final glowPaint = Paint()
-      ..color = primaryColor.withValues(alpha: _isPressed ? 1.0 : 0.4)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4.0
-      ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 8.0);
+      ..strokeWidth = 2.0;
+    
+    final highlightPath = Path()
+      ..moveTo(16, 2)
+      ..lineTo(size.x - 16, 2);
+    canvas.drawPath(highlightPath, highlightPaint);
 
-    canvas.drawPath(path, glowPaint);
-    canvas.drawPath(path, strokePaint);
-
-    // Draw text manually or use a child TextComponent? We can just use a child.
+    if (_isPressed) {
+      canvas.restore();
+    }
+  }
+  
+  Color _darken(Color color, double amount) {
+    assert(amount >= 0 && amount <= 1);
+    final hsl = HSLColor.fromColor(color);
+    final hslDark = hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
+    return hslDark.toColor();
   }
 
   @override
   Future<void> onLoad() async {
     await super.onLoad();
 
-    add(TextComponent(
-      text: 'EXECUTE',
+    final textComp = TextComponent(
+      text: 'RUN',
       textRenderer: TextPaint(
-        style: GoogleFonts.rajdhani(
-          color: const Color(0xFF00FF66),
-          fontSize: 18,
+        style: GoogleFonts.nunitoSans(
+          color: const Color(0xFFF9F5EA),
+          fontSize: 20,
           fontWeight: FontWeight.bold,
-          letterSpacing: 2.0,
+          letterSpacing: 1.5,
         ),
       ),
       position: Vector2(size.x / 2, size.y / 2),
       anchor: Anchor.center,
-    ));
+    );
+    add(textComp);
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    // Shift text down if pressed
+    final textComp = children.whereType<TextComponent>().firstOrNull;
+    if (textComp != null) {
+      textComp.position = Vector2(size.x / 2, (size.y / 2) + (_isPressed ? 4 : 0));
+    }
   }
 
   @override
   void onTapDown(TapDownEvent event) {
     _isPressed = true;
-    add(ScaleEffect.to(Vector2.all(0.95), EffectController(duration: 0.08)));
   }
 
   @override
   void onTapUp(TapUpEvent event) {
-    _isPressed = false;
-    add(ScaleEffect.to(Vector2.all(1.0), EffectController(duration: 0.08)));
-    onRun();
+    if (_isPressed) {
+      _isPressed = false;
+      onRun();
+    }
   }
 
   @override
   void onTapCancel(TapCancelEvent event) {
     _isPressed = false;
-    add(ScaleEffect.to(Vector2.all(1.0), EffectController(duration: 0.08)));
   }
 }
+

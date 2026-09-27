@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'block_workspace_component.dart';
 
 enum ClauseType {
@@ -19,14 +20,14 @@ enum ClauseType {
   
   Color get color {
     switch (this) {
-      case ClauseType.select: return const Color(0xFF39FF6A);
-      case ClauseType.from: return const Color(0xFF4ACFFF);
-      case ClauseType.join: return const Color(0xFFFFD54A);
-      case ClauseType.where: return const Color(0xFFFF9A6A);
-      case ClauseType.groupBy: return const Color(0xFFB06AFF);
-      case ClauseType.having: return const Color(0xFFFF6AB3);
-      case ClauseType.orderBy: return const Color(0xFF6ABFFF);
-      case ClauseType.limit: return const Color(0xFFAFFF6A);
+      case ClauseType.select: return const Color(0xFF4A7C59); // Green
+      case ClauseType.from: return const Color(0xFFD48B3E); // Amber
+      case ClauseType.join: return const Color(0xFF8B5A2B); // Brown
+      case ClauseType.where: return const Color(0xFFB55A30); // Rust
+      case ClauseType.groupBy: return const Color(0xFF5A7C8A); // Slate Blue
+      case ClauseType.having: return const Color(0xFF8A5A7C); // Plum
+      case ClauseType.orderBy: return const Color(0xFF6B8E23); // Olive
+      case ClauseType.limit: return const Color(0xFF8F9779); // Sage
     }
   }
 }
@@ -54,16 +55,35 @@ class DraggableBlockComponent extends PositionComponent with DragCallbacks, TapC
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    // Background
-    add(RectangleComponent(
-      size: size,
-      paint: Paint()..color = const Color(0xFF1E2128),
+    
+    // Background (Wood block)
+    final rrect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, 0, size.x, size.y),
+      const Radius.circular(8.0),
+    );
+    
+    add(_CustomRRectComponent(
+      rrect: rrect,
+      paint: Paint()..color = const Color(0xFFD4C4A8), // Light wood / parchment
     ));
     
-    // Keyword Box
-    add(RectangleComponent(
-      size: Vector2(size.x * 0.3, size.y),
-      paint: Paint()..color = type.color.withValues(alpha: 0.15),
+    add(_CustomRRectComponent(
+      rrect: rrect,
+      paint: Paint()
+        ..color = const Color(0xFF8B7355)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2,
+    ));
+    
+    // Keyword Box (Color coded)
+    final keywordRRect = RRect.fromRectAndCorners(
+      Rect.fromLTWH(0, 0, size.x * 0.3, size.y),
+      topLeft: const Radius.circular(8.0),
+      bottomLeft: const Radius.circular(8.0),
+    );
+    add(_CustomRRectComponent(
+      rrect: keywordRRect,
+      paint: Paint()..color = type.color.withValues(alpha: 0.8),
     ));
     
     // Keyword Text
@@ -72,11 +92,10 @@ class DraggableBlockComponent extends PositionComponent with DragCallbacks, TapC
       position: Vector2(size.x * 0.15, size.y / 2),
       anchor: Anchor.center,
       textRenderer: TextPaint(
-        style: TextStyle(
-          color: type.color,
+        style: GoogleFonts.nunitoSans(
+          color: const Color(0xFFF9F5EA),
           fontSize: 14,
-          fontWeight: FontWeight.bold,
-          fontFamily: 'JetBrainsMono',
+          fontWeight: FontWeight.w900,
         ),
       ),
     ));
@@ -87,10 +106,10 @@ class DraggableBlockComponent extends PositionComponent with DragCallbacks, TapC
       position: Vector2(size.x * 0.35, size.y / 2),
       anchor: Anchor.centerLeft,
       textRenderer: TextPaint(
-        style: TextStyle(
-          color: value.isEmpty ? Colors.white38 : Colors.white,
+        style: GoogleFonts.quicksand(
+          color: value.isEmpty ? const Color(0xFF8B7355).withValues(alpha: 0.6) : const Color(0xFF3D2817),
           fontSize: 14,
-          fontFamily: 'JetBrainsMono',
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -101,10 +120,10 @@ class DraggableBlockComponent extends PositionComponent with DragCallbacks, TapC
     value = newValue;
     _valueText.text = value.isEmpty ? type.keyword.toLowerCase() : value;
     _valueText.textRenderer = TextPaint(
-      style: TextStyle(
-        color: value.isEmpty ? Colors.white38 : Colors.white,
+      style: GoogleFonts.quicksand(
+        color: value.isEmpty ? const Color(0xFF8B7355).withValues(alpha: 0.6) : const Color(0xFF3D2817),
         fontSize: 14,
-        fontFamily: 'JetBrainsMono',
+        fontWeight: FontWeight.w700,
       ),
     );
   }
@@ -142,6 +161,18 @@ class DraggableBlockComponent extends PositionComponent with DragCallbacks, TapC
     } else if (originalPosition != null) {
       position = originalPosition!;
     }
+  }
+}
+
+class _CustomRRectComponent extends PositionComponent {
+  final RRect rrect;
+  final Paint paint;
+
+  _CustomRRectComponent({required this.rrect, required this.paint});
+
+  @override
+  void render(Canvas canvas) {
+    canvas.drawRRect(rrect, paint);
   }
 }
 

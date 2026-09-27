@@ -13,7 +13,7 @@ class BlockSlotComponent extends RectangleComponent {
             ..color = Colors.transparent
             ..style = PaintingStyle.stroke
             ..strokeWidth = 2
-            ..color = const Color(0xFF333333),
+            ..color = const Color(0xFFD4C4A8), // Light wood / parchment border
         );
 }
 
@@ -21,19 +21,27 @@ class BlockWorkspaceComponent extends PositionComponent with HasGameReference<Qu
   final List<DraggableBlockComponent> activeBlocks = [];
   final List<BlockSlotComponent> slots = [];
   late final RectangleComponent paletteBg;
+  late final RectangleComponent paletteBorder;
 
   @override
   Future<void> onLoad() async {
     await super.onLoad();
     size = game.size;
     
-    // Draw the palette area at the bottom
+    // Draw the palette area at the bottom (Wood/Dirt colored)
     paletteBg = RectangleComponent(
       size: Vector2(size.x, 100),
       position: Vector2(0, size.y - 100),
-      paint: Paint()..color = const Color(0xFF15171E),
+      paint: Paint()..color = const Color(0xFF3D2817),
     );
     add(paletteBg);
+    
+    paletteBorder = RectangleComponent(
+      size: Vector2(size.x, 4),
+      position: Vector2(0, size.y - 100),
+      paint: Paint()..color = const Color(0xFF5C3D2E),
+    );
+    add(paletteBorder);
     
     _initPaletteBlocks();
     _initSlots();
@@ -82,6 +90,9 @@ class BlockWorkspaceComponent extends PositionComponent with HasGameReference<Qu
     if (isLoaded) {
       paletteBg.size = Vector2(s.x, 100);
       paletteBg.position = Vector2(0, s.y - 100);
+      paletteBorder.size = Vector2(s.x, 4);
+      paletteBorder.position = Vector2(0, s.y - 100);
+      
       // Re-position palette blocks
       for (int i = 0; i < activeBlocks.length; i++) {
         final b = activeBlocks[i];
@@ -137,3 +148,4 @@ class BlockWorkspaceComponent extends PositionComponent with HasGameReference<Qu
     }
   }
 }
+

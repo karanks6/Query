@@ -2,7 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../data/content/models/level_model.dart';
-import '../ui/holo_panel.dart';
+import '../ui/parchment_panel.dart';
 
 class BriefingPanelComponent extends PositionComponent {
   final LevelModel level;
@@ -17,22 +17,21 @@ class BriefingPanelComponent extends PositionComponent {
   Future<void> onLoad() async {
     await super.onLoad();
     
-    // Background using HoloPanel
-    final panel = HoloPanelComponent(
+    // Background using ParchmentPanel
+    final panel = ParchmentPanel(
       size: size,
-      borderColor: const Color(0xFF00FF66),
     );
     add(panel);
 
     // "TARGET" header
     add(TextComponent(
-      text: 'MISSION BRIEFING',
+      text: 'TRAIL NOTES',
       textRenderer: TextPaint(
-        style: GoogleFonts.rajdhani(
-          color: const Color(0xFF00FF66),
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 2.0,
+        style: GoogleFonts.nunitoSans(
+          color: const Color(0xFF3D2817),
+          fontSize: 18,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.5,
         ),
       ),
       position: Vector2(16, 12),
@@ -42,10 +41,11 @@ class BriefingPanelComponent extends PositionComponent {
     add(TextBoxComponent(
       text: level.narrative,
       textRenderer: TextPaint(
-        style: GoogleFonts.firaCode(
-          color: const Color(0xFFE0E6ED),
+        style: GoogleFonts.quicksand(
+          color: const Color(0xFF5C3D2E),
           fontSize: 14,
           height: 1.4,
+          fontWeight: FontWeight.w600,
         ),
       ),
       boxConfig: TextBoxConfig(
@@ -56,3 +56,4 @@ class BriefingPanelComponent extends PositionComponent {
     ));
   }
 }
+
