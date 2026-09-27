@@ -13,7 +13,6 @@ import '../components/gameplay/icon_button_component.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/effects.dart';
 import '../effects/particle_effects.dart';
-import '../components/hex_grid_background.dart';
 
 import '../../main.dart'; // for navigatorKey
 import '../../features/hints/hints_modal.dart';
@@ -38,14 +37,20 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
   Future<void> onLoad() async {
     await super.onLoad();
     
-    // Background
-    add(HexGridBackground(hexColor: const Color(0xFF00FF66)));
+    // Background (Dark Wood base)
+    final bg = RectangleComponent(
+      size: game.size,
+      paint: Paint()..color = const Color(0xFF2C1B10), // Very dark wood
+    );
+    add(bg);
 
     // Add HUD
     hud = GameplayHudComponent(
       level: level,
       state: const GameplayState(),
-      onBackTap: () {},
+      onBackTap: () {
+        game.popScene();
+      },
     );
     add(hud);
 
@@ -54,7 +59,7 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
       state: const GameplayState(),
       onToggle: () {},
       size: Vector2(160, 40),
-      position: Vector2(game.size.x / 2 - 80, 68),
+      position: Vector2(game.size.x / 2 - 80, 108), // 68 + 40 safeArea
     );
     add(tabBar);
 
@@ -62,19 +67,20 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
     briefingPanel = BriefingPanelComponent(
       level: level,
       size: Vector2(game.size.x - 40, 140),
-      position: Vector2(20, 120),
+      position: Vector2(20, 160), // 120 + 40 safeArea
     );
     add(briefingPanel);
 
     // Action buttons (left side bottom)
-    final btnY = game.size.y - 70;
+    final btnY = game.size.y - 80; // slightly higher
     add(IconButtonComponent(
       label: 'HINT',
+      primaryColor: const Color(0xFF5A7C8A), // Slate blue for hint
       onTap: () {
         final state = ref.read(gameplayProvider);
         showModalBottomSheet(
           context: navigatorKey.currentContext!,
-          backgroundColor: const Color(0xFF15171E),
+          backgroundColor: const Color(0xFFEFE6D5),
           isScrollControlled: true,
           builder: (_) => HintsModal(
             hints: level.hints,
@@ -90,11 +96,12 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
 
     add(IconButtonComponent(
       label: 'SCHEMA',
+      primaryColor: const Color(0xFFD48B3E),
       onTap: () {
         showModalBottomSheet(
           context: navigatorKey.currentContext!,
           isScrollControlled: true,
-          backgroundColor: const Color(0xFF15171E),
+          backgroundColor: const Color(0xFFEFE6D5),
           builder: (_) => DraggableScrollableSheet(
             expand: false,
             initialChildSize: 0.6,
@@ -112,11 +119,12 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
 
     add(IconButtonComponent(
       label: 'HISTORY',
+      primaryColor: const Color(0xFF8B5A2B),
       onTap: () {
         showModalBottomSheet(
           context: navigatorKey.currentContext!,
           isScrollControlled: true,
-          backgroundColor: const Color(0xFF15171E),
+          backgroundColor: const Color(0xFFEFE6D5),
           builder: (_) => QueryHistorySheet(levelId: level.id),
         );
       },
@@ -133,8 +141,8 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
       onRun: () {
         ref.read(gameplayProvider.notifier).runQuery();
       },
-      size: Vector2(160, 48),
-      position: Vector2(game.size.x - 180, game.size.y - 70),
+      size: Vector2(120, 60), // slightly more compact
+      position: Vector2(game.size.x - 140, game.size.y - 90), // shifted up
     );
     add(runButton);
   }
@@ -166,11 +174,17 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
   @override
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
+    for (final child in children) {
+      if (child is RectangleComponent && child.paint.color == const Color(0xFF2C1B10)) {
+        child.size = size;
+        break;
+      }
+    }
     if (isLoaded) {
       briefingPanel.size = Vector2(size.x - 40, 140);
-      briefingPanel.position = Vector2(20, 120);
-      tabBar.position = Vector2(size.x / 2 - 80, 68);
-      runButton.position = Vector2(size.x - 180, size.y - 70);
+      briefingPanel.position = Vector2(20, 160);
+      tabBar.position = Vector2(size.x / 2 - 80, 108);
+      runButton.position = Vector2(size.x - 140, size.y - 90);
       // Ideally update icon buttons positions here too
     }
   }
@@ -199,7 +213,7 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
       _lastStatus = currentStatus;
       if (currentStatus == GameplayStatus.success) {
         // Success Explosion from center of screen
-        add(ParticleEffects.successExplosion(game.size / 2));
+        add(ParticleEffects.successExplosion(game.size / 2.0));
         
         // Push VictoryScene after a short delay to see explosion
         Future.delayed(const Duration(seconds: 1), () {
@@ -208,7 +222,7 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
             VictoryScene(
               level: level,
               state: state,
-              onNextLevel: () async {
+              onNextLevel: () {
                  // Dummy transition for now since we removed Flutter Navigator
                  game.popScene();
               },
@@ -225,7 +239,7 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
         });
       } else if (currentStatus == GameplayStatus.failed) {
         // Error sparks from run button
-        add(ParticleEffects.errorSparks(runButton.position + runButton.size / 2));
+        add(ParticleEffects.errorSparks(runButton.position + runButton.size / 2.0));
         
         // Shake run button
         runButton.add(

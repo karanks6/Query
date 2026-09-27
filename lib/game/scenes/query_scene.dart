@@ -5,5 +5,5 @@ abstract class QueryScene extends Component with HasGameReference<QueryGame> {
   Future<void> onEnter() async {}
   Future<void> onExit() async {}
   
-  List<String> get activeOverlays => ['flutter_ui'];
+  List<String> get activeOverlays => [];
 }
