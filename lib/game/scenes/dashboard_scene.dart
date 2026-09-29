@@ -13,6 +13,7 @@ import '../components/persistent_hud.dart';
 import '../components/ui/wood_button.dart';
 import '../components/ui/parchment_panel.dart';
 import '../../core/providers.dart';
+import '../../core/settings/settings_service.dart';
 import '../../data/content/level_loader.dart';
 
 class DashboardScene extends QueryScene with RiverpodComponentMixin {
@@ -26,6 +27,8 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
   int initialStreak = 0;
   int initialXp = 0;
   int initialAchievements = 0;
+  
+  _StatsRowComponent? _statsRow;
 
   @override
   Future<void> onLoad() async { 
@@ -47,6 +50,10 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
     add(layoutContainer);
 
     try {
+      final prefs = ref.read(sharedPreferencesProvider);
+      final playerDao = ref.read(playerDaoProvider);
+      await playerDao.checkDailyStreak(prefs);
+
       final profile = await ref.read(playerProfileProvider.future);
       if (profile != null) {
         initialStreak = profile.streakCount;
@@ -74,6 +81,27 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
     }
 
     _buildLayout();
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+    addToGameWidgetBuild(() {
+      ref.listen(playerProfileProvider, (previous, next) {
+        if (next.hasValue && next.value != null) {
+          _statsRow?.updateStats(
+            streak: next.value!.streakCount,
+            xp: next.value!.totalXp,
+          );
+        }
+      });
+      
+      ref.listen(allAchievementsProvider, (previous, next) {
+        if (next.hasValue) {
+          _statsRow?.updateStats(achievements: next.value!.length);
+        }
+      });
+    });
   }
 
   void _buildLayout() { 
@@ -129,14 +157,14 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
 
     // 1.5 Stats Row
     final statsHeight = 40.0;
-    final statsRow = _StatsRowComponent(
+    _statsRow = _StatsRowComponent(
       initialStreak: initialStreak,
       initialXp: initialXp,
       initialAchievements: initialAchievements,
       size: Vector2(contentWidth, statsHeight),
       position: Vector2(centerX - contentWidth / 2, yPos),
     );
-    layoutContainer.add(statsRow); 
+    layoutContainer.add(_statsRow!); 
     print('DEBUG: statsRow added');
     yPos += statsHeight + 16;
 
@@ -327,6 +355,12 @@ class _StatsRowComponent extends PositionComponent {
     required super.size,
     required super.position,
   });
+
+  void updateStats({int? streak, int? xp, int? achievements}) {
+    if (streak != null) _streakText.text = '🔥 $streak';
+    if (xp != null) _xpText.text = '✨ $xp XP';
+    if (achievements != null) _achText.text = '🏆 $achievements';
+  }
 
   @override
   Future<void> onLoad() async { 
