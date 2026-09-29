@@ -86,9 +86,6 @@ class _AchievementsScreenState extends ConsumerState<AchievementsScreen> with Si
             for (final e in earnedList)
               e.achievementId: DateTime.fromMillisecondsSinceEpoch(e.earnedAt),
           };
-          
-          final earnedCount = earnedMap.length;
-          final totalCount = kAchievements.length;
 
           return Column(
             children: [
