@@ -1,4 +1,4 @@
-import 'package:sqlite3/sqlite3.dart';
+import 'package:query/core/sandbox_engine/sqlite_facade/sqlite_facade.dart';
 import 'validation_result.dart';
 
 /// Layer 1: Syntax validation.
