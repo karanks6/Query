@@ -11,6 +11,7 @@ class WoodButton extends PositionComponent with TapCallbacks {
   final Color primaryColor;
   final Color textColor;
   final bool hasIcon;
+  final double? fontSize;
 
   bool _isPressed = false;
 
@@ -21,6 +22,7 @@ class WoodButton extends PositionComponent with TapCallbacks {
     this.primaryColor = const Color(0xFF4A7C59), // Forest Green
     this.textColor = const Color(0xFFF9F5EA), // Parchment cream
     this.hasIcon = false,
+    this.fontSize,
     super.position,
     Vector2? size,
   }) : super(size: size ?? Vector2(200, 60));
@@ -126,7 +128,7 @@ class WoodButton extends PositionComponent with TapCallbacks {
       textRenderer: TextPaint(
         style: GoogleFonts.nunitoSans(
           color: textColor,
-          fontSize: secondaryText != null ? 18 : 22,
+          fontSize: fontSize ?? (secondaryText != null ? 18 : 22),
           fontWeight: FontWeight.w900,
           letterSpacing: 1.2,
           shadows: [
