@@ -3,6 +3,7 @@ import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
 import 'draggable_block_component.dart';
 import '../../query_game.dart';
+import '../../../main.dart';
 
 class BlockSlotComponent extends RectangleComponent {
   DraggableBlockComponent? attachedBlock;
@@ -51,10 +52,8 @@ class BlockWorkspaceComponent extends PositionComponent with HasGameReference<Qu
     // Add some initial blocks to the palette
     final selectBlock = DraggableBlockComponent(
       type: ClauseType.select,
-      onTapBlock: (block) {
-        // trigger flutter overlay
-      },
-      size: Vector2(120, 40),
+      onTapBlock: _showTextInputDialog,
+      size: Vector2(150, 40),
       position: Vector2(20, size.y - 80),
     );
     add(selectBlock);
@@ -62,8 +61,8 @@ class BlockWorkspaceComponent extends PositionComponent with HasGameReference<Qu
     
     final fromBlock = DraggableBlockComponent(
       type: ClauseType.from,
-      onTapBlock: (block) {},
-      size: Vector2(120, 40),
+      onTapBlock: _showTextInputDialog,
+      size: Vector2(150, 40),
       position: Vector2(160, size.y - 80),
     );
     add(fromBlock);
@@ -75,7 +74,7 @@ class BlockWorkspaceComponent extends PositionComponent with HasGameReference<Qu
     for (int i = 0; i < 4; i++) {
       final slot = BlockSlotComponent(
         size: Vector2(200, 50),
-        position: Vector2(20, 240 + (i * 60)), // Positioned below briefing
+        position: Vector2(20, 320 + (i * 60)), // Positioned below briefing
       );
       add(slot);
       slots.add(slot);
@@ -97,11 +96,52 @@ class BlockWorkspaceComponent extends PositionComponent with HasGameReference<Qu
       for (int i = 0; i < activeBlocks.length; i++) {
         final b = activeBlocks[i];
         if (b.originalPosition != null && b.originalPosition!.y > s.y - 120) {
-          b.position = Vector2(20.0 + (i * 140.0), s.y - 80);
+          b.position = Vector2(20.0 + (i * 170.0), s.y - 80);
           b.originalPosition = b.position.clone();
         }
       }
     }
+  }
+
+  void _showTextInputDialog(DraggableBlockComponent block) {
+    final ctx = navigatorKey.currentContext;
+    if (ctx == null) return;
+    
+    final controller = TextEditingController(text: block.value);
+    showDialog(
+      context: ctx,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFFEFE6D5),
+          title: Text('Edit ${block.type.keyword}'),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Enter value...',
+            ),
+            onSubmitted: (val) {
+              block.updateValue(val);
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('CANCEL'),
+            ),
+            TextButton(
+              onPressed: () {
+                block.updateValue(controller.text);
+                Navigator.pop(context);
+              },
+              child: const Text('SAVE'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void handleBlockDragEnd(DraggableBlockComponent block) {
