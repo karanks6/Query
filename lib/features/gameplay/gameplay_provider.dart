@@ -269,7 +269,6 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
 
     // Check world unlock
     await progressDao.checkAndUnlockNextWorld(level.worldId);
-    final currentWorldProg = await progressDao.getWorldProgress(level.worldId);
 
     // Achievement engine — collect newly unlocked IDs
     final newAchievements = <String>[];
