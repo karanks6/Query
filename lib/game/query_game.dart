@@ -1,5 +1,4 @@
 import 'package:flame/game.dart';
-import 'package:flame/events.dart';
 import 'package:flame/components.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
