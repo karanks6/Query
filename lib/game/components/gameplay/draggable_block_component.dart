@@ -77,7 +77,7 @@ class DraggableBlockComponent extends PositionComponent with DragCallbacks, TapC
     
     // Keyword Box (Color coded)
     final keywordRRect = RRect.fromRectAndCorners(
-      Rect.fromLTWH(0, 0, size.x * 0.3, size.y),
+      Rect.fromLTWH(0, 0, size.x * 0.45, size.y),
       topLeft: const Radius.circular(8.0),
       bottomLeft: const Radius.circular(8.0),
     );
@@ -89,7 +89,7 @@ class DraggableBlockComponent extends PositionComponent with DragCallbacks, TapC
     // Keyword Text
     add(TextComponent(
       text: type.keyword,
-      position: Vector2(size.x * 0.15, size.y / 2),
+      position: Vector2(size.x * 0.22, size.y / 2),
       anchor: Anchor.center,
       textRenderer: TextPaint(
         style: GoogleFonts.nunitoSans(
@@ -103,7 +103,7 @@ class DraggableBlockComponent extends PositionComponent with DragCallbacks, TapC
     // Value Text
     _valueText = TextComponent(
       text: value.isEmpty ? type.keyword.toLowerCase() : value,
-      position: Vector2(size.x * 0.35, size.y / 2),
+      position: Vector2(size.x * 0.5, size.y / 2),
       anchor: Anchor.centerLeft,
       textRenderer: TextPaint(
         style: GoogleFonts.quicksand(
