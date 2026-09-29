@@ -1,5 +1,8 @@
+import 'dart:collection';
+
 class Database {
   void execute(String sql, [List<Object?> parameters = const []]) {}
+  ResultSet select(String sql, [List<Object?> parameters = const []]) => ResultSet();
   PreparedStatement prepare(String sql, {bool persistent = false, bool v2 = true}) => PreparedStatement();
   void dispose() {}
 }
@@ -9,9 +12,15 @@ class PreparedStatement {
   void dispose() {}
 }
 
-class ResultSet {
+class ResultSet extends IterableBase<Map<String, dynamic>> {
   List<String> get columnNames => [];
   List<List<dynamic>> get rows => [];
+  
+  @override
+  Iterator<Map<String, dynamic>> get iterator => <Map<String, dynamic>>[].iterator;
+  
+  @override
+  bool get isEmpty => true;
   
   @override
   String toString() => '';
