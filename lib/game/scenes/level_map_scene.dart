@@ -4,6 +4,7 @@ import 'package:flutter/material.dart' hide Image;
 import 'package:google_fonts/google_fonts.dart';
 
 import 'query_scene.dart';
+import 'package:flame/parallax.dart';
 import '../components/ui/wood_button.dart';
 import '../components/ui/dirt_trail_component.dart';
 import 'gameplay_scene.dart';
@@ -24,11 +25,10 @@ class LevelMapScene extends QueryScene with DragCallbacks {
   @override
   Future<void> onLoad() async {
     // Parchment background
-    final bg = RectangleComponent(
-      size: game.size,
-      paint: Paint()..color = const Color(0xFFEFE6D5),
-    );
-    add(bg);
+    final bg = await ParallaxComponent.load([ParallaxImageData("jungle_pattern.jpg")], baseVelocity: Vector2(0, -5), repeat: ImageRepeat.repeat); bg.size = game.size; add(bg); final overlay = RectangleComponent(size: game.size, paint: Paint()..color = const Color(0x99000000)); add(overlay);
+
+    scrollContainer = PositionComponent(size: game.size);
+    add(scrollContainer);
 
     final title = TextComponent(
       text: worldId.toUpperCase().replaceAll('_', ' '),
@@ -36,30 +36,29 @@ class LevelMapScene extends QueryScene with DragCallbacks {
       anchor: Anchor.center,
       textRenderer: TextPaint(
         style: GoogleFonts.nunitoSans(
-          color: const Color(0xFF3D2817),
+          color: const Color(0xFFEFE6D5),
           fontSize: 32,
           fontWeight: FontWeight.w900,
           letterSpacing: 1.5,
         ),
       ),
     );
-    add(title);
+    scrollContainer.add(title);
 
     final backBtn = WoodButton(
       text: '< BACK TO MAP',
       size: Vector2(180, 50),
       position: Vector2((game.size.x - 180) / 2, 110),
       primaryColor: const Color(0xFFD4C4A8),
-      textColor: const Color(0xFF3D2817),
+      textColor: const Color(0xFFEFE6D5),
       fontSize: 16,
       onPressed: () {
         game.popScene();
       },
     );
-    add(backBtn);
+    scrollContainer.add(backBtn);
 
-    scrollContainer = PositionComponent(size: game.size);
-    add(scrollContainer);
+
 
     final circuitPath = DirtTrailComponent();
     scrollContainer.add(circuitPath);
@@ -122,4 +121,6 @@ class LevelMapScene extends QueryScene with DragCallbacks {
     }
   }
 }
+
+
 
