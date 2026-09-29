@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sqlite3/sqlite3.dart' as sqlite;
+import 'package:query/core/sandbox_engine/sqlite_facade/sqlite_facade.dart' as sqlite;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../theming/tokens/game_tokens.dart';
