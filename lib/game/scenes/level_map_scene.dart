@@ -19,6 +19,9 @@ class LevelMapScene extends QueryScene with DragCallbacks {
   LevelMapScene({required this.worldId});
 
   @override
+  bool containsLocalPoint(Vector2 point) => true;
+
+  @override
   Future<void> onLoad() async {
     // Parchment background
     final bg = RectangleComponent(
@@ -48,6 +51,7 @@ class LevelMapScene extends QueryScene with DragCallbacks {
       position: Vector2((game.size.x - 180) / 2, 110),
       primaryColor: const Color(0xFFD4C4A8),
       textColor: const Color(0xFF3D2817),
+      fontSize: 16,
       onPressed: () {
         game.popScene();
       },
