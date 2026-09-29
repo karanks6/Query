@@ -13,6 +13,10 @@ class WorldSelectScene extends QueryScene with DragCallbacks {
   late PositionComponent scrollContainer;
   double _scrollY = 0;
   double _maxScroll = 0;
+
+  @override
+  bool containsLocalPoint(Vector2 point) => true;
+
   @override
   Future<void> onLoad() async {
     // Parchment background
@@ -63,6 +67,7 @@ class WorldSelectScene extends QueryScene with DragCallbacks {
       position: Vector2((game.size.x - 180) / 2, 110),
       primaryColor: const Color(0xFFD4C4A8),
       textColor: const Color(0xFF3D2817),
+      fontSize: 16,
       onPressed: () {
         game.popScene();
       },
