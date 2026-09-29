@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sqlite3/sqlite3.dart' as sqlite;
+import 'package:query/core/sandbox_engine/sqlite_facade/sqlite_facade.dart' as sqlite;
 import '../../../theming/tokens/game_tokens.dart';
 import '../../../theming/components/slanted_panel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
