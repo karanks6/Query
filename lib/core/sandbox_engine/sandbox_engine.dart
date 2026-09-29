@@ -1,4 +1,4 @@
-import 'package:sqlite3/sqlite3.dart';
+import 'package:query/core/sandbox_engine/sqlite_facade/sqlite_facade.dart';
 import 'statement_whitelist.dart';
 import '../validation/validation_result.dart';
 
