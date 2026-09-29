@@ -61,6 +61,7 @@ class GameplayHudComponent extends PositionComponent {
       size: Vector2(80, 40),
       position: Vector2(10, 10 + safeAreaTop),
       primaryColor: const Color(0xFF7A6B5D),
+      fontSize: 16,
       onPressed: onBackTap,
     );
     add(backBtn);
