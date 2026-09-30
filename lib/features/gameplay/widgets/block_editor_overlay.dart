@@ -89,7 +89,7 @@ class _BlockEditorOverlayState extends State<BlockEditorOverlay> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                   blurRadius: 10,
                   offset: const Offset(0, 5),
                 )
@@ -99,7 +99,7 @@ class _BlockEditorOverlayState extends State<BlockEditorOverlay> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'DEFINE \',
+                  'DEFINE $keyword',
                   style: GoogleFonts.cinzel(
                     color: const Color(0xFF3D2817),
                     fontSize: 22,
