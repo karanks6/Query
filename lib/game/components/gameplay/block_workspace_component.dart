@@ -19,6 +19,7 @@ class BlockSlotComponent extends RectangleComponent {
 }
 
 class BlockWorkspaceComponent extends PositionComponent with HasGameReference<QueryGame> {
+  DraggableBlockComponent? editingBlock;
   final List<DraggableBlockComponent> activeBlocks = [];
   final List<BlockSlotComponent> slots = [];
   late final RectangleComponent paletteBg;
@@ -104,44 +105,8 @@ class BlockWorkspaceComponent extends PositionComponent with HasGameReference<Qu
   }
 
   void _showTextInputDialog(DraggableBlockComponent block) {
-    final ctx = navigatorKey.currentContext;
-    if (ctx == null) return;
-    
-    final controller = TextEditingController(text: block.value);
-    showDialog(
-      context: ctx,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFFEFE6D5),
-          title: Text('Edit ${block.type.keyword}'),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Enter value...',
-            ),
-            onSubmitted: (val) {
-              block.updateValue(val);
-              Navigator.pop(context);
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('CANCEL'),
-            ),
-            TextButton(
-              onPressed: () {
-                block.updateValue(controller.text);
-                Navigator.pop(context);
-              },
-              child: const Text('SAVE'),
-            ),
-          ],
-        );
-      },
-    );
+    editingBlock = block;
+    game.overlays.add('block_editor');
   }
 
   void handleBlockDragEnd(DraggableBlockComponent block) {
