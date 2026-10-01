@@ -16,13 +16,28 @@ class GameplayScreenOverlay extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(gameplayProvider);
-    if (state.level == null) return const SizedBox.shrink();
+    if (state.level == null) {
+      return const Positioned.fill(
+        child: Center(
+          child: Material(
+            color: Colors.red,
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'LOADING LEVEL...',
+                style: TextStyle(color: Colors.white, fontSize: 24),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     final hasResults = state.lastReport?.resultRows != null;
 
-    return Material(
-      type: MaterialType.transparency,
-      child: SizedBox.expand(
+    return Positioned.fill(
+      child: Material(
+        type: MaterialType.transparency,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
