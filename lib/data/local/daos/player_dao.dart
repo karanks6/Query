@@ -40,10 +40,6 @@ class PlayerDao extends DatabaseAccessor<AppDatabase> with _$PlayerDaoMixin {
       rankTitle: Value(newRank),
     ));
 
-    if (achievementsDao != null && newXp >= 500) {
-      await achievementsDao.awardAchievement('rank_silver');
-    }
-    
     // Sync to global leaderboard (fire-and-forget)
     try {
       final lbService = LeaderboardService();

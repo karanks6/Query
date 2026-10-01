@@ -3,7 +3,6 @@ import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
 import 'draggable_block_component.dart';
 import '../../query_game.dart';
-import '../../../main.dart';
 
 class BlockSlotComponent extends RectangleComponent {
   DraggableBlockComponent? attachedBlock;

@@ -32,7 +32,6 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
 
   @override
   Future<void> onLoad() async { 
-    print('DEBUG: _StatsRowComponent.onLoad started');
     // Warm wood desk background (gradient-like via multiple rectangles or just solid)
     final bg = RectangleComponent(
       size: game.size,
@@ -105,7 +104,6 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
   }
 
   void _buildLayout() { 
-    print('DEBUG: _buildLayout started');
     final availableWidth = game.size.x;
     final contentWidth = availableWidth > 440 ? 400.0 : availableWidth - 32;
     final centerX = availableWidth / 2;
@@ -164,8 +162,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
       size: Vector2(contentWidth, statsHeight),
       position: Vector2(centerX - contentWidth / 2, yPos),
     );
-    layoutContainer.add(_statsRow!); 
-    print('DEBUG: statsRow added');
+    layoutContainer.add(_statsRow!);
     yPos += statsHeight + 16;
 
     // 2. EXPEDITION MAP (Journal Folio)
@@ -265,7 +262,6 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
     journal.add(discBg);
 
     layoutContainer.add(journal); 
-    print('DEBUG: journal added');
     yPos += journalHeight + 20;
 
     // 3. Action Buttons
@@ -364,7 +360,6 @@ class _StatsRowComponent extends PositionComponent {
 
   @override
   Future<void> onLoad() async { 
-    print('DEBUG: _StatsRowComponent.onLoad started');
     final bg = _RoundedPlaqueComponent(size: size);
     add(bg);
 
