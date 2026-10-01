@@ -30,13 +30,13 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
   late BriefingPanelComponent briefingPanel;
   late RunButtonComponent runButton;
   late TabBarComponent tabBar;
-  
+
   GameplayScene({required this.level});
 
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    
+
     // Background (Dark Wood base)
     final bg = RectangleComponent(
       size: game.size,
@@ -86,7 +86,8 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
             hints: level.hints,
             highestUsed: state.highestHintUsed,
             attemptCount: state.attemptCount,
-            onHintUsed: (tier) async => await ref.read(gameplayProvider.notifier).useHint(tier),
+            onHintUsed: (tier) async =>
+                await ref.read(gameplayProvider.notifier).useHint(tier),
           ),
         );
       },
@@ -148,21 +149,26 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
   @override
   Future<void> onEnter() async {
     super.onEnter();
-    // Load level into state
-    ref.read(gameplayProvider.notifier).loadLevel(level);
-
-    if (level.type == LevelType.tutorial || level.levelNumber == 1) {
-      showDialog(
-        context: navigatorKey.currentContext!,
-        barrierDismissible: false,
-        builder: (ctx) => ConceptLessonDialog(level: level),
-      );
-    }
   }
 
   @override
   void onMount() {
     super.onMount();
+
+    // Load level into state (must be done in onMount or later so `ref` is available)
+    ref.read(gameplayProvider.notifier).loadLevel(level);
+
+    if (level.type == LevelType.tutorial || level.levelNumber == 1) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (navigatorKey.currentContext != null) {
+          showDialog(
+            context: navigatorKey.currentContext!,
+            barrierDismissible: false,
+            builder: (ctx) => ConceptLessonDialog(level: level),
+          );
+        }
+      });
+    }
     // Wire up tab bar toggle now that ref is available
     tabBar.onToggleCallback = () {
       ref.read(gameplayProvider.notifier).toggleQueryMode();
@@ -173,7 +179,8 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
     for (final child in children) {
-      if (child is RectangleComponent && child.paint.color == const Color(0xFF2C1B10)) {
+      if (child is RectangleComponent &&
+          child.paint.color == const Color(0xFF2C1B10)) {
         child.size = size;
         break;
       }
@@ -191,7 +198,8 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
 
   GameplayStatus _deriveStatus(GameplayState state) {
     if (state.levelCompleted) return GameplayStatus.success;
-    if (state.lastReport != null && !state.lastReport!.isComplete) return GameplayStatus.failed;
+    if (state.lastReport != null && !state.lastReport!.isComplete)
+      return GameplayStatus.failed;
     if (state.sandboxError != null) return GameplayStatus.failed;
     return GameplayStatus.initial;
   }
@@ -207,7 +215,7 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
       if (currentStatus == GameplayStatus.success) {
         // Success Explosion from center of screen
         add(ParticleEffects.successExplosion(game.size / 2.0));
-        
+
         // Push VictoryScene after a short delay to see explosion
         Future.delayed(const Duration(seconds: 1), () {
           if (!isMounted) return;
@@ -216,8 +224,8 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
               level: level,
               state: state,
               onNextLevel: () {
-                 // Dummy transition for now since we removed Flutter Navigator
-                 game.popScene();
+                // Dummy transition for now since we removed Flutter Navigator
+                game.popScene();
               },
               onReplay: () {
                 game.popScene();
@@ -232,8 +240,9 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
         });
       } else if (currentStatus == GameplayStatus.failed) {
         // Error sparks from run button
-        add(ParticleEffects.errorSparks(runButton.position + runButton.size / 2.0));
-        
+        add(ParticleEffects.errorSparks(
+            runButton.position + runButton.size / 2.0));
+
         // Shake run button
         runButton.add(
           MoveEffect.by(
@@ -252,4 +261,3 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
   @override
   List<String> get activeOverlays => ['flutter_code_editor'];
 }
-
