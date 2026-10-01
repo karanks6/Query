@@ -4,7 +4,7 @@ import 'query_scene.dart';
 
 import 'package:flame_riverpod/flame_riverpod.dart';
 import '../../features/gameplay/gameplay_provider.dart';
-import '../components/gameplay/block_workspace_component.dart';
+// BlockWorkspaceComponent removed — input is now handled by FlutterBlockWorkspace
 import '../components/gameplay/gameplay_hud_component.dart';
 import '../components/gameplay/briefing_panel_component.dart';
 import '../components/gameplay/run_button_component.dart';
@@ -25,7 +25,7 @@ enum GameplayStatus { initial, success, failed }
 
 class GameplayScene extends QueryScene with RiverpodComponentMixin {
   final LevelModel level;
-  late BlockWorkspaceComponent blockWorkspace;
+
   late GameplayHudComponent hud;
   late BriefingPanelComponent briefingPanel;
   late RunButtonComponent runButton;
@@ -132,9 +132,7 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
       position: Vector2(170, btnY),
     ));
 
-    // Add Block Workspace
-    blockWorkspace = BlockWorkspaceComponent();
-    add(blockWorkspace);
+    // Block workspace is now handled by FlutterBlockWorkspace (Flutter overlay)
 
     // Add Run Button
     runButton = RunButtonComponent(
@@ -202,11 +200,6 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
   void update(double dt) {
     super.update(dt);
     final state = ref.read(gameplayProvider);
-    if (state.queryMode == QueryMode.block) {
-      blockWorkspace.priority = 10;
-    } else {
-      blockWorkspace.priority = -10;
-    }
 
     final currentStatus = _deriveStatus(state);
     if (currentStatus != _lastStatus) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../gameplay_provider.dart';
+import '../../../main.dart'; // for navigatorKey
 
 class FlutterBlockWorkspace extends ConsumerStatefulWidget {
   const FlutterBlockWorkspace({super.key});
@@ -36,11 +37,15 @@ class _FlutterBlockWorkspaceState extends ConsumerState<FlutterBlockWorkspace> {
   Future<void> _editClause(int index) async {
     if (index < 0 || index >= _query.length) return;
     final clause = _query[index];
+    // Use the root navigator context so the bottom sheet can open from
+    // within the GameWidget overlay (which has no own Navigator).
+    final ctx = navigatorKey.currentContext;
+    if (ctx == null) return;
     final result = await showModalBottomSheet<String>(
-      context: context,
+      context: ctx,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => _GameInputSheet(
+      builder: (bsCtx) => _GameInputSheet(
         keyword: clause.type.keyword,
         initialValue: clause.value,
         hint: clause.type.hint,
@@ -62,7 +67,8 @@ class _FlutterBlockWorkspaceState extends ConsumerState<FlutterBlockWorkspace> {
       ..sort((a, b) => a.type.sortOrder.compareTo(b.type.sortOrder));
     final parts = sorted.map((c) {
       final v = c.value.trim();
-      return v.isNotEmpty ? ' ' : c.type.keyword;
+      // Build valid SQL clause: "SELECT *" or "FROM users" etc.
+      return v.isNotEmpty ? '${c.type.keyword} $v' : c.type.keyword;
     }).toList();
     ref.read(gameplayProvider.notifier).updateQuery(parts.join('\n'));
   }
