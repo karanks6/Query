@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../gameplay_provider.dart';
@@ -26,7 +26,7 @@ class _FlutterBlockWorkspaceState extends ConsumerState<FlutterBlockWorkspace> {
   void _addClause(_ClauseType type) {
     setState(() {
       if ((type == _ClauseType.select || type == _ClauseType.from) &&
-          _query.any((c) => c.type == type)) return;
+          _query.any((c) => c.type == type)) { return; }
       _query.add(_ClausePair(type: type, value: ''));
     });
     final idx = _query.lastIndexWhere((c) => c.type == type);
