@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../gameplay_provider.dart';
@@ -342,11 +342,7 @@ class _InputSheetState extends State<_InputSheet> {
           color: const Color(0xFFEFE6D5),
           borderRadius:
               const BorderRadius.vertical(top: Radius.circular(20)),
-          border: Border(
-            top: BorderSide(color: c, width: 3),
-            left: BorderSide(color: c.withValues(alpha: 0.5), width: 2),
-            right: BorderSide(color: c.withValues(alpha: 0.5), width: 2),
-          ),
+          border: Border.all(color: c, width: 3),
         ),
         padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
         child: Column(
