@@ -1,10 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/validation/query_validator.dart';
 import '../../core/validation/validation_result.dart';
 import '../../core/sandbox_engine/sandbox_engine.dart';
 import '../../core/scoring/level_scorer.dart';
 import '../../data/content/models/level_model.dart';
 import '../../core/providers.dart';
+import '../../core/settings/settings_service.dart';
 import '../achievements/achievements_screen.dart';
 
 // ─── Query mode ───────────────────────────────────────────────────────────────
@@ -267,6 +269,14 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
     await playerDao.addXp(score.xpEarned, achievementsDao: achievementsDao);
     await playerDao.earnInsightPoints(score.xpEarned ~/ 5);
 
+    // ── Update daily streak on every level completion ──────────────────────────
+    // This is the primary place streak is updated so it reflects immediately
+    // in the in-game HUD and in the dashboard when the user returns.
+    try {
+      final prefs = _ref.read(sharedPreferencesProvider);
+      await playerDao.checkDailyStreak(prefs, achievementsDao: achievementsDao);
+    } catch (_) {}
+
     // Check world unlock
     await progressDao.checkAndUnlockNextWorld(level.worldId);
 
@@ -281,12 +291,19 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
 
     final updatedProfile = await playerDao.getProfile();
     final totalXp = updatedProfile?.totalXp ?? 0;
+    final currentStreak = updatedProfile?.streakCount ?? 0;
 
+    // XP-based achievements
     for (final ach in kAchievements) {
       if (totalXp >= ach.requiredXp) {
         await maybeAward(ach.id);
       }
     }
+
+    // Streak-based achievements
+    if (currentStreak >= 3) await maybeAward('daily_streak_3');
+    if (currentStreak >= 7) await maybeAward('daily_streak_7');
+    if (currentStreak >= 30) await maybeAward('daily_streak_30');
 
     state = state.copyWith(
       levelCompleted: true,
