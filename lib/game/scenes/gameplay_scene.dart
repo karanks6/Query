@@ -147,11 +147,6 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
   }
 
   @override
-  Future<void> onEnter() async {
-    super.onEnter();
-  }
-
-  @override
   void onMount() {
     super.onMount();
 
@@ -198,8 +193,9 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
 
   GameplayStatus _deriveStatus(GameplayState state) {
     if (state.levelCompleted) return GameplayStatus.success;
-    if (state.lastReport != null && !state.lastReport!.isComplete)
+    if (state.lastReport != null && !state.lastReport!.isComplete) {
       return GameplayStatus.failed;
+    }
     if (state.sandboxError != null) return GameplayStatus.failed;
     return GameplayStatus.initial;
   }
