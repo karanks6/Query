@@ -51,7 +51,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
     try {
       final prefs = ref.read(sharedPreferencesProvider);
       final playerDao = ref.read(playerDaoProvider);
-      await playerDao.checkDailyStreak(prefs);
+      await playerDao.checkDailyStreak(prefs, increment: false);
 
       final profile = await ref.read(playerProfileProvider.future);
       if (profile != null) {
@@ -184,7 +184,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
     journal.add(jTitle);
 
     final jSubtitle = TextComponent(
-      text: 'ACT I • MISTY VALE',
+      text: 'ACT I - MISTY VALE',
       textRenderer: TextPaint(style: GoogleFonts.publicSans(color: const Color(0xFF2D5A3A), fontSize: 10, fontWeight: FontWeight.bold)),
       position: Vector2(contentWidth - 16, 18),
       anchor: Anchor.topRight,
@@ -268,7 +268,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
     final btnWidth = contentWidth;
     final continueBtn = WoodButton(
       text: 'CONTINUE',
-      secondaryText: 'Stage 3-4 • The Whispering Brook',
+      secondaryText: 'Stage 3-4 - The Whispering Brook',
       position: Vector2(centerX - btnWidth / 2, yPos),
       size: Vector2(btnWidth, 70),
       primaryColor: const Color(0xFF4A7C59), // Forest Green
@@ -399,8 +399,8 @@ class _StatsRowComponent extends PositionComponent {
     _streakText = TextComponent(
       text: '🔥 $initialStreak',
       textRenderer: TextPaint(style: textStyle),
-      position: Vector2(colWidth * 0.5, size.y / 2),
-      anchor: Anchor.center,
+      position: Vector2(10, size.y / 2),
+      anchor: Anchor.centerLeft,
     );
     streakBtn.add(_streakText);
     add(streakBtn);
