@@ -1,4 +1,4 @@
-﻿// This file is retired — input is now handled by FlutterBlockWorkspace.
+// This file is retired — input is now handled by FlutterBlockWorkspace.
 // Kept as an empty stub so dart analyze does not error on missing imports.
 import 'package:flutter/material.dart';
 import '../../../game/query_game.dart';
