@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../theming/tokens/game_tokens.dart';
 import '../../../core/settings/settings_service.dart';
 
-/// Results pane â€” displays query result rows with color-coded diff.
+/// Results pane — displays query result rows with color-coded diff.
 ///
 /// Row states:
 ///   - Match (default): neutral background
@@ -72,7 +72,7 @@ class ResultPane extends ConsumerWidget {
                     color: GameTokens.accent, size: 12),
                 const SizedBox(width: 4),
                 Text(
-                  'RESULTS  â€”  ${rows.length} row${rows.length == 1 ? '' : 's'}',
+                  'RESULTS  —  ${rows.length} row${rows.length == 1 ? '' : 's'}',
                   style: GameTokens.bodySmall.copyWith(
                     color: GameTokens.accent,
                     letterSpacing: 1,
