@@ -78,9 +78,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       );
 
                       final statsRow = profileAsync.when(
-                        data: (profile) => profile != null ? _StatsRow(profile: profile) : const SizedBox.shrink(),
+                        data: (profile) => profile != null ? _StatsRow(profile: profile) : const Text('Profile is null', style: TextStyle(color: Colors.red)),
                         loading: () => const _LoadingCard(),
-                        error: (_, __) => const SizedBox.shrink(),
+                        error: (err, __) => Text('Stats Error: $err', style: const TextStyle(color: Colors.red)),
                       );
 
                       final dailyChallenge = _DailyChallengeCard(
@@ -300,11 +300,15 @@ class _StatsRow extends StatelessWidget {
                         ),
                     ],
                   ),
-                  Text(
-                    '${profile.streakCount} days',
-                    style: GameTokens.headlineMedium.copyWith(
-                      color: GameTokens.warning,
-                      fontSize: 24,
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '${profile.streakCount} days',
+                      style: GameTokens.headlineMedium.copyWith(
+                        color: GameTokens.warning,
+                        fontSize: 24,
+                      ),
                     ),
                   ),
                 ],
@@ -327,9 +331,13 @@ class _StatsRow extends StatelessWidget {
                     Text('XP', style: GameTokens.bodyMedium),
                   ],
                 ),
-                Text(
-                  '${profile.totalXp}',
-                  style: GameTokens.headlineMedium.copyWith(fontSize: 24),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '${profile.totalXp}',
+                    style: GameTokens.headlineMedium.copyWith(fontSize: 24),
+                  ),
                 ),
                 const SizedBox(height: 4),
                 _XpProgressBar(totalXp: profile.totalXp as int),
