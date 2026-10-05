@@ -32,7 +32,7 @@ enum AppTheme {
   }
 }
 
-/// Central theme provider â€” manages the active theme and returns
+/// Central theme provider — manages the active theme and returns
 /// the MaterialThemeData for the currently active theme.
 class ThemeNotifier extends StateNotifier<AppTheme> {
   final SharedPreferences _prefs;
