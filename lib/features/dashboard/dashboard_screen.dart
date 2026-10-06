@@ -253,71 +253,30 @@ class _StatsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     // IntrinsicHeight removed: it forces a 2-pass layout that can crash inside
     // SliverFillRemaining. Cards use mainAxisAlignment to distribute space.
-    return SizedBox(
-      height: 130,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                backgroundColor: Colors.transparent,
-                isScrollControlled: true,
-                builder: (context) => Align(
-                  alignment: Alignment.bottomCenter,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 500),
-                    child: DraggableScrollableSheet(
-                      initialChildSize: 0.85,
-                      maxChildSize: 0.95,
-                      minChildSize: 0.5,
-                      builder: (_, controller) => StreakCalendarModal(scrollController: controller),
-                    ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isNarrow = constraints.maxWidth < 600;
+
+        final streakCard = GestureDetector(
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.transparent,
+              isScrollControlled: true,
+              builder: (context) => Align(
+                alignment: Alignment.bottomCenter,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: DraggableScrollableSheet(
+                    initialChildSize: 0.85,
+                    maxChildSize: 0.95,
+                    minChildSize: 0.5,
+                    builder: (_, controller) => StreakCalendarModal(scrollController: controller),
                   ),
                 ),
-              );
-            },
-            child: SlantedPanel(
-              padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceSm),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.local_fire_department,
-                          color: GameTokens.warning, size: 20),
-                      const SizedBox(width: 4),
-                      Text('STREAK', style: GameTokens.bodyMedium),
-                      const Spacer(),
-                      // Streak freeze badge
-                      if ((profile.streakFreezeAvailable as int? ?? 0) > 0)
-                        Tooltip(
-                          message: '${profile.streakFreezeAvailable} Streak Freeze available',
-                          child: const Icon(Icons.ac_unit, color: GameTokens.info, size: 13),
-                        ),
-                    ],
-                  ),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      '${profile.streakCount} days',
-                      style: GameTokens.headlineMedium.copyWith(
-                        color: GameTokens.warning,
-                        fontSize: 24,
-                      ),
-                    ),
-                  ),
-                ],
               ),
-            ),
-          ),
-        ),
-        const SizedBox(width: GameTokens.spaceSm),
-        Expanded(
+            );
+          },
           child: SlantedPanel(
             padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceSm),
             child: Column(
@@ -326,77 +285,137 @@ class _StatsRow extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.bolt, color: GameTokens.accent, size: 20),
+                    const Icon(Icons.local_fire_department,
+                        color: GameTokens.warning, size: 20),
                     const SizedBox(width: 4),
-                    Text('XP', style: GameTokens.bodyMedium),
+                    Text('STREAK', style: GameTokens.bodyMedium),
+                    const Spacer(),
+                    // Streak freeze badge
+                    if ((profile.streakFreezeAvailable as int? ?? 0) > 0)
+                      Tooltip(
+                        message: '${profile.streakFreezeAvailable} Streak Freeze available',
+                        child: const Icon(Icons.ac_unit, color: GameTokens.info, size: 13),
+                      ),
                   ],
                 ),
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    '${profile.totalXp}',
-                    style: GameTokens.headlineMedium.copyWith(fontSize: 24),
+                    '${profile.streakCount} days',
+                    style: GameTokens.headlineMedium.copyWith(
+                      color: GameTokens.warning,
+                      fontSize: 24,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 4),
-                _XpProgressBar(totalXp: profile.totalXp as int),
               ],
             ),
           ),
-        ),
-        const SizedBox(width: GameTokens.spaceSm),
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                backgroundColor: Colors.transparent,
-                isScrollControlled: true,
-                builder: (context) => Align(
-                  alignment: Alignment.bottomCenter,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 500),
-                    child: DraggableScrollableSheet(
-                      initialChildSize: 0.9,
-                      maxChildSize: 0.95,
-                      minChildSize: 0.5,
-                      builder: (_, controller) => RankProgressModal(scrollController: controller),
-                    ),
-                  ),
-                ),
-              );
-            },
-            child: SlantedPanel(
-              padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceSm),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        );
+
+        final xpCard = SlantedPanel(
+          padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceSm),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.workspace_premium_outlined,
-                          color: GameTokens.accent, size: 20),
-                      const SizedBox(width: 4),
-                      Text('RANK', style: GameTokens.bodyMedium),
-                    ],
-                  ),
-                  Text(
-                    profile.rankTitle,
-                    style: GameTokens.bodyMedium.copyWith(
-                      color: GameTokens.accent,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  const Icon(Icons.bolt, color: GameTokens.accent, size: 20),
+                  const SizedBox(width: 4),
+                  Text('XP', style: GameTokens.bodyMedium),
                 ],
               ),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '${profile.totalXp}',
+                  style: GameTokens.headlineMedium.copyWith(fontSize: 24),
+                ),
+              ),
+              const SizedBox(height: 4),
+              _XpProgressBar(totalXp: profile.totalXp as int),
+            ],
+          ),
+        );
+
+        final rankCard = GestureDetector(
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.transparent,
+              isScrollControlled: true,
+              builder: (context) => Align(
+                alignment: Alignment.bottomCenter,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: DraggableScrollableSheet(
+                    initialChildSize: 0.9,
+                    maxChildSize: 0.95,
+                    minChildSize: 0.5,
+                    builder: (_, controller) => RankProgressModal(scrollController: controller),
+                  ),
+                ),
+              ),
+            );
+          },
+          child: SlantedPanel(
+            padding: const EdgeInsets.symmetric(horizontal: GameTokens.spaceMd, vertical: GameTokens.spaceSm),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.workspace_premium_outlined,
+                        color: GameTokens.accent, size: 20),
+                    const SizedBox(width: 4),
+                    Text('RANK', style: GameTokens.bodyMedium),
+                  ],
+                ),
+                Text(
+                  profile.rankTitle,
+                  style: GameTokens.bodyMedium.copyWith(
+                    color: GameTokens.accent,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
-        ),
-      ],
-      ),
+        );
+
+        if (isNarrow) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 100, child: streakCard),
+              const SizedBox(height: GameTokens.spaceSm),
+              SizedBox(height: 100, child: xpCard),
+              const SizedBox(height: GameTokens.spaceSm),
+              SizedBox(height: 100, child: rankCard),
+            ],
+          );
+        }
+
+        return SizedBox(
+          height: 130,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(child: streakCard),
+              const SizedBox(width: GameTokens.spaceSm),
+              Expanded(child: xpCard),
+              const SizedBox(width: GameTokens.spaceSm),
+              Expanded(child: rankCard),
+            ],
+          ),
+        );
+      },
     ).animate().fadeIn(delay: 100.ms, duration: 400.ms);
   }
 }
