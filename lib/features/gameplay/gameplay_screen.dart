@@ -46,6 +46,7 @@ class GameplayScreenOverlay extends ConsumerWidget {
 
             // ── Active input workspace ────────────────────────────────────────
             Expanded(
+              flex: 5,
               child: state.queryMode == QueryMode.block
                   ? const FlutterBlockWorkspace(key: ValueKey('blocks'))
                   : CodeModeWorkspace(
@@ -59,8 +60,8 @@ class GameplayScreenOverlay extends ConsumerWidget {
 
             // ── Results pane (shown below workspace when available) ───────────
             if (hasResults)
-              SizedBox(
-                height: 200,
+              Flexible(
+                flex: 3,
                 child: ResultPane(rows: state.lastReport!.resultRows!),
               ),
 
