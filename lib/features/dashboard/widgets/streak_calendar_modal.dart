@@ -12,51 +12,82 @@ import '../../../core/settings/settings_service.dart';
 ///  - 12-week GitHub-style activity heatmap (colour-coded intensity)
 ///  - Milestone badges (3 / 7 / 30-day)
 ///  - Recent activity log (last 5 active days)
-class StreakCalendarModal extends ConsumerWidget {
+class StreakCalendarModal extends ConsumerStatefulWidget {
   final ScrollController? scrollController;
-  const StreakCalendarModal({super.key, this.scrollController});
+  final dynamic profile;
+
+  const StreakCalendarModal({
+    super.key,
+    this.scrollController,
+    this.profile,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StreakCalendarModal> createState() => _StreakCalendarModalState();
+}
+
+class _StreakCalendarModalState extends ConsumerState<StreakCalendarModal> {
+  bool _creatingProfile = false;
+
+  /// If the DB stream emits null, auto-create a profile so the stream
+  /// re-emits with a valid row and the modal renders.
+  Future<void> _ensureProfile() async {
+    if (_creatingProfile) return;
+    setState(() => _creatingProfile = true);
+    try {
+      final dao = ref.read(playerDaoProvider);
+      await dao.getProfile(); // getProfile auto-creates if missing
+    } finally {
+      if (mounted) setState(() => _creatingProfile = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final profileAsync = ref.watch(playerProfileProvider);
     final prefs = ref.watch(sharedPreferencesProvider);
+
+    // Prefer live stream data; fall back to the profile passed from the scene
+    final currentProfile = profileAsync.valueOrNull ?? widget.profile;
 
     return Container(
       decoration: const BoxDecoration(
         color: GameTokens.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: profileAsync.when(
-        loading: () => const Padding(
-          padding: EdgeInsets.all(64),
-          child: Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(GameTokens.accent),
-              strokeWidth: 2,
-            ),
-          ),
-        ),
-        error: (_, __) => const Padding(
-          padding: EdgeInsets.all(32),
-          child: Center(child: Text('Error loading streak data')),
-        ),
-        data: (profile) {
-          if (profile == null) return const SizedBox.shrink();
+      child: SingleChildScrollView(
+        controller: widget.scrollController,
+        child: Builder(
+          builder: (context) {
+            // Profile still null after stream loaded → kick off creation
+            if (currentProfile == null) {
+              if (profileAsync.hasValue && !_creatingProfile) {
+                // Stream resolved but emitted null — no profile in DB yet
+                WidgetsBinding.instance.addPostFrameCallback((_) => _ensureProfile());
+              }
+              return const Padding(
+                padding: EdgeInsets.all(64),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(GameTokens.accent),
+                    strokeWidth: 2,
+                  ),
+                ),
+              );
+            }
 
-          final currentStreak = profile.streakCount;
-          final longestStreak =
-              prefs.getInt('longest_streak') ?? currentStreak;
-          final history =
-              (prefs.getStringList('streak_history') ?? []).toSet();
-          final totalActiveDays = history.length;
+            final currentStreak = currentProfile.streakCount as int;
+            final longestStreak =
+                prefs.getInt('longest_streak') ?? currentStreak;
+            final history =
+                (prefs.getStringList('streak_history') ?? []).toSet();
+            final totalActiveDays = history.length;
 
-          // Determine if today is already recorded
-          final todayStr = DateTime.now().toIso8601String().substring(0, 10);
-          final isActiveToday = history.contains(todayStr);
+            // Determine if today is already recorded
+            final todayStr = DateTime.now().toIso8601String().substring(0, 10);
+            final isActiveToday = history.contains(todayStr);
 
-          return SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
+            return Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -204,9 +235,9 @@ class StreakCalendarModal extends ConsumerWidget {
 
                 const SizedBox(height: GameTokens.spaceXl),
               ],
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
