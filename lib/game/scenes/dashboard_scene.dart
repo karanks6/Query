@@ -435,11 +435,11 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
     super.onMount();
     addToGameWidgetBuild(() {
       // Immediately read current values (listeners only fire on changes)
-      final profileNow = ref.read(playerProfileProvider).valueOrNull;
+      final profileNow = ref.read(playerProfileProvider).value;
       if (profileNow != null) {
         _refreshStats(streak: profileNow.streakCount, xp: profileNow.totalXp);
       }
-      final achNow = ref.read(allAchievementsProvider).valueOrNull;
+      final achNow = ref.read(allAchievementsProvider).value;
       if (achNow != null) {
         _refreshStats(achievements: achNow.length);
       }
