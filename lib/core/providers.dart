@@ -59,9 +59,18 @@ final levelLoaderProvider = Provider<LevelLoader>((ref) {
 
 // ─── Player profile stream ────────────────────────────────────────────────────
 
-final playerProfileProvider = StreamProvider((ref) {
+final playerProfileProvider = StreamProvider((ref) async* {
   final db = ref.watch(appDatabaseProvider);
-  return (db.select(db.playerProfiles)..limit(1)).watchSingleOrNull();
+  await for (final profile in (db.select(db.playerProfiles)..limit(1)).watchSingleOrNull()) {
+    if (profile == null) {
+      // No profile in DB yet — create a default one so the stream
+      // always emits a valid profile.
+      await db.playerDao.getProfile(); // getProfile() auto-creates if needed
+      // Don't yield null; the next DB event will emit the created profile.
+    } else {
+      yield profile;
+    }
+  }
 });
 
 // ─── World progress stream ────────────────────────────────────────────────────
