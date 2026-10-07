@@ -28,6 +28,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
   int initialXp = 0;
   int initialAchievements = 0;
   
+  dynamic _currentPlayerProfile;
   _StatsRowComponent? _statsRow;
 
   @override
@@ -54,6 +55,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
       await playerDao.checkDailyStreak(prefs, increment: false);
 
       final profile = await ref.read(playerProfileProvider.future);
+      _currentPlayerProfile = profile;
       if (profile != null) {
         initialStreak = profile.streakCount;
         initialXp = profile.totalXp;
@@ -159,6 +161,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
       initialStreak: initialStreak,
       initialXp: initialXp,
       initialAchievements: initialAchievements,
+      profile: _currentPlayerProfile,
       size: Vector2(contentWidth, statsHeight),
       position: Vector2(centerX - contentWidth / 2, yPos),
     );
@@ -343,11 +346,13 @@ class _StatsRowComponent extends PositionComponent {
   final int initialStreak;
   final int initialXp;
   final int initialAchievements;
+  final dynamic profile;
 
   _StatsRowComponent({
     required this.initialStreak,
     required this.initialXp,
     required this.initialAchievements,
+    this.profile,
     required super.size,
     required super.position,
   });
@@ -388,7 +393,7 @@ class _StatsRowComponent extends PositionComponent {
                   initialChildSize: 0.85,
                   maxChildSize: 0.95,
                   minChildSize: 0.5,
-                  builder: (_, controller) => StreakCalendarModal(scrollController: controller),
+                  builder: (_, controller) => StreakCalendarModal(scrollController: controller, profile: profile),
                 ),
               ),
             ),
