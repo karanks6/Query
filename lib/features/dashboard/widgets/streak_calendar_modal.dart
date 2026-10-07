@@ -183,14 +183,14 @@ class _StreakCalendarModalState extends ConsumerState<StreakCalendarModal> {
                               style: GameTokens.bodySmall
                                   .copyWith(fontSize: 9, color: GameTokens.disabledText)),
                           const SizedBox(width: 4),
-                          for (final a in [0.15, 0.4, 0.65, 1.0])
+                          for (final a in [0.0, 0.4, 0.65, 1.0])
                             Container(
                               width: 10,
                               height: 10,
                               margin: const EdgeInsets.only(left: 2),
                               decoration: BoxDecoration(
-                                color: a == 0.15
-                                    ? GameTokens.surfaceVariant
+                                color: a == 0.0
+                                    ? const Color(0xFF4A2E18)
                                     : GameTokens.warning.withValues(alpha: a),
                                 borderRadius: BorderRadius.circular(2),
                               ),
@@ -599,11 +599,11 @@ class _ActivityHeatmap extends StatelessWidget {
                           color: isFuture
                               ? Colors.transparent
                               : isActive
-                                  ? GameTokens.warning.withValues(alpha: 0.85)
-                                  : GameTokens.surfaceVariant,
+                                  ? GameTokens.warning.withValues(alpha: 0.90)
+                                  : const Color(0xFF4A2E18), // dark wood brown for inactive
                           border: isToday
                               ? Border.all(
-                                  color: GameTokens.surface, width: 1.5)
+                                  color: Colors.white70, width: 1.5)
                               : null,
                           borderRadius: BorderRadius.circular(2),
                         ),
