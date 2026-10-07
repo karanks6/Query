@@ -48,7 +48,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
     add(layoutContainer);
 
     try {
-      final prefs = ref.read(sharedPreferencesProvider);
+      final prefs = await SharedPreferences.getInstance();
       final playerDao = ref.read(playerDaoProvider);
       await playerDao.checkDailyStreak(prefs, increment: false);
 
