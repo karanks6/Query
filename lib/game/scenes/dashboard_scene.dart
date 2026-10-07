@@ -27,6 +27,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
   int currentWorldNumber = 1;
 
   dynamic _currentPlayerProfile;
+  int _achievementsCount = 0;
   _StatsRowComponent? _statsRow;
 
   @override
@@ -55,6 +56,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
       _currentPlayerProfile = profile;
       
       final achList = await ref.read(allAchievementsProvider.future);
+      _achievementsCount = achList.length;
       
       final progressList = await ref.read(allWorldProgressProvider.future);
       String highestUnlocked = 'world_01';
@@ -145,6 +147,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
     final statsHeight = 40.0;
     _statsRow = _StatsRowComponent(
       profile: _currentPlayerProfile,
+      initialAchievements: _achievementsCount,
       size: Vector2(contentWidth, statsHeight),
       position: Vector2(centerX - contentWidth / 2, yPos),
     );
@@ -333,9 +336,11 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
   late TextComponent _xpText;
 
   final dynamic profile;
+  final int? initialAchievements;
 
   _StatsRowComponent({
     this.profile,
+    this.initialAchievements,
     required super.size,
     required super.position,
   });
@@ -443,14 +448,12 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
     super.onMount();
     
     try {
-      // Seed initial values OUTSIDE of the Flutter build phase to avoid AssertionError
-      final profileNow = ref.read(playerProfileProvider).value;
-      if (profileNow != null) {
-        _refreshStats(streak: profileNow.streakCount, xp: profileNow.totalXp);
+      // Seed initial values using the passed-in profile and achievements count
+      if (profile != null) {
+        _refreshStats(streak: profile!.streakCount, xp: profile!.totalXp);
       }
-      final achNow = ref.read(allAchievementsProvider).value;
-      if (achNow != null) {
-        _refreshStats(achievements: achNow.length);
+      if (initialAchievements != null) {
+        _refreshStats(achievements: initialAchievements);
       }
 
       addToGameWidgetBuild(() {
