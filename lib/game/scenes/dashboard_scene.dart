@@ -433,8 +433,19 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
   @override
   void onMount() {
     super.onMount();
+    
+    // Seed initial values OUTSIDE of the Flutter build phase to avoid AssertionError
+    final profileNow = ref.read(playerProfileProvider).value;
+    if (profileNow != null) {
+      _refreshStats(streak: profileNow.streakCount, xp: profileNow.totalXp);
+    }
+    final achNow = ref.read(allAchievementsProvider).value;
+    if (achNow != null) {
+      _refreshStats(achievements: achNow.length);
+    }
+
     addToGameWidgetBuild(() {
-      // Listen for changes and fire immediately to seed initial values
+      // Listen for future changes
       ref.listen(playerProfileProvider, (_, next) {
         if (next.hasValue && next.value != null) {
           _refreshStats(
@@ -442,13 +453,13 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
             xp: next.value!.totalXp,
           );
         }
-      }, fireImmediately: true);
+      });
 
       ref.listen(allAchievementsProvider, (_, next) {
         if (next.hasValue && next.value != null) {
           _refreshStats(achievements: next.value!.length);
         }
-      }, fireImmediately: true);
+      });
     });
   }
 }
