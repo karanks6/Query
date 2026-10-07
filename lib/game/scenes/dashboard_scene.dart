@@ -90,6 +90,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
     addToGameWidgetBuild(() {
       ref.listen(playerProfileProvider, (previous, next) {
         if (next.hasValue && next.value != null) {
+          _currentPlayerProfile = next.value;
           _statsRow?.updateStats(
             streak: next.value!.streakCount,
             xp: next.value!.totalXp,
