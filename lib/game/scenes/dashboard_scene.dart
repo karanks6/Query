@@ -24,10 +24,6 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
   String currentWorldTitle = 'Archive Vaults';
   int currentWorldNumber = 1;
 
-  int initialStreak = 0;
-  int initialXp = 0;
-  int initialAchievements = 0;
-  
   dynamic _currentPlayerProfile;
   _StatsRowComponent? _statsRow;
 
@@ -56,13 +52,8 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
 
       final profile = await ref.read(playerProfileProvider.future);
       _currentPlayerProfile = profile;
-      if (profile != null) {
-        initialStreak = profile.streakCount;
-        initialXp = profile.totalXp;
-      }
       
       final achList = await ref.read(allAchievementsProvider.future);
-      initialAchievements = achList.length;
       
       final progressList = await ref.read(allWorldProgressProvider.future);
       String highestUnlocked = 'world_01';
@@ -87,20 +78,12 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
   @override
   void onMount() {
     super.onMount();
+    // _StatsRowComponent handles its own real-time updates via RiverpodComponentMixin.
+    // We only need to update _currentPlayerProfile here for the modal.
     addToGameWidgetBuild(() {
       ref.listen(playerProfileProvider, (previous, next) {
         if (next.hasValue && next.value != null) {
           _currentPlayerProfile = next.value;
-          _statsRow?.updateStats(
-            streak: next.value!.streakCount,
-            xp: next.value!.totalXp,
-          );
-        }
-      });
-      
-      ref.listen(allAchievementsProvider, (previous, next) {
-        if (next.hasValue) {
-          _statsRow?.updateStats(achievements: next.value!.length);
         }
       });
     });
@@ -159,9 +142,6 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
     // 1.5 Stats Row
     final statsHeight = 40.0;
     _statsRow = _StatsRowComponent(
-      initialStreak: initialStreak,
-      initialXp: initialXp,
-      initialAchievements: initialAchievements,
       profile: _currentPlayerProfile,
       size: Vector2(contentWidth, statsHeight),
       position: Vector2(centerX - contentWidth / 2, yPos),
@@ -339,29 +319,23 @@ class _RoundedPlaqueComponent extends PositionComponent {
   }
 }
 
-class _StatsRowComponent extends PositionComponent {
+class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
   late TextComponent _streakText;
   late TextComponent _achText;
   late TextComponent _xpText;
 
-  final int initialStreak;
-  final int initialXp;
-  final int initialAchievements;
   final dynamic profile;
 
   _StatsRowComponent({
-    required this.initialStreak,
-    required this.initialXp,
-    required this.initialAchievements,
     this.profile,
     required super.size,
     required super.position,
   });
 
-  void updateStats({int? streak, int? xp, int? achievements}) {
-    if (streak != null) _streakText.text = '🔥 $streak';
-    if (xp != null) _xpText.text = '✨ $xp XP';
-    if (achievements != null) _achText.text = '🏆 $achievements';
+  void _refreshStats({int? streak, int? xp, int? achievements}) {
+    if (streak != null && isMounted) _streakText.text = '\uD83D\uDD25 $streak';
+    if (xp != null && isMounted) _xpText.text = '\u2728 $xp XP';
+    if (achievements != null && isMounted) _achText.text = '\uD83C\uDFC6 $achievements';
   }
 
   @override
@@ -403,7 +377,7 @@ class _StatsRowComponent extends PositionComponent {
       },
     );
     _streakText = TextComponent(
-      text: '🔥 $initialStreak',
+      text: '🔥 0',
       textRenderer: TextPaint(style: textStyle),
       position: Vector2(10, size.y / 2),
       anchor: Anchor.centerLeft,
@@ -431,7 +405,7 @@ class _StatsRowComponent extends PositionComponent {
       },
     );
     _achText = TextComponent(
-      text: '🏆 $initialAchievements',
+      text: '🏆 0',
       textRenderer: TextPaint(style: textStyle),
       position: Vector2(colWidth * 0.5, size.y / 2),
       anchor: Anchor.center,
@@ -448,12 +422,41 @@ class _StatsRowComponent extends PositionComponent {
 
     // XP
     _xpText = TextComponent(
-      text: '✨ $initialXp XP',
+      text: '✨ 0 XP',
       textRenderer: TextPaint(style: textStyle),
       position: Vector2(colWidth * 2.5, size.y / 2),
       anchor: Anchor.center,
     );
     add(_xpText);
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+    addToGameWidgetBuild(() {
+      // Immediately read current values (listeners only fire on changes)
+      final profileNow = ref.read(playerProfileProvider).valueOrNull;
+      if (profileNow != null) {
+        _refreshStats(streak: profileNow.streakCount, xp: profileNow.totalXp);
+      }
+      final achNow = ref.read(allAchievementsProvider).valueOrNull;
+      if (achNow != null) {
+        _refreshStats(achievements: achNow.length);
+      }
+
+      // Listen for future changes
+      ref.listen(playerProfileProvider, (_, next) {
+        if (next.hasValue && next.value != null) {
+          _refreshStats(
+            streak: next.value!.streakCount,
+            xp: next.value!.totalXp,
+          );
+        }
+      });
+      ref.listen(allAchievementsProvider, (_, next) {
+        if (next.hasValue) _refreshStats(achievements: next.value!.length);
+      });
+    });
   }
 }
 
