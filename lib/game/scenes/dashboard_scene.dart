@@ -16,9 +16,11 @@ import '../../core/providers.dart';
 import '../../core/settings/settings_service.dart';
 import '../../data/content/level_loader.dart';
 
+class _LayoutContainer extends PositionComponent with RiverpodComponentMixin {}
+
 class DashboardScene extends QueryScene with RiverpodComponentMixin {
   late PersistentHudComponent hud;
-  late PositionComponent layoutContainer;
+  late _LayoutContainer layoutContainer;
   
   String currentWorldId = 'world_01';
   String currentWorldTitle = 'Archive Vaults';
@@ -39,10 +41,9 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
     hud = PersistentHudComponent();
     add(hud);
 
-    layoutContainer = PositionComponent(
-      size: Vector2(game.size.x, game.size.y - 100), // account for top HUD
-      position: Vector2(0, 110), // offset below HUD
-    );
+    layoutContainer = _LayoutContainer()
+      ..size = Vector2(game.size.x, game.size.y - 100)
+      ..position = Vector2(0, 110);
     add(layoutContainer);
 
     try {
@@ -90,54 +91,55 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
   }
 
   void _buildLayout() { 
-    final availableWidth = game.size.x;
-    final contentWidth = availableWidth > 440 ? 400.0 : availableWidth - 32;
-    final centerX = availableWidth / 2;
-    var yPos = 10.0; // Start padding
+    try {
+      final availableWidth = game.size.x;
+      final contentWidth = availableWidth > 440 ? 400.0 : availableWidth - 32;
+      final centerX = availableWidth / 2;
+      var yPos = 10.0; // Start padding
 
-    // 1. WANDERWOOD Plaque
-    final plaqueWidth = contentWidth * 0.8;
-    final plaqueHeight = 60.0;
-    
-    // Plaque background using a custom component for RRect
-    final plaqueBg = _RoundedPlaqueComponent(
-      size: Vector2(plaqueWidth, plaqueHeight),
-      position: Vector2(centerX - plaqueWidth / 2, yPos),
-    );
+      // 1. WANDERWOOD Plaque
+      final plaqueWidth = contentWidth * 0.8;
+      final plaqueHeight = 60.0;
+      
+      // Plaque background using a custom component for RRect
+      final plaqueBg = _RoundedPlaqueComponent(
+        size: Vector2(plaqueWidth, plaqueHeight),
+        position: Vector2(centerX - plaqueWidth / 2, yPos),
+      );
 
-    final title = TextComponent(
-      text: 'WANDERWOOD',
-      textRenderer: TextPaint(
-        style: GoogleFonts.nunitoSans(
-          color: const Color(0xFFF9F5EA),
-          fontSize: 24,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 4,
-          shadows: [const Shadow(color: Colors.black87, offset: Offset(0, 2), blurRadius: 4)]
+      final title = TextComponent(
+        text: 'WANDERWOOD',
+        textRenderer: TextPaint(
+          style: GoogleFonts.nunitoSans(
+            color: const Color(0xFFF9F5EA),
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 4,
+            shadows: [const Shadow(color: Colors.black87, offset: Offset(0, 2), blurRadius: 4)]
+          ),
         ),
-      ),
-      anchor: Anchor.center,
-      position: Vector2(plaqueWidth / 2, plaqueHeight / 2 - 6),
-    );
-    plaqueBg.add(title);
-    
-    final subTitle = TextComponent(
-      text: 'TALES OF THE WILD',
-      textRenderer: TextPaint(
-        style: GoogleFonts.quicksand(
-          color: const Color(0xFFE59B28), // amber-300 ish
-          fontSize: 10,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 2.0,
+        anchor: Anchor.center,
+        position: Vector2(plaqueWidth / 2, plaqueHeight / 2 - 6),
+      );
+      plaqueBg.add(title);
+      
+      final subTitle = TextComponent(
+        text: 'TALES OF THE WILD',
+        textRenderer: TextPaint(
+          style: GoogleFonts.quicksand(
+            color: const Color(0xFFE59B28), // amber-300 ish
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 2.0,
+          ),
         ),
-      ),
-      anchor: Anchor.center,
-      position: Vector2(plaqueWidth / 2, plaqueHeight - 14),
-    );
-    plaqueBg.add(subTitle);
-    
-    layoutContainer.add(plaqueBg);
-    yPos += plaqueHeight + 16;
+        anchor: Anchor.center,
+        position: Vector2(plaqueWidth / 2, plaqueHeight - 14),
+      );
+      plaqueBg.add(subTitle);
+      
+      layoutContainer.add(plaqueBg);
+      yPos += plaqueHeight + 16;
 
     // 1.5 Stats Row
     final statsHeight = 40.0;
@@ -274,6 +276,15 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
       },
     );
     layoutContainer.add(dailyBtn);
+
+    } catch (e, st) {
+      final errorComp = TextComponent(
+        text: 'Error in _buildLayout:\n$e\n$st',
+        position: Vector2(10, 100),
+        textRenderer: TextPaint(style: const TextStyle(color: Colors.red, fontSize: 10)),
+      );
+      layoutContainer.add(errorComp);
+    }
   }
 
   @override
