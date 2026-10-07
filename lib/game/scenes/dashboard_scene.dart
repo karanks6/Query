@@ -12,6 +12,7 @@ import 'daily_challenge_scene.dart';
 import '../components/persistent_hud.dart';
 import '../components/ui/wood_button.dart';
 import '../components/ui/parchment_panel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/providers.dart';
 import '../../core/settings/settings_service.dart';
 import '../../data/content/level_loader.dart';
