@@ -434,33 +434,37 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
   void onMount() {
     super.onMount();
     
-    // Seed initial values OUTSIDE of the Flutter build phase to avoid AssertionError
-    final profileNow = ref.read(playerProfileProvider).value;
-    if (profileNow != null) {
-      _refreshStats(streak: profileNow.streakCount, xp: profileNow.totalXp);
-    }
-    final achNow = ref.read(allAchievementsProvider).value;
-    if (achNow != null) {
-      _refreshStats(achievements: achNow.length);
-    }
+    try {
+      // Seed initial values OUTSIDE of the Flutter build phase to avoid AssertionError
+      final profileNow = ref.read(playerProfileProvider).value;
+      if (profileNow != null) {
+        _refreshStats(streak: profileNow.streakCount, xp: profileNow.totalXp);
+      }
+      final achNow = ref.read(allAchievementsProvider).value;
+      if (achNow != null) {
+        _refreshStats(achievements: achNow.length);
+      }
 
-    addToGameWidgetBuild(() {
-      // Listen for future changes
-      ref.listen(playerProfileProvider, (_, next) {
-        if (next.hasValue && next.value != null) {
-          _refreshStats(
-            streak: next.value!.streakCount,
-            xp: next.value!.totalXp,
-          );
-        }
-      });
+      addToGameWidgetBuild(() {
+        // Listen for future changes
+        ref.listen(playerProfileProvider, (_, next) {
+          if (next.hasValue && next.value != null) {
+            _refreshStats(
+              streak: next.value!.streakCount,
+              xp: next.value!.totalXp,
+            );
+          }
+        });
 
-      ref.listen(allAchievementsProvider, (_, next) {
-        if (next.hasValue && next.value != null) {
-          _refreshStats(achievements: next.value!.length);
-        }
+        ref.listen(allAchievementsProvider, (_, next) {
+          if (next.hasValue && next.value != null) {
+            _refreshStats(achievements: next.value!.length);
+          }
+        });
       });
-    });
+    } catch (e) {
+      print('Error in _StatsRowComponent.onMount: $e');
+    }
   }
 }
 
