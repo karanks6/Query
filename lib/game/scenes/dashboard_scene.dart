@@ -297,11 +297,8 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
       }
     }
     
-    // We can rebuild layout on resize for simplicity
-    if (isLoaded) {
-      layoutContainer.removeAll(layoutContainer.children);
-      layoutContainer.size = Vector2(size.x, size.y - 100);
-      _buildLayout();
+    if (isLoaded && layoutContainer.isMounted) {
+       layoutContainer.size = Vector2(size.x, size.y - 100);
     }
   }
 
