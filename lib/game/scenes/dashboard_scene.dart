@@ -434,17 +434,7 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
   void onMount() {
     super.onMount();
     addToGameWidgetBuild(() {
-      // Immediately read current values (listeners only fire on changes)
-      final profileNow = ref.read(playerProfileProvider).value;
-      if (profileNow != null) {
-        _refreshStats(streak: profileNow.streakCount, xp: profileNow.totalXp);
-      }
-      final achNow = ref.read(allAchievementsProvider).value;
-      if (achNow != null) {
-        _refreshStats(achievements: achNow.length);
-      }
-
-      // Listen for future changes
+      // Listen for changes and fire immediately to seed initial values
       ref.listen(playerProfileProvider, (_, next) {
         if (next.hasValue && next.value != null) {
           _refreshStats(
@@ -452,10 +442,13 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
             xp: next.value!.totalXp,
           );
         }
-      });
+      }, fireImmediately: true);
+
       ref.listen(allAchievementsProvider, (_, next) {
-        if (next.hasValue) _refreshStats(achievements: next.value!.length);
-      });
+        if (next.hasValue && next.value != null) {
+          _refreshStats(achievements: next.value!.length);
+        }
+      }, fireImmediately: true);
     });
   }
 }
