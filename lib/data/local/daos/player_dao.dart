@@ -13,8 +13,13 @@ class PlayerDao extends DatabaseAccessor<AppDatabase> with _$PlayerDaoMixin {
   PlayerDao(super.db);
 
   /// Gets the single player profile (creates a default if none exists).
-  Future<PlayerProfile?> getProfile() {
-    return (select(playerProfiles)..limit(1)).getSingleOrNull();
+  Future<PlayerProfile?> getProfile() async {
+    var profile = await (select(playerProfiles)..limit(1)).getSingleOrNull();
+    if (profile == null) {
+      await createProfile("Guest");
+      profile = await (select(playerProfiles)..limit(1)).getSingleOrNull();
+    }
+    return profile;
   }
 
   /// Creates the initial profile after onboarding name entry.
