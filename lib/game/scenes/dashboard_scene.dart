@@ -346,9 +346,9 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
   });
 
   void _refreshStats({int? streak, int? xp, int? achievements}) {
-    if (streak != null && isMounted) _streakText.text = '\uD83D\uDD25 $streak';
-    if (xp != null && isMounted) _xpText.text = '\u2728 $xp XP';
-    if (achievements != null && isMounted) _achText.text = '\uD83C\uDFC6 $achievements';
+    if (streak != null) _streakText.text = '🔥 $streak';
+    if (xp != null) _xpText.text = '✨ $xp XP';
+    if (achievements != null) _achText.text = '🏆 $achievements';
   }
 
   @override
