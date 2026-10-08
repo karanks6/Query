@@ -271,7 +271,7 @@ class _StatsRow extends StatelessWidget {
                     initialChildSize: 0.85,
                     maxChildSize: 0.95,
                     minChildSize: 0.5,
-                    builder: (_, controller) => StreakCalendarModal(scrollController: controller),
+                    builder: (_, controller) => StreakCalendarModal(scrollController: controller, profile: profile),
                   ),
                 ),
               ),
