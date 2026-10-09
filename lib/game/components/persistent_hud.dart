@@ -43,7 +43,7 @@ class PersistentHudComponent extends PositionComponent with RiverpodComponentMix
     _settingsArea = _SettingsTapArea(
       size: Vector2(48, 48),
       onTap: () {
-        ref.read(audioControllerProvider).playSfx('click.wav');
+        ref.read(audioControllerProvider).playSfx('ui_click.wav');
         if (navigatorKey.currentContext != null) {
           showModalBottomSheet(
             context: navigatorKey.currentContext!,
