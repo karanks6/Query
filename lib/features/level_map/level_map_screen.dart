@@ -8,6 +8,7 @@ import '../../shared/widgets/game_widgets.dart';
 import '../../data/content/level_loader.dart';
 import '../../data/content/models/level_model.dart';
 import '../../core/providers.dart';
+import '../../core/audio/audio_controller.dart';
 import '../../game/scenes/level_map_scene.dart';
 import '../../main.dart';
 
@@ -38,6 +39,7 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
     _loadWorld();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(queryGameProvider).pushScene(LevelMapScene(worldId: widget.worldId));
+      ref.read(audioControllerProvider).playWorldBgm(widget.worldId);
     });
   }
 
