@@ -123,7 +123,7 @@ class _QueryHistorySheetState extends ConsumerState<QueryHistorySheet> {
                           width: double.infinity,
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: GameTokens.background,
+                            color: GameTokens.surfaceVariant,
                             borderRadius: GameTokens.borderRadiusSm,
                           ),
                           child: SelectableText(
