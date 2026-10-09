@@ -201,7 +201,7 @@ class _TableItem extends StatelessWidget {
         // Data Table
         if (isExpanded)
           Container(
-            color: GameTokens.background,
+            color: GameTokens.surfaceVariant,
             width: double.infinity,
             child: data.isEmpty
                 ? Padding(
@@ -216,12 +216,12 @@ class _TableItem extends StatelessWidget {
                       dataRowMaxHeight: 28,
                       columnSpacing: 24,
                       headingTextStyle: GameTokens.bodySmall.copyWith(
-                        color: GameTokens.accent,
+                        color: GameTokens.accentDim,
                         fontWeight: FontWeight.bold,
                         fontSize: 11,
                       ),
                       dataTextStyle: GameTokens.bodySmall.copyWith(
-                        color: GameTokens.secondaryText,
+                        color: GameTokens.primaryText,
                         fontSize: 12,
                       ),
                       columns: data.first.keys.map((key) {
