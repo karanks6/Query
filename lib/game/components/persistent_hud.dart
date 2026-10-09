@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/providers.dart';
 
@@ -54,24 +55,28 @@ class PersistentHudComponent extends PositionComponent with RiverpodComponentMix
     add(_rankTitle);
   }
 
+  ProviderSubscription? _profileSub;
+
   @override
   void onMount() {
     super.onMount();
     
-    // Seed initial values directly if available
-    final currentProfile = ref.read(playerProfileProvider).value;
-    if (currentProfile != null) {
-      _playerName.text = currentProfile.displayName;
-      _rankTitle.text = currentProfile.rankTitle;
-    }
+    _profileSub = ref.listenManual(
+      playerProfileProvider,
+      (previous, next) {
+        if (next.hasValue && next.value != null) {
+          _playerName.text = next.value!.displayName;
+          _rankTitle.text = next.value!.rankTitle;
+        }
+      },
+      fireImmediately: true,
+    );
+  }
 
-    // Listen for future changes
-    ref.listen(playerProfileProvider, (previous, next) {
-      if (next.hasValue && next.value != null) {
-        _playerName.text = next.value!.displayName;
-        _rankTitle.text = next.value!.rankTitle;
-      }
-    });
+  @override
+  void onRemove() {
+    _profileSub?.close();
+    super.onRemove();
   }
 
   @override

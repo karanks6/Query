@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart' hide Image;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flame/events.dart';
 import '../../main.dart';
@@ -79,19 +80,27 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
     _buildLayout();
   }
 
+  ProviderSubscription? _profileSub;
+
   @override
   void onMount() {
     super.onMount();
     // We only need to update _currentPlayerProfile here for the modal.
-    final currentProfile = ref.read(playerProfileProvider).value;
-    if (currentProfile != null) {
-      _currentPlayerProfile = currentProfile;
-    }
-    ref.listen(playerProfileProvider, (previous, next) {
-      if (next.hasValue && next.value != null) {
-        _currentPlayerProfile = next.value;
-      }
-    });
+    _profileSub = ref.listenManual(
+      playerProfileProvider,
+      (previous, next) {
+        if (next.hasValue && next.value != null) {
+          _currentPlayerProfile = next.value;
+        }
+      },
+      fireImmediately: true,
+    );
+  }
+
+  @override
+  void onRemove() {
+    _profileSub?.close();
+    super.onRemove();
   }
 
   void _buildLayout() { 
@@ -445,44 +454,46 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
     add(_xpText);
   }
 
+  ProviderSubscription? _profileSub;
+  ProviderSubscription? _achSub;
+
   @override
   void onMount() {
     super.onMount();
     
     try {
-      // Read current values directly (works synchronously if loaded)
-      final currentProfile = ref.read(playerProfileProvider).value;
-      if (currentProfile != null) {
-        _refreshStats(streak: currentProfile.streakCount, xp: currentProfile.totalXp);
-      } else if (profile != null) {
-        _refreshStats(streak: profile!.streakCount, xp: profile!.totalXp);
-      }
+      _profileSub = ref.listenManual(
+        playerProfileProvider,
+        (_, next) {
+          if (next.hasValue && next.value != null) {
+            _refreshStats(
+              streak: next.value!.streakCount,
+              xp: next.value!.totalXp,
+            );
+          }
+        },
+        fireImmediately: true,
+      );
 
-      final currentAch = ref.read(allAchievementsProvider).value;
-      if (currentAch != null) {
-        _refreshStats(achievements: currentAch.length);
-      } else if (initialAchievements != null) {
-        _refreshStats(achievements: initialAchievements);
-      }
-
-      // Listen for future changes directly in onMount
-      ref.listen(playerProfileProvider, (_, next) {
-        if (next.hasValue && next.value != null) {
-          _refreshStats(
-            streak: next.value!.streakCount,
-            xp: next.value!.totalXp,
-          );
-        }
-      });
-
-      ref.listen(allAchievementsProvider, (_, next) {
-        if (next.hasValue && next.value != null) {
-          _refreshStats(achievements: next.value!.length);
-        }
-      });
+      _achSub = ref.listenManual(
+        allAchievementsProvider,
+        (_, next) {
+          if (next.hasValue && next.value != null) {
+            _refreshStats(achievements: next.value!.length);
+          }
+        },
+        fireImmediately: true,
+      );
     } catch (e) {
       print('Error in _StatsRowComponent.onMount: $e');
     }
+  }
+
+  @override
+  void onRemove() {
+    _profileSub?.close();
+    _achSub?.close();
+    super.onRemove();
   }
 }
 
