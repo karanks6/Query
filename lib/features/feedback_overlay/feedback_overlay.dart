@@ -46,7 +46,11 @@ class FeedbackOverlay extends ConsumerWidget {
     
     // Play sound effect on build
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(audioControllerProvider).playSfx(isSuccess ? 'level_success' : 'level_failure');
+      if (isSuccess) {
+        ref.read(audioControllerProvider).playCelebration();
+      } else {
+        ref.read(audioControllerProvider).playSfx('ui_click.wav');
+      }
     });
 
     final state = ref.watch(gameplayProvider);
