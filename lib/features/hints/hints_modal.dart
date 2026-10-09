@@ -64,7 +64,7 @@ class _HintsModalState extends State<HintsModal> {
     } else if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Not enough Insight Points to reveal this hint.'),
+          content: Text('Not enough Insight Points to reveal this hint.', style: TextStyle(color: Colors.white)),
           backgroundColor: Color(0xFF3A1A1A),
           behavior: SnackBarBehavior.floating,
         ),
@@ -203,14 +203,14 @@ class _HintTierRow extends StatelessWidget {
                   style: GameTokens.bodySmall.copyWith(
                     color: isUnlocked
                         ? GameTokens.accent
-                        : GameTokens.disabledText,
+                        : GameTokens.secondaryText.withOpacity(0.6),
                     letterSpacing: 1,
                   ),
                 ),
                 const Spacer(),
                 if (!isUnlocked)
-                  const Icon(Icons.lock_outline,
-                      color: GameTokens.disabledText, size: 14)
+                  Icon(Icons.lock_outline,
+                      color: GameTokens.secondaryText.withOpacity(0.6), size: 14)
                 else if (!isRevealed && hint != null)
                   ActionButton(
                     onPressed: () => onReveal(hint!),
