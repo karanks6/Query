@@ -82,15 +82,15 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
   @override
   void onMount() {
     super.onMount();
-    // _StatsRowComponent handles its own real-time updates via RiverpodComponentMixin.
     // We only need to update _currentPlayerProfile here for the modal.
-    addToGameWidgetBuild(() {
-      _currentPlayerProfile = ref.read(playerProfileProvider).value;
-      ref.listen(playerProfileProvider, (previous, next) {
-        if (next.hasValue && next.value != null) {
-          _currentPlayerProfile = next.value;
-        }
-      });
+    final currentProfile = ref.read(playerProfileProvider).value;
+    if (currentProfile != null) {
+      _currentPlayerProfile = currentProfile;
+    }
+    ref.listen(playerProfileProvider, (previous, next) {
+      if (next.hasValue && next.value != null) {
+        _currentPlayerProfile = next.value;
+      }
     });
   }
 
@@ -450,40 +450,35 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
     super.onMount();
     
     try {
-      // Seed initial values using the passed-in profile and achievements count
-      if (profile != null) {
+      // Read current values directly (works synchronously if loaded)
+      final currentProfile = ref.read(playerProfileProvider).value;
+      if (currentProfile != null) {
+        _refreshStats(streak: currentProfile.streakCount, xp: currentProfile.totalXp);
+      } else if (profile != null) {
         _refreshStats(streak: profile!.streakCount, xp: profile!.totalXp);
       }
-      if (initialAchievements != null) {
+
+      final currentAch = ref.read(allAchievementsProvider).value;
+      if (currentAch != null) {
+        _refreshStats(achievements: currentAch.length);
+      } else if (initialAchievements != null) {
         _refreshStats(achievements: initialAchievements);
       }
 
-      addToGameWidgetBuild(() {
-        final currentProfile = ref.read(playerProfileProvider).value;
-        if (currentProfile != null) {
-          _refreshStats(streak: currentProfile.streakCount, xp: currentProfile.totalXp);
+      // Listen for future changes directly in onMount
+      ref.listen(playerProfileProvider, (_, next) {
+        if (next.hasValue && next.value != null) {
+          _refreshStats(
+            streak: next.value!.streakCount,
+            xp: next.value!.totalXp,
+          );
         }
+      });
 
-        final currentAch = ref.read(allAchievementsProvider).value;
-        if (currentAch != null) {
-          _refreshStats(achievements: currentAch.length);
+      ref.listen(allAchievementsProvider, (_, next) {
+        if (next.hasValue && next.value != null) {
+          _refreshStats(achievements: next.value!.length);
         }
-
-        // Listen for future changes
-        ref.listen(playerProfileProvider, (_, next) {
-          if (next.hasValue && next.value != null) {
-            _refreshStats(
-              streak: next.value!.streakCount,
-              xp: next.value!.totalXp,
-            );
-          }
-        });
-
-        ref.listen(allAchievementsProvider, (_, next) {
-          if (next.hasValue && next.value != null) {
-            _refreshStats(achievements: next.value!.length);
-          }
-        });
       });
     } catch (e) {
       print('Error in _StatsRowComponent.onMount: $e');
