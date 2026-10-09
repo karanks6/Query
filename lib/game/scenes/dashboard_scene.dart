@@ -85,11 +85,12 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
     // _StatsRowComponent handles its own real-time updates via RiverpodComponentMixin.
     // We only need to update _currentPlayerProfile here for the modal.
     addToGameWidgetBuild(() {
+      _currentPlayerProfile = ref.read(playerProfileProvider).value;
       ref.listen(playerProfileProvider, (previous, next) {
         if (next.hasValue && next.value != null) {
           _currentPlayerProfile = next.value;
         }
-      }, fireImmediately: true);
+      });
     });
   }
 
@@ -458,6 +459,16 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
       }
 
       addToGameWidgetBuild(() {
+        final currentProfile = ref.read(playerProfileProvider).value;
+        if (currentProfile != null) {
+          _refreshStats(streak: currentProfile.streakCount, xp: currentProfile.totalXp);
+        }
+
+        final currentAch = ref.read(allAchievementsProvider).value;
+        if (currentAch != null) {
+          _refreshStats(achievements: currentAch.length);
+        }
+
         // Listen for future changes
         ref.listen(playerProfileProvider, (_, next) {
           if (next.hasValue && next.value != null) {
@@ -466,13 +477,13 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
               xp: next.value!.totalXp,
             );
           }
-        }, fireImmediately: true);
+        });
 
         ref.listen(allAchievementsProvider, (_, next) {
           if (next.hasValue && next.value != null) {
             _refreshStats(achievements: next.value!.length);
           }
-        }, fireImmediately: true);
+        });
       });
     } catch (e) {
       print('Error in _StatsRowComponent.onMount: $e');
