@@ -403,8 +403,8 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
     _streakText = TextComponent(
       text: '🔥 0',
       textRenderer: TextPaint(style: textStyle),
-      position: Vector2(10, size.y / 2),
-      anchor: Anchor.centerLeft,
+      position: Vector2(colWidth * 0.5, size.y / 2),
+      anchor: Anchor.center,
     );
     streakBtn.add(_streakText);
     add(streakBtn);
