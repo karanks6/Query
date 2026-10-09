@@ -33,8 +33,16 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
     add(scanLines);
 
     FlameAudio.bgm.initialize();
-    await FlameAudio.audioCache.loadAll(['click.wav', 'ambient.wav']);
-    ref.read(audioControllerProvider).playBgm('ambient.wav');
+    await FlameAudio.audioCache.loadAll([
+      'ui_click.wav', 
+      'celebration.wav',
+      'ambient_dashboard.mp3',
+      'bgm_world_01.mp3',
+      'bgm_world_02.mp3',
+      'bgm_world_03.mp3',
+      'bgm_world_04.mp3'
+    ]);
+    ref.read(audioControllerProvider).playWorldBgm('dashboard');
   }
 
   Future<void> pushScene(QueryScene next) async {
