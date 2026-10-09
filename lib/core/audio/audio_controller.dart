@@ -1,33 +1,56 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flame_audio/flame_audio.dart';
 import '../settings/settings_service.dart';
 
 class AudioController {
   final Ref ref;
 
   AudioController(this.ref) {
-    // Listen to settings changes if needed
+    _init();
   }
 
-  void playSfx(String sfxId) {
+  void _init() {
+    ref.listen(settingsProvider, (previous, next) {
+      if (previous?.musicEnabled != next.musicEnabled) {
+        if (!next.musicEnabled) {
+          stopBgm();
+        } else {
+          // Ideally resume previous bgm if we kept track of it.
+        }
+      }
+    });
+  }
+
+  Future<void> playSfx(String sfxId) async {
     final settings = ref.read(settingsProvider);
     if (!settings.soundEffectsEnabled) return;
     
-    // In a real implementation, this would use audioplayers or similar.
-    // For now, we mock the audio playback.
-    debugPrint('[AudioController] Playing SFX: $sfxId');
+    try {
+      await FlameAudio.play(sfxId);
+    } catch (e) {
+      debugPrint('[AudioController] Error playing SFX $sfxId: $e');
+    }
   }
 
-  void playBgm(String bgmId) {
+  Future<void> playBgm(String bgmId) async {
     final settings = ref.read(settingsProvider);
     if (!settings.musicEnabled) return;
 
-    // Mock background music playback
-    debugPrint('[AudioController] Playing BGM: $bgmId');
+    try {
+      if (FlameAudio.bgm.isPlaying) {
+        FlameAudio.bgm.stop();
+      }
+      await FlameAudio.bgm.play(bgmId);
+    } catch (e) {
+      debugPrint('[AudioController] Error playing BGM $bgmId: $e');
+    }
   }
 
   void stopBgm() {
-    debugPrint('[AudioController] Stopping BGM');
+    if (FlameAudio.bgm.isPlaying) {
+      FlameAudio.bgm.stop();
+    }
   }
 }
 

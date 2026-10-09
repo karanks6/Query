@@ -2,7 +2,9 @@ import 'package:flame/game.dart';
 import 'package:flame/components.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:flame_audio/flame_audio.dart';
 
+import '../core/audio/audio_controller.dart';
 import 'scenes/query_scene.dart';
 import 'components/scan_line_component.dart';
 import 'components/parallax_world.dart';
@@ -29,6 +31,10 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
     // The parallax is in the deep background.
     add(parallax);
     add(scanLines);
+
+    FlameAudio.bgm.initialize();
+    await FlameAudio.audioCache.loadAll(['click.wav', 'ambient.wav']);
+    ref.read(audioControllerProvider).playBgm('ambient.wav');
   }
 
   Future<void> pushScene(QueryScene next) async {

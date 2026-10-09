@@ -100,6 +100,7 @@ flutter:
     - assets/levels/daily_challenges/
     - assets/levels/weekly_cases/
     - assets/concept_cards/
+    - assets/audio/
     - assets/audio/terminal_classic/
     - assets/images/
     - assets/images/chapters/
