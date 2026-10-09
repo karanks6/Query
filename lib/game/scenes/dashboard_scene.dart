@@ -72,8 +72,8 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
       currentWorldTitle = worldData.title;
       currentWorldNumber = worldData.number;
 
-    } catch (e) {
-      // Fallback or ignore
+    } catch (e, st) {
+      print('DASHBOARD SCENE ONLOAD ERROR: $e\n$st');
     }
 
     _buildLayout();
@@ -89,7 +89,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
         if (next.hasValue && next.value != null) {
           _currentPlayerProfile = next.value;
         }
-      });
+      }, fireImmediately: true);
     });
   }
 
@@ -466,13 +466,13 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
               xp: next.value!.totalXp,
             );
           }
-        });
+        }, fireImmediately: true);
 
         ref.listen(allAchievementsProvider, (_, next) {
           if (next.hasValue && next.value != null) {
             _refreshStats(achievements: next.value!.length);
           }
-        });
+        }, fireImmediately: true);
       });
     } catch (e) {
       print('Error in _StatsRowComponent.onMount: $e');
