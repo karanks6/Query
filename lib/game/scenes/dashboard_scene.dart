@@ -15,14 +15,13 @@ import '../components/ui/wood_button.dart';
 import '../components/ui/parchment_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/providers.dart';
-import '../../core/settings/settings_service.dart';
 import '../../data/content/level_loader.dart';
 
-class _LayoutContainer extends PositionComponent with RiverpodComponentMixin {}
+class LayoutContainer extends PositionComponent with RiverpodComponentMixin {}
 
 class DashboardScene extends QueryScene with RiverpodComponentMixin {
   late PersistentHudComponent hud;
-  late _LayoutContainer layoutContainer;
+  late LayoutContainer layoutContainer;
   
   String currentWorldId = 'world_01';
   String currentWorldTitle = 'Archive Vaults';
@@ -44,7 +43,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
     hud = PersistentHudComponent();
     add(hud);
 
-    layoutContainer = _LayoutContainer()
+    layoutContainer = LayoutContainer()
       ..size = Vector2(game.size.x, game.size.y - 100)
       ..position = Vector2(0, 110);
     add(layoutContainer);
@@ -74,7 +73,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
       currentWorldNumber = worldData.number;
 
     } catch (e, st) {
-      print('DASHBOARD SCENE ONLOAD ERROR: $e\n$st');
+      debugPrint('DASHBOARD SCENE ONLOAD ERROR: $e\n$st');
     }
 
     _buildLayout();
@@ -485,7 +484,7 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
         fireImmediately: true,
       );
     } catch (e) {
-      print('Error in _StatsRowComponent.onMount: $e');
+      debugPrint('Error in _StatsRowComponent.onMount: $e');
     }
   }
 
