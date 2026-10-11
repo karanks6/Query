@@ -29,10 +29,6 @@ class ProfileScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator(color: GameTokens.accent)),
         error: (err, stack) => Center(child: Text('Error loading profile: $err', style: const TextStyle(color: GameTokens.error))),
         data: (profile) {
-          if (profile == null) {
-            return const Center(child: Text('Profile not found', style: TextStyle(color: GameTokens.error)));
-          }
-
           return ListView(
             padding: const EdgeInsets.all(GameTokens.spaceLg),
             children: [
