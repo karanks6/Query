@@ -203,14 +203,14 @@ class _HintTierRow extends StatelessWidget {
                   style: GameTokens.bodySmall.copyWith(
                     color: isUnlocked
                         ? GameTokens.accent
-                        : GameTokens.secondaryText.withOpacity(0.6),
+                        : GameTokens.secondaryText.withValues(alpha: 0.6),
                     letterSpacing: 1,
                   ),
                 ),
                 const Spacer(),
                 if (!isUnlocked)
                   Icon(Icons.lock_outline,
-                      color: GameTokens.secondaryText.withOpacity(0.6), size: 14)
+                      color: GameTokens.secondaryText.withValues(alpha: 0.6), size: 14)
                 else if (!isRevealed && hint != null)
                   ActionButton(
                     onPressed: () => onReveal(hint!),
