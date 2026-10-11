@@ -78,9 +78,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       );
 
                       final statsRow = profileAsync.when(
-                        data: (profile) => profile != null ? _StatsRow(profile: profile) : const Text('Profile is null', style: TextStyle(color: Colors.red)),
+                        data: (profile) => _StatsRow(profile: profile),
                         loading: () => const _LoadingCard(),
-                        error: (err, __) => Text('Stats Error: $err', style: const TextStyle(color: Colors.red)),
+                        error: (_, __) => const SizedBox.shrink(),
                       );
 
                       final dailyChallenge = _DailyChallengeCard(
