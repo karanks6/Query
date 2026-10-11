@@ -23,8 +23,6 @@ class RankProgressModal extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, __) => const Center(child: Text('Error loading profile')),
         data: (profile) {
-          if (profile == null) return const SizedBox.shrink();
-
           final currentRank = RankSystem.getRankForXp(profile.totalXp);
           final currentIndex = RankSystem.tiers.indexOf(currentRank);
           
