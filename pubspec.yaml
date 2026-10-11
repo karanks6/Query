@@ -105,6 +105,11 @@ flutter:
     - assets/images/
     - assets/images/chapters/
     - assets/reference/
+    - assets/fonts/
+    - assets/fonts/NunitoSans-Black.ttf
+    - assets/fonts/NunitoSans-Regular.ttf
+    - assets/fonts/Quicksand-Bold.ttf
+    - assets/fonts/Quicksand-Regular.ttf
 
   fonts:
     - family: JetBrainsMono
