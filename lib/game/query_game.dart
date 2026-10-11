@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
@@ -32,17 +34,24 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
     add(parallax);
     add(scanLines);
 
-    FlameAudio.bgm.initialize();
-    await FlameAudio.audioCache.loadAll([
-      'ui_click.wav', 
-      'celebration.wav',
-      'ambient_dashboard.mp3',
-      'bgm_world_01.mp3',
-      'bgm_world_02.mp3',
-      'bgm_world_03.mp3',
-      'bgm_world_04.mp3'
-    ]);
-    ref.read(audioControllerProvider).playWorldBgm('dashboard');
+    final isTesting = !kIsWeb && Platform.environment.containsKey('FLUTTER_TEST');
+    if (!isTesting) {
+      try {
+        FlameAudio.bgm.initialize();
+        await FlameAudio.audioCache.loadAll([
+          'ui_click.wav', 
+          'celebration.wav',
+          'ambient_dashboard.mp3',
+          'bgm_world_01.mp3',
+          'bgm_world_02.mp3',
+          'bgm_world_03.mp3',
+          'bgm_world_04.mp3'
+        ]);
+        ref.read(audioControllerProvider).playWorldBgm('dashboard');
+      } catch (e) {
+        debugPrint('[QueryGame] Audio initialization skipped or failed: $e');
+      }
+    }
   }
 
   Future<void> pushScene(QueryScene next) async {
