@@ -65,9 +65,13 @@ class AudioController {
 
   Future<void> playCelebration() async {
     final settings = ref.read(settingsProvider);
-    if (settings.musicEnabled && FlameAudio.bgm.isPlaying) {
-      // Pause music briefly
-      FlameAudio.bgm.pause();
+    try {
+      if (settings.musicEnabled && FlameAudio.bgm.isPlaying) {
+        // Pause music briefly
+        FlameAudio.bgm.pause();
+      }
+    } catch (e) {
+      debugPrint('[AudioController] Error pausing BGM: $e');
     }
     
     if (settings.soundEffectsEnabled) {
@@ -81,16 +85,24 @@ class AudioController {
     // Resume after 2.5 seconds
     if (settings.musicEnabled) {
       Timer(const Duration(milliseconds: 2500), () {
-        if (_currentBgm != null && !FlameAudio.bgm.isPlaying) {
-          FlameAudio.bgm.resume();
+        try {
+          if (_currentBgm != null && !FlameAudio.bgm.isPlaying) {
+            FlameAudio.bgm.resume();
+          }
+        } catch (e) {
+          debugPrint('[AudioController] Error resuming BGM: $e');
         }
       });
     }
   }
 
   void stopBgm() {
-    if (FlameAudio.bgm.isPlaying) {
-      FlameAudio.bgm.stop();
+    try {
+      if (FlameAudio.bgm.isPlaying) {
+        FlameAudio.bgm.stop();
+      }
+    } catch (e) {
+      debugPrint('[AudioController] Error stopping BGM: $e');
     }
   }
 }
