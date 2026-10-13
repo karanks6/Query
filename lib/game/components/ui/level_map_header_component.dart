@@ -5,19 +5,24 @@ import 'package:flutter/material.dart' hide Image;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flame_audio/flame_audio.dart';
 
-/// A high-end Unity-style fixed game header for the Level Map.
+/// A soft, animated adventure game fixed header for the Level Map.
 ///
 /// Features:
-/// - Pinned top HUD with stone-arch gradient backdrop
-/// - 3D tactile circular/shield Back Button with gold bevel
-/// - Ornate World Title plaque with Quicksand/NunitoSans fantasy typography
-/// - Jewel-encrusted Star Trophy pill badge showing total stars earned
+/// - Safe top spacing (46px+ top inset) preventing any collision with Android status bar/notch
+/// - Warm adventure game palette (mahogany canopy, warm gold trim, soft glowing stars)
+/// - 3D tactile circular Back Button with warm wood/amber tones and bounce feedback
+/// - World Title & Chapter subtitle styled with soft fantasy typography
+/// - Dynamic Star Trophy pill badge that updates reactively
 class LevelMapHeaderComponent extends PositionComponent {
   final String worldTitle;
   final String worldSubtitle;
-  final int earnedStars;
+  int earnedStars;
   final int totalPossibleStars;
   final VoidCallback onBackPressed;
+
+  late _StarBadgeComponent _badgePill;
+  late TextComponent _titleComp;
+  late TextComponent _subtitleComp;
 
   LevelMapHeaderComponent({
     required this.worldTitle,
@@ -32,22 +37,24 @@ class LevelMapHeaderComponent extends PositionComponent {
   Future<void> onLoad() async {
     await super.onLoad();
 
+    const topInset = 46.0;
+
     // 1. Back Button
     final backBtn = _HeaderBackButton(
-      position: Vector2(16, 24),
-      size: Vector2(46, 46),
+      position: Vector2(16, topInset),
+      size: Vector2(44, 44),
       onPressed: onBackPressed,
     );
     add(backBtn);
 
     // 2. World Title Text
     final centerX = size.x / 2.0;
-    final titleComp = TextComponent(
+    _titleComp = TextComponent(
       text: worldTitle.toUpperCase(),
       textRenderer: TextPaint(
-        style: GoogleFonts.quicksand(
-          color: const Color(0xFFF9F5EA),
-          fontSize: 17,
+        style: GoogleFonts.nunitoSans(
+          color: const Color(0xFFFFF9EC),
+          fontSize: 16.5,
           fontWeight: FontWeight.w900,
           letterSpacing: 2.0,
           shadows: [
@@ -60,75 +67,80 @@ class LevelMapHeaderComponent extends PositionComponent {
         ),
       ),
       anchor: Anchor.topCenter,
-      position: Vector2(centerX, 23),
+      position: Vector2(centerX, topInset + 2),
     );
-    add(titleComp);
+    add(_titleComp);
 
     // 3. World Subtitle Text
-    final subtitleComp = TextComponent(
+    _subtitleComp = TextComponent(
       text: worldSubtitle.toUpperCase(),
       textRenderer: TextPaint(
         style: GoogleFonts.quicksand(
           color: const Color(0xFFFFD166),
-          fontSize: 10,
+          fontSize: 10.5,
           fontWeight: FontWeight.w800,
-          letterSpacing: 1.5,
+          letterSpacing: 1.2,
         ),
       ),
       anchor: Anchor.topCenter,
-      position: Vector2(centerX, 48),
+      position: Vector2(centerX, topInset + 25),
     );
-    add(subtitleComp);
+    add(_subtitleComp);
 
     // 4. Star Badge Text
-    final badgeWidth = 66.0;
-    final badgeHeight = 32.0;
+    const badgeWidth = 68.0;
+    const badgeHeight = 32.0;
     final badgeLeft = size.x - badgeWidth - 16.0;
-    final badgeTop = 31.0;
+    final badgeTop = topInset + 6.0;
 
-    final badgePill = _StarBadgeComponent(
+    _badgePill = _StarBadgeComponent(
       position: Vector2(badgeLeft, badgeTop),
       size: Vector2(badgeWidth, badgeHeight),
       earnedStars: earnedStars,
       totalStars: totalPossibleStars,
     );
-    add(badgePill);
+    add(_badgePill);
+  }
+
+  void updateStars(int earned, int total) {
+    earnedStars = earned;
+    _badgePill.updateStars(earned, total);
   }
 
   @override
   void render(Canvas canvas) {
     if (size.x <= 0 || size.y <= 0) return;
 
-    // 1. Dark Top Bar Backdrop with Gradient
+    // 1. Warm Mahogany Canopy Backdrop with Gradient
     final rect = Rect.fromLTWH(0, 0, size.x, size.y);
     final bgGradient = ui.Gradient.linear(
       rect.topCenter,
       rect.bottomCenter,
       [
-        const Color(0xF2121B20),
-        const Color(0xE6162329),
-        const Color(0xCC0E171C),
+        const Color(0xF724160E),
+        const Color(0xEB1A100A),
+        const Color(0xD9120B07),
       ],
       const [0.0, 0.7, 1.0],
     );
 
     canvas.drawRect(rect, Paint()..shader = bgGradient);
 
-    // 2. Bottom Shadow Gradient
-    final shadowRect = Rect.fromLTWH(0, size.y, size.x, 20);
+    // 2. Soft Bottom Shadow Gradient
+    final shadowRect = Rect.fromLTWH(0, size.y, size.x, 18);
     final shadowGradient = ui.Gradient.linear(
       shadowRect.topCenter,
       shadowRect.bottomCenter,
       [
-        const Color(0x99000000),
+        const Color(0x80000000),
         const Color(0x00000000),
       ],
     );
     canvas.drawRect(shadowRect, Paint()..shader = shadowGradient);
 
-    // 3. Golden Bottom Bezel Line
+    // 3. Warm Amber Bezel Line
     final bezelPaint = Paint()
-      ..color = const Color(0xFFD4AF37)
+      ..color = const Color(0xFFD48B3E)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
     canvas.drawLine(
@@ -140,8 +152,9 @@ class LevelMapHeaderComponent extends PositionComponent {
 }
 
 class _StarBadgeComponent extends PositionComponent {
-  final int earnedStars;
-  final int totalStars;
+  int earnedStars;
+  int totalStars;
+  late TextComponent _numText;
 
   _StarBadgeComponent({
     required super.position,
@@ -163,22 +176,28 @@ class _StarBadgeComponent extends PositionComponent {
           fontWeight: FontWeight.w900,
         ),
       ),
-      position: Vector2(8, 6),
+      position: Vector2(7, 6),
     );
     add(starText);
 
-    final numText = TextComponent(
+    _numText = TextComponent(
       text: '$earnedStars/$totalStars',
       textRenderer: TextPaint(
-        style: GoogleFonts.quicksand(
-          color: const Color(0xFFF8FAFC),
-          fontSize: 11,
+        style: GoogleFonts.nunitoSans(
+          color: const Color(0xFFFFF9EC),
+          fontSize: 11.5,
           fontWeight: FontWeight.w900,
         ),
       ),
-      position: Vector2(25, 8),
+      position: Vector2(25, 7),
     );
-    add(numText);
+    add(_numText);
+  }
+
+  void updateStars(int earned, int total) {
+    earnedStars = earned;
+    totalStars = total;
+    _numText.text = '$earned/$total';
   }
 
   @override
@@ -190,12 +209,12 @@ class _StarBadgeComponent extends PositionComponent {
 
     // Shadow
     canvas.drawRRect(
-      rrect.shift(const Offset(0, 3)),
+      rrect.shift(const Offset(0, 2)),
       Paint()..color = const Color(0x55000000),
     );
 
     // Background
-    canvas.drawRRect(rrect, Paint()..color = const Color(0xFF1E293B));
+    canvas.drawRRect(rrect, Paint()..color = const Color(0xFF332014));
 
     // Gold Trim
     final trimPaint = Paint()
@@ -222,9 +241,9 @@ class _HeaderBackButton extends PositionComponent with TapCallbacks {
     final chevron = TextComponent(
       text: '<',
       textRenderer: TextPaint(
-        style: GoogleFonts.quicksand(
-          color: const Color(0xFFFFF3B0),
-          fontSize: 24,
+        style: GoogleFonts.nunitoSans(
+          color: const Color(0xFFFFF9EC),
+          fontSize: 23,
           fontWeight: FontWeight.w900,
           shadows: [
             const Shadow(
@@ -251,28 +270,28 @@ class _HeaderBackButton extends PositionComponent with TapCallbacks {
     // Shadow
     if (!_isPressed) {
       canvas.drawRRect(
-        rrect.shift(const Offset(0, 4)),
+        rrect.shift(const Offset(0, 3)),
         Paint()..color = const Color(0x66000000),
       );
     }
 
     if (_isPressed) {
       canvas.save();
-      canvas.translate(0, 3);
+      canvas.translate(0, 2);
     }
 
-    // Gradient Fill
+    // Warm Adventure Wood/Amber Gradient Fill
     final bgGradient = ui.Gradient.linear(
       Offset.zero,
       Offset(0, size.y),
       [
-        const Color(0xFF2C3E50),
-        const Color(0xFF1A252F),
+        const Color(0xFF4E3524),
+        const Color(0xFF332014),
       ],
     );
     canvas.drawRRect(rrect, Paint()..shader = bgGradient);
 
-    // Bezel Rim
+    // Golden Rim
     final borderPaint = Paint()
       ..color = const Color(0xFFE5B048)
       ..style = PaintingStyle.stroke
@@ -281,10 +300,10 @@ class _HeaderBackButton extends PositionComponent with TapCallbacks {
 
     // Top Rim Highlight
     final highlightPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.3)
+      ..color = Colors.white.withValues(alpha: 0.25)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = 1.5;
+      ..strokeWidth = 1.4;
     canvas.drawLine(
       const Offset(8, 2),
       Offset(size.x - 8, 2),
@@ -301,7 +320,7 @@ class _HeaderBackButton extends PositionComponent with TapCallbacks {
     _isPressed = true;
     for (final c in children) {
       if (c is PositionComponent) {
-        c.position.y += 3;
+        c.position.y += 2;
       }
     }
     try {
@@ -315,7 +334,7 @@ class _HeaderBackButton extends PositionComponent with TapCallbacks {
       _isPressed = false;
       for (final c in children) {
         if (c is PositionComponent) {
-          c.position.y -= 3;
+          c.position.y -= 2;
         }
       }
       onPressed();
@@ -328,7 +347,7 @@ class _HeaderBackButton extends PositionComponent with TapCallbacks {
       _isPressed = false;
       for (final c in children) {
         if (c is PositionComponent) {
-          c.position.y -= 3;
+          c.position.y -= 2;
         }
       }
     }
