@@ -85,10 +85,32 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
     if (sceneStack.length > 1) {
       final old = sceneStack.removeLast();
       await old.onExit();
-      remove(old);
+      if (old.parent != null) {
+        remove(old);
+      }
 
       final current = sceneStack.last;
-      add(current);
+      if (current.parent == null) {
+        add(current);
+      }
+      await current.onEnter();
+      _updateOverlays();
+    }
+  }
+
+  Future<void> popToScene(Type sceneType) async {
+    while (sceneStack.length > 1 && sceneStack.last.runtimeType != sceneType) {
+      final old = sceneStack.removeLast();
+      await old.onExit();
+      if (old.parent != null) {
+        remove(old);
+      }
+    }
+    if (sceneStack.isNotEmpty) {
+      final current = sceneStack.last;
+      if (current.parent == null) {
+        add(current);
+      }
       await current.onEnter();
       _updateOverlays();
     }
