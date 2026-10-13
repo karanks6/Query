@@ -11,6 +11,7 @@ import '../components/ui/stage_node_component.dart';
 import '../components/ui/level_map_header_component.dart';
 import '../../data/content/level_loader.dart';
 import '../../data/content/models/level_model.dart';
+import '../../data/local/daos/progress_dao.dart';
 import '../../core/providers.dart';
 
 /// Soft, animated adventure game Level Map Scene.
@@ -19,7 +20,7 @@ import '../../core/providers.dart';
 /// - Naturally curving meandering river connecting all stages with moving water currents & foam
 /// - Soft animated game tablets (Zelda/Ori/Genshin style) matching warm app nature theme
 /// - Fixed top HUD with comfortable 46px+ safe spacing preventing notch/status bar collisions
-/// - Reactive level unlocking via onEnter() ensuring next level unlocks immediately upon completion
+/// - Reactive, bulletproof level unlocking on level completion
 /// - Strictly clamped responsive layouts ensuring zero overflow
 class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallbacks {
   final String worldId;
@@ -33,11 +34,22 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
 
   double _scrollY = 0;
   double _maxScroll = 0;
+  bool _needsRefresh = false;
 
   LevelMapScene({required this.worldId});
 
   @override
   bool containsLocalPoint(Vector2 point) => true;
+
+  ProgressDao? _resolveProgressDao() {
+    try {
+      if (isMounted) return ref.read(progressDaoProvider);
+    } catch (_) {}
+    try {
+      return game.ref.read(progressDaoProvider);
+    } catch (_) {}
+    return null;
+  }
 
   @override
   Future<void> onLoad() async {
@@ -92,16 +104,27 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
     final completedIds = <String>{};
     final starsMap = <String, int>{};
     int totalEarnedStars = 0;
+    int levelsCompletedCount = 0;
 
     try {
-      final progressDao = ref.read(progressDaoProvider);
-      final allComps = await progressDao.getAllLevelCompletions();
-      for (final comp in allComps) {
-        completedIds.add(comp.levelId);
-        starsMap[comp.levelId] = comp.starsEarned;
+      final progressDao = _resolveProgressDao();
+      if (progressDao != null) {
+        final allComps = await progressDao.getAllLevelCompletions();
+        for (final comp in allComps) {
+          completedIds.add(comp.levelId);
+          starsMap[comp.levelId] = comp.starsEarned;
+        }
+        try {
+          final byWorld = await progressDao.getCompletedLevelIds(world.id);
+          completedIds.addAll(byWorld);
+        } catch (_) {}
+        try {
+          final wp = await progressDao.getWorldProgress(world.id);
+          if (wp != null) {
+            levelsCompletedCount = wp.levelsCompleted;
+          }
+        } catch (_) {}
       }
-      final byWorld = await progressDao.getCompletedLevelIds(world.id);
-      completedIds.addAll(byWorld);
     } catch (e) {
       debugPrint('[LevelMapScene] Progress lookup skipped: $e');
     }
@@ -114,8 +137,12 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
 
     // Determine active/current level
     String? currentLevelId;
-    for (final lvl in world.levels) {
-      if (!completedIds.contains(lvl.id)) {
+    for (int i = 0; i < world.levels.length; i++) {
+      final lvl = world.levels[i];
+      final isCompleted = completedIds.contains(lvl.id) ||
+          (starsMap[lvl.id] ?? 0) > 0 ||
+          i < levelsCompletedCount;
+      if (!isCompleted) {
         currentLevelId = lvl.id;
         break;
       }
@@ -144,10 +171,20 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
       final x = isLeft ? leftX : rightX;
       final y = startY + (i * stageSpacing);
 
-      final isCompleted = completedIds.contains(level.id);
+      final isCompleted = completedIds.contains(level.id) ||
+          (starsMap[level.id] ?? 0) > 0 ||
+          i < levelsCompletedCount;
+
+      final prevCompleted = i > 0 &&
+          (completedIds.contains(world.levels[i - 1].id) ||
+              (starsMap[world.levels[i - 1].id] ?? 0) > 0 ||
+              (i - 1) < levelsCompletedCount);
+
       final isUnlocked = i == 0 ||
-          (i > 0 && completedIds.contains(world.levels[i - 1].id)) ||
-          isCompleted;
+          i <= levelsCompletedCount ||
+          isCompleted ||
+          prevCompleted;
+
       final isCurrent = level.id == currentLevelId;
       final stars = starsMap[level.id] ?? 0;
 
@@ -192,6 +229,12 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
     add(headerComponent!);
   }
 
+  @override
+  void onMount() {
+    super.onMount();
+    refreshProgress();
+  }
+
   /// Re-evaluates player progress when entering or returning from gameplay.
   /// Unlocks the next level immediately upon level completion.
   Future<void> refreshProgress() async {
@@ -201,16 +244,29 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
     final completedIds = <String>{};
     final starsMap = <String, int>{};
     int totalEarnedStars = 0;
+    int levelsCompletedCount = 0;
 
     try {
-      final progressDao = ref.read(progressDaoProvider);
-      final allComps = await progressDao.getAllLevelCompletions();
-      for (final comp in allComps) {
-        completedIds.add(comp.levelId);
-        starsMap[comp.levelId] = comp.starsEarned;
+      final progressDao = _resolveProgressDao();
+      if (progressDao != null) {
+        final allComps = await progressDao.getAllLevelCompletions();
+        for (final comp in allComps) {
+          completedIds.add(comp.levelId);
+          starsMap[comp.levelId] = comp.starsEarned;
+        }
+
+        try {
+          final byWorld = await progressDao.getCompletedLevelIds(world.id);
+          completedIds.addAll(byWorld);
+        } catch (_) {}
+
+        try {
+          final wp = await progressDao.getWorldProgress(world.id);
+          if (wp != null) {
+            levelsCompletedCount = wp.levelsCompleted;
+          }
+        } catch (_) {}
       }
-      final byWorld = await progressDao.getCompletedLevelIds(world.id);
-      completedIds.addAll(byWorld);
     } catch (e) {
       debugPrint('[LevelMapScene] Progress refresh error: $e');
     }
@@ -222,8 +278,12 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
     }
 
     String? currentLevelId;
-    for (final lvl in world.levels) {
-      if (!completedIds.contains(lvl.id)) {
+    for (int i = 0; i < world.levels.length; i++) {
+      final lvl = world.levels[i];
+      final isCompleted = completedIds.contains(lvl.id) ||
+          (starsMap[lvl.id] ?? 0) > 0 ||
+          i < levelsCompletedCount;
+      if (!isCompleted) {
         currentLevelId = lvl.id;
         break;
       }
@@ -233,10 +293,21 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
     for (int i = 0; i < _stageNodes.length; i++) {
       if (i >= world.levels.length) break;
       final lvl = world.levels[i];
-      final isCompleted = completedIds.contains(lvl.id);
+
+      final isCompleted = completedIds.contains(lvl.id) ||
+          (starsMap[lvl.id] ?? 0) > 0 ||
+          i < levelsCompletedCount;
+
+      final prevCompleted = i > 0 &&
+          (completedIds.contains(world.levels[i - 1].id) ||
+              (starsMap[world.levels[i - 1].id] ?? 0) > 0 ||
+              (i - 1) < levelsCompletedCount);
+
       final isUnlocked = i == 0 ||
-          (i > 0 && completedIds.contains(world.levels[i - 1].id)) ||
-          isCompleted;
+          i <= levelsCompletedCount ||
+          isCompleted ||
+          prevCompleted;
+
       final isCurrent = lvl.id == currentLevelId;
       final stars = starsMap[lvl.id] ?? 0;
 
@@ -253,7 +324,17 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
   @override
   Future<void> onEnter() async {
     await super.onEnter();
+    _needsRefresh = true;
     await refreshProgress();
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (_needsRefresh) {
+      _needsRefresh = false;
+      refreshProgress();
+    }
   }
 
   @override
