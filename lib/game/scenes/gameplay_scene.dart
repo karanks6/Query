@@ -21,6 +21,7 @@ import '../../features/gameplay/widgets/query_history_sheet.dart';
 import '../../features/gameplay/widgets/concept_lesson_dialog.dart';
 import '../../data/content/level_loader.dart';
 import 'victory_scene.dart';
+import 'level_map_scene.dart';
 
 enum GameplayStatus { initial, success, failed }
 
@@ -226,24 +227,22 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
                   final nextIndex = world.levels.indexWhere((l) => l.id == level.id) + 1;
                   if (nextIndex < world.levels.length) {
                     final nextLevel = world.levels[nextIndex];
-                    game.popScene(); // Pop VictoryScene
-                    game.replaceScene(GameplayScene(level: nextLevel));
+                    await game.popScene(); // Pop VictoryScene
+                    await game.replaceScene(GameplayScene(level: nextLevel));
                     return;
                   }
                 } catch (e) {
                   debugPrint('[GameplayScene] Transition to next level error: $e');
                 }
                 // If end of world or error, return to LevelMap
-                game.popScene(); // Pop Victory
-                game.popScene(); // Pop Gameplay to LevelMap
+                await game.popToScene(LevelMapScene);
               },
-              onReplay: () {
+              onReplay: () async {
                 ref.read(gameplayProvider.notifier).loadLevel(level);
-                game.popScene(); // Pop Victory to resume fresh GameplayScene
+                await game.popScene(); // Pop Victory to resume fresh GameplayScene
               },
-              onMap: () {
-                game.popScene(); // Pop Victory
-                game.popScene(); // Pop Gameplay to go back to LevelMap
+              onMap: () async {
+                await game.popToScene(LevelMapScene);
               },
             ),
           );
