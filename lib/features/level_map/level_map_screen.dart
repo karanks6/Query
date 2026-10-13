@@ -47,7 +47,14 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
     try {
       final world = await LevelLoader.instance.loadWorld(widget.worldId);
       final progressDao = ref.read(progressDaoProvider);
-      final completedIds = await progressDao.getCompletedLevelIds(widget.worldId);
+      final completedIds = <String>{};
+      final allComps = await progressDao.getAllLevelCompletions();
+      for (final comp in allComps) {
+        completedIds.add(comp.levelId);
+      }
+      try {
+        completedIds.addAll(await progressDao.getCompletedLevelIds(world.id));
+      } catch (_) {}
 
       final stars = <String, int>{};
       for (final levelId in completedIds) {
@@ -220,11 +227,12 @@ class _LevelPath extends StatelessWidget {
                         final stars = levelStars[level.id] ?? 0;
                         final isCompleted = stars > 0;
                         final isUnlocked = index == 0 ||
-                            levelStars.containsKey(
-                              world.levels[index - 1].id,
-                            );
+                            isCompleted ||
+                            (index > 0 &&
+                                (levelStars.containsKey(world.levels[index - 1].id) ||
+                                    (levelStars[world.levels[index - 1].id] ?? 0) > 0));
                         final isNextToPlay = isUnlocked && !isCompleted &&
-                            (index == 0 || levelStars.containsKey(world.levels[index - 1].id));
+                            (index == 0 || (levelStars[world.levels[index - 1].id] ?? 0) > 0);
                         final hasNote = levelNotes.contains(level.id);
 
                         // Calculate position based on the winding path
