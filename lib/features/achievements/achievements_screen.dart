@@ -272,16 +272,22 @@ class _AchievementTileState extends State<_AchievementTile> {
           ),
           if (!widget.isEarned) ...[
              const SizedBox(height: GameTokens.spaceSm),
-             Text(
-               'REQUIRES ${widget.def.requiredXp} XP',
-               style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText, fontSize: 10, letterSpacing: 2),
+             FittedBox(
+               fit: BoxFit.scaleDown,
+               child: Text(
+                 'REQUIRES ${widget.def.requiredXp} XP',
+                 style: GameTokens.bodySmall.copyWith(color: GameTokens.secondaryText, fontSize: 10, letterSpacing: 2),
+               ),
              ),
           ],
           if (widget.isEarned) ...[
              const SizedBox(height: GameTokens.spaceSm),
-             Text(
-               'TAP FOR DETAILS',
-               style: GameTokens.bodySmall.copyWith(color: GameTokens.accent, fontSize: 10, letterSpacing: 2),
+             FittedBox(
+               fit: BoxFit.scaleDown,
+               child: Text(
+                 'TAP FOR DETAILS',
+                 style: GameTokens.bodySmall.copyWith(color: GameTokens.accent, fontSize: 10, letterSpacing: 2),
+               ),
              ),
           ]
         ],
@@ -324,9 +330,15 @@ class _AchievementTileState extends State<_AchievementTile> {
               children: [
                 const Icon(Icons.calendar_today, color: GameTokens.success, size: 14),
                 const SizedBox(width: 4),
-                Text(
-                  'Earned: ${_formatDate(widget.earnedAt!)}',
-                  style: GameTokens.bodySmall.copyWith(color: GameTokens.success),
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Earned: ${_formatDate(widget.earnedAt!)}',
+                      style: GameTokens.bodySmall.copyWith(color: GameTokens.success),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -335,9 +347,15 @@ class _AchievementTileState extends State<_AchievementTile> {
             children: [
               const Icon(Icons.star, color: GameTokens.warning, size: 14),
               const SizedBox(width: 4),
-              Text(
-                'Requires: ${widget.def.requiredXp} XP',
-                style: GameTokens.bodySmall.copyWith(color: GameTokens.warning),
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Requires: ${widget.def.requiredXp} XP',
+                    style: GameTokens.bodySmall.copyWith(color: GameTokens.warning),
+                  ),
+                ),
               ),
             ],
           ),
