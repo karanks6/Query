@@ -6,22 +6,20 @@ import 'package:flutter/material.dart' hide Image;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flame_audio/flame_audio.dart';
 
-/// A high-end Unity-style game stage node card.
+/// A soft, animated game UI stage node card.
 ///
-/// Features:
-/// - 3D tactile beveled chassis with dynamic drop shadow
-/// - Embossed circular medallion portal with metallic bezel
-/// - Pulsing magical aura ring on the active/current stage
-/// - 3-Star achievement rating
-/// - Game typography with Quicksand & NunitoSans
-/// - Lock states with padlock glyphs
-/// - Responsive sizing strictly clamped to screen margins
+/// Styled like top animated adventure games (Zelda, Genshin, Ori):
+/// - Soft rounded organic tablets with warm wood/moss/amber palette
+/// - Sunlit golden medallion portal with tactile depth
+/// - Warm breathing aura ring on the active/ready stage
+/// - 3-Star achievement rating and status
+/// - Fully reactive updateProgress() method for dynamic level unlocking
 class StageNodeComponent extends PositionComponent with TapCallbacks {
   final int stageNumber;
   final String title;
-  final int stars;
-  final bool isUnlocked;
-  final bool isCurrent;
+  int stars;
+  bool isUnlocked;
+  bool isCurrent;
   final bool isLeftAligned;
   final VoidCallback onPressed;
 
@@ -43,10 +41,10 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
     required this.onPressed,
     super.position,
     Vector2? size,
-  }) : super(size: size ?? Vector2(220, 74));
+  }) : super(size: size ?? Vector2(195, 72));
 
   Vector2 get riverAnchorPoint {
-    final mx = isLeftAligned ? (size.x - 36.0) : 36.0;
+    final mx = isLeftAligned ? 36.0 : (size.x - 36.0);
     return Vector2(position.x + mx, position.y + (size.y / 2.0));
   }
 
@@ -54,43 +52,34 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    final medallionCenterX = isLeftAligned ? (size.x - 36.0) : 36.0;
-    final double contentLeft = isLeftAligned ? 14.0 : (medallionCenterX + 26.0);
+    final medallionCenterX = isLeftAligned ? 36.0 : (size.x - 36.0);
+    final double contentLeft = isLeftAligned ? 68.0 : 16.0;
 
-    // 1. Stage Subtitle (e.g. "STAGE 1 • READY")
-    final subColor = !isUnlocked
-        ? const Color(0xFF78909C)
-        : (isCurrent
-            ? const Color(0xFFFFE082)
-            : (stars > 0 ? const Color(0xFFFFD56B) : const Color(0xFF81D4FA)));
-
+    // 1. Stage Subtitle
     _stageSubText = TextComponent(
-      text: isCurrent ? 'STAGE $stageNumber • READY' : 'STAGE $stageNumber',
+      text: _computeSubText(),
       textRenderer: TextPaint(
         style: GoogleFonts.quicksand(
-          color: subColor,
-          fontSize: 11,
+          color: _computeSubColor(),
+          fontSize: 10.5,
           fontWeight: FontWeight.w900,
-          letterSpacing: 1.2,
+          letterSpacing: 1.0,
         ),
       ),
-      position: Vector2(contentLeft, 12),
+      position: Vector2(contentLeft, 11),
     );
     add(_stageSubText);
 
     // 2. Stage Title
-    final titleColor = !isUnlocked
-        ? const Color(0xFF90A4AE)
-        : const Color(0xFFFFFFFF);
-
+    final displayTitle = title.length > 13 ? '${title.substring(0, 12)}...' : title;
     _titleText = TextComponent(
-      text: title.length > 15 ? '${title.substring(0, 14)}...' : title,
+      text: displayTitle,
       textRenderer: TextPaint(
         style: GoogleFonts.nunitoSans(
-          color: titleColor,
-          fontSize: 13,
+          color: isUnlocked ? const Color(0xFFFDFBF7) : const Color(0xFFA0AEC0),
+          fontSize: 12.5,
           fontWeight: FontWeight.w800,
-          letterSpacing: 0.3,
+          letterSpacing: 0.2,
           shadows: [
             const Shadow(
               color: Color(0x99000000),
@@ -100,41 +89,22 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
           ],
         ),
       ),
-      position: Vector2(contentLeft, 28),
+      position: Vector2(contentLeft, 27),
     );
     add(_titleText);
 
     // 3. Stars / Status row
-    final String starString;
-    final Color starColor;
-    if (!isUnlocked) {
-      starString = '🔒 LOCKED';
-      starColor = const Color(0xFF78909C);
-    } else if (stars == 3) {
-      starString = '★★★ CLEARED';
-      starColor = const Color(0xFFFFD166);
-    } else if (stars == 2) {
-      starString = '★★☆ CLEARED';
-      starColor = const Color(0xFFFFD166);
-    } else if (stars == 1) {
-      starString = '★☆☆ CLEARED';
-      starColor = const Color(0xFFFFD166);
-    } else {
-      starString = isCurrent ? '▶ PLAY NOW' : '☆☆☆ UNLOCKED';
-      starColor = isCurrent ? const Color(0xFFA7F3D0) : const Color(0xFF94A3B8);
-    }
-
     _starRatingText = TextComponent(
-      text: starString,
+      text: _computeStatusText(),
       textRenderer: TextPaint(
         style: GoogleFonts.quicksand(
-          color: starColor,
-          fontSize: 10,
+          color: _computeStatusColor(),
+          fontSize: 10.0,
           fontWeight: FontWeight.w800,
           letterSpacing: 0.8,
         ),
       ),
-      position: Vector2(contentLeft, 48),
+      position: Vector2(contentLeft, 47),
     );
     add(_starRatingText);
 
@@ -143,7 +113,7 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
       text: !isUnlocked ? '🔒' : '$stageNumber',
       textRenderer: TextPaint(
         style: GoogleFonts.quicksand(
-          color: isCurrent || stars > 0 ? const Color(0xFF2A1B03) : const Color(0xFFF1F5F9),
+          color: isCurrent || stars > 0 ? const Color(0xFF2C1E07) : const Color(0xFFF1F5F9),
           fontSize: !isUnlocked ? 14 : 19,
           fontWeight: FontWeight.w900,
           shadows: isCurrent || stars > 0
@@ -155,6 +125,83 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
       position: Vector2(medallionCenterX, size.y / 2.0),
     );
     add(_medallionText);
+  }
+
+  void updateProgress({
+    required int stars,
+    required bool isUnlocked,
+    required bool isCurrent,
+  }) {
+    this.stars = stars;
+    this.isUnlocked = isUnlocked;
+    this.isCurrent = isCurrent;
+
+    _stageSubText.text = _computeSubText();
+    _stageSubText.textRenderer = TextPaint(
+      style: GoogleFonts.quicksand(
+        color: _computeSubColor(),
+        fontSize: 10.5,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 1.0,
+      ),
+    );
+
+    final displayTitle = title.length > 13 ? '${title.substring(0, 12)}...' : title;
+    _titleText.text = displayTitle;
+    _titleText.textRenderer = TextPaint(
+      style: GoogleFonts.nunitoSans(
+        color: isUnlocked ? const Color(0xFFFDFBF7) : const Color(0xFFA0AEC0),
+        fontSize: 12.5,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 0.2,
+      ),
+    );
+
+    _starRatingText.text = _computeStatusText();
+    _starRatingText.textRenderer = TextPaint(
+      style: GoogleFonts.quicksand(
+        color: _computeStatusColor(),
+        fontSize: 10.0,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 0.8,
+      ),
+    );
+
+    _medallionText.text = !isUnlocked ? '🔒' : '$stageNumber';
+    _medallionText.textRenderer = TextPaint(
+      style: GoogleFonts.quicksand(
+        color: isCurrent || stars > 0 ? const Color(0xFF2C1E07) : const Color(0xFFF1F5F9),
+        fontSize: !isUnlocked ? 14 : 19,
+        fontWeight: FontWeight.w900,
+      ),
+    );
+  }
+
+  String _computeSubText() {
+    if (!isUnlocked) return 'STAGE $stageNumber';
+    if (isCurrent) return 'STAGE $stageNumber • READY';
+    return 'STAGE $stageNumber';
+  }
+
+  Color _computeSubColor() {
+    if (!isUnlocked) return const Color(0xFF8C9BAE);
+    if (isCurrent) return const Color(0xFFFFD54F);
+    if (stars > 0) return const Color(0xFFFFE082);
+    return const Color(0xFF81D4FA);
+  }
+
+  String _computeStatusText() {
+    if (!isUnlocked) return '🔒 LOCKED';
+    if (stars == 3) return '★★★ CLEARED';
+    if (stars == 2) return '★★☆ CLEARED';
+    if (stars == 1) return '★☆☆ CLEARED';
+    return isCurrent ? '▶ PLAY NOW' : '☆☆☆ UNLOCKED';
+  }
+
+  Color _computeStatusColor() {
+    if (!isUnlocked) return const Color(0xFF8C9BAE);
+    if (stars > 0) return const Color(0xFFFFD166);
+    return isCurrent ? const Color(0xFFA7F3D0) : const Color(0xFF94A3B8);
   }
 
   @override
@@ -171,50 +218,50 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
 
     final rrect = RRect.fromRectAndRadius(
       Rect.fromLTWH(0, 0, size.x, size.y),
-      const Radius.circular(18.0),
+      const Radius.circular(20.0),
     );
 
-    // 1. Drop Shadow
+    // 1. Soft Drop Shadow
     if (!_isPressed) {
-      final shadowColor = isUnlocked ? const Color(0x77000000) : const Color(0x55000000);
+      final shadowColor = isUnlocked ? const Color(0x66000000) : const Color(0x44000000);
       final shadowRRect = RRect.fromRectAndRadius(
-        Rect.fromLTWH(0, 6, size.x, size.y),
-        const Radius.circular(18.0),
+        Rect.fromLTWH(0, 5, size.x, size.y),
+        const Radius.circular(20.0),
       );
       canvas.drawRRect(shadowRRect, Paint()..color = shadowColor);
     }
 
     if (_isPressed) {
       canvas.save();
-      canvas.translate(0, 4);
+      canvas.translate(0, 3);
     }
 
-    // 2. Chassis Background Gradient
+    // 2. Soft Nature Tablet Gradient (Warm Wood, Moss Green, Warm Amber)
     final rect = Rect.fromLTWH(0, 0, size.x, size.y);
     final List<Color> bgColors;
     if (!isUnlocked) {
       bgColors = [
-        const Color(0xFF263238),
-        const Color(0xFF1E272C),
-        const Color(0xFF141A1E),
+        const Color(0xFF2E3D39), // Soft weathered river moss stone
+        const Color(0xFF24302D),
+        const Color(0xFF1B2523),
       ];
     } else if (isCurrent) {
       bgColors = [
+        const Color(0xFFD97706), // Warm sunlit amber gold
         const Color(0xFFB45309),
-        const Color(0xFF92400E),
-        const Color(0xFF78350F),
+        const Color(0xFF8A3D06),
       ];
     } else if (stars > 0) {
       bgColors = [
-        const Color(0xFF1E6F48),
-        const Color(0xFF165337),
-        const Color(0xFF0F3A26),
+        const Color(0xFF2E6F4B), // Lush forest jade moss
+        const Color(0xFF23583B),
+        const Color(0xFF18422B),
       ];
     } else {
       bgColors = [
-        const Color(0xFF2E4057),
-        const Color(0xFF223042),
-        const Color(0xFF17212E),
+        const Color(0xFF335C67), // Soft mountain lake teal
+        const Color(0xFF274750),
+        const Color(0xFF1B3238),
       ];
     }
 
@@ -227,36 +274,36 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
 
     canvas.drawRRect(rrect, Paint()..shader = gradient);
 
-    // 3. Metallic Border
+    // 3. Warm Beveled Border
     final borderPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.2;
+      ..strokeWidth = 2.0;
 
     if (!isUnlocked) {
-      borderPaint.color = const Color(0xFF455A64);
+      borderPaint.color = const Color(0xFF4A5E57); // Muted river moss rim
     } else if (isCurrent) {
-      borderPaint.color = const Color(0xFFFFD166);
+      borderPaint.color = const Color(0xFFFFE082); // Warm sun gold rim
     } else if (stars > 0) {
-      borderPaint.color = const Color(0xFFE5B048);
+      borderPaint.color = const Color(0xFFE5B048); // Antique gold rim
     } else {
       borderPaint.color = const Color(0xFF78909C);
     }
     canvas.drawRRect(rrect, borderPaint);
 
-    // 4. Top Rim Highlight
+    // 4. Soft Top Chamfer Highlight
     final topHighlightPaint = Paint()
       ..color = Colors.white.withValues(alpha: isUnlocked ? 0.28 : 0.12)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = 1.8;
+      ..strokeWidth = 1.6;
     canvas.drawLine(
-      const Offset(18, 2),
-      Offset(size.x - 18, 2),
+      const Offset(20, 2),
+      Offset(size.x - 20, 2),
       topHighlightPaint,
     );
 
     // 5. Render Medallion Portal Plate
-    final medallionCenterX = isLeftAligned ? (size.x - 36.0) : 36.0;
+    final medallionCenterX = isLeftAligned ? 36.0 : (size.x - 36.0);
     final medallionCenter = Offset(medallionCenterX, size.y / 2.0);
     _renderMedallion(canvas, medallionCenter);
 
@@ -266,38 +313,38 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
   }
 
   void _renderMedallion(Canvas canvas, Offset center) {
-    const radius = 25.0;
+    const radius = 24.0;
 
-    // A. Pulsing Aura on Current Stage
+    // A. Soft Warm Breathing Halo on Ready Stage
     if (isCurrent) {
-      final pulse = (sin(_animTime * 4.0) + 1.0) / 2.0;
-      final pulseRadius = radius + 3.0 + (pulse * 6.0);
-      final pulseAlpha = (0.6 - (pulse * 0.4)).clamp(0.0, 1.0);
+      final pulse = (sin(_animTime * 3.5) + 1.0) / 2.0;
+      final pulseRadius = radius + 3.0 + (pulse * 5.0);
+      final pulseAlpha = (0.5 - (pulse * 0.35)).clamp(0.0, 1.0);
 
       final pulsePaint = Paint()
-        ..color = const Color(0xFFFFE082).withValues(alpha: pulseAlpha)
+        ..color = const Color(0xFFFFD54F).withValues(alpha: pulseAlpha)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 3.0;
+        ..strokeWidth = 2.8;
       canvas.drawCircle(center, pulseRadius, pulsePaint);
     }
 
     // B. Medallion Drop Shadow
     final shadowPaint = Paint()
-      ..color = const Color(0x66000000)
+      ..color = const Color(0x55000000)
       ..style = PaintingStyle.fill;
-    canvas.drawCircle(center + const Offset(0, 3), radius, shadowPaint);
+    canvas.drawCircle(center + const Offset(0, 2.5), radius, shadowPaint);
 
-    // C. Medallion Base Plate
+    // C. Medallion Plate Gradient
     final plateColors = isUnlocked
         ? (isCurrent
-            ? [const Color(0xFFFBBF24), const Color(0xFFD97706), const Color(0xFF92400E)]
+            ? [const Color(0xFFFDE047), const Color(0xFFF59E0B), const Color(0xFFB45309)]
             : (stars > 0
-                ? [const Color(0xFFF3C65B), const Color(0xFFC78B2B), const Color(0xFF88570E)]
-                : [const Color(0xFF37474F), const Color(0xFF263238), const Color(0xFF182024)]))
-        : [const Color(0xFF263238), const Color(0xFF1E272C), const Color(0xFF101820)];
+                ? [const Color(0xFFFDE68A), const Color(0xFFD97706), const Color(0xFF92400E)]
+                : [const Color(0xFF475569), const Color(0xFF334155), const Color(0xFF1E293B)]))
+        : [const Color(0xFF33413E), const Color(0xFF273330), const Color(0xFF1B2321)];
 
     final plateGradient = ui.Gradient.radial(
-      center - const Offset(4, 4),
+      center - const Offset(3, 3),
       radius * 1.2,
       plateColors,
       const [0.0, 0.6, 1.0],
@@ -305,13 +352,13 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
 
     canvas.drawCircle(center, radius, Paint()..shader = plateGradient);
 
-    // D. Medallion Golden Rim
+    // D. Medallion Rim
     final rimPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.5
+      ..strokeWidth = 2.2
       ..color = isUnlocked
-          ? (isCurrent ? const Color(0xFFFFF3B0) : const Color(0xFFFFD56B))
-          : const Color(0xFF546E7A);
+          ? (isCurrent ? const Color(0xFFFFFBEB) : const Color(0xFFFFE082))
+          : const Color(0xFF566963);
     canvas.drawCircle(center, radius, rimPaint);
   }
 
@@ -321,7 +368,7 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
     _isPressed = true;
     for (final c in children) {
       if (c is PositionComponent) {
-        c.position.y += 4;
+        c.position.y += 3;
       }
     }
     try {
@@ -335,7 +382,7 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
       _isPressed = false;
       for (final c in children) {
         if (c is PositionComponent) {
-          c.position.y -= 4;
+          c.position.y -= 3;
         }
       }
       onPressed();
@@ -348,7 +395,7 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
       _isPressed = false;
       for (final c in children) {
         if (c is PositionComponent) {
-          c.position.y -= 4;
+          c.position.y -= 3;
         }
       }
     }
