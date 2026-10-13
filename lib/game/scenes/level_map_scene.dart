@@ -13,19 +13,23 @@ import '../../data/content/level_loader.dart';
 import '../../data/content/models/level_model.dart';
 import '../../core/providers.dart';
 
-/// High-end Unity-style Level Map Scene.
+/// Soft, animated adventure game Level Map Scene.
 ///
 /// Features:
-/// - Flowing enchanted river connecting all stages with moving water animations & sparkles
-/// - 3D tactile stage node medallions with star ratings, lock states & pulsing active glow
-/// - Fixed Unity-style top HUD with gold-trimmed Back button & Star trophy counter
-/// - Strictly clamped responsive layouts ensuring zero screen overflow
+/// - Naturally curving meandering river connecting all stages with moving water currents & foam
+/// - Soft animated game tablets (Zelda/Ori/Genshin style) matching warm app nature theme
+/// - Fixed top HUD with comfortable 46px+ safe spacing preventing notch/status bar collisions
+/// - Reactive level unlocking via onEnter() ensuring next level unlocks immediately upon completion
+/// - Strictly clamped responsive layouts ensuring zero overflow
 class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallbacks {
   final String worldId;
   late PositionComponent scrollContainer;
   late FlowingRiverComponent riverComponent;
   LevelMapHeaderComponent? headerComponent;
   RectangleComponent? _overlayComponent;
+
+  WorldModel? _world;
+  final List<StageNodeComponent> _stageNodes = [];
 
   double _scrollY = 0;
   double _maxScroll = 0;
@@ -37,11 +41,11 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
 
   @override
   Future<void> onLoad() async {
-    // 1. Parallax jungle background with dark mysterious vignette
+    // 1. Parallax jungle background with soft warm vignette
     try {
       final bg = await ParallaxComponent.load(
         [ParallaxImageData("jungle_pattern.jpg")],
-        baseVelocity: Vector2(0, -4),
+        baseVelocity: Vector2(0, -3),
         repeat: ImageRepeat.repeat,
       );
       bg.size = game.size;
@@ -50,7 +54,7 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
 
     _overlayComponent = RectangleComponent(
       size: game.size,
-      paint: Paint()..color = const Color(0xB8050E12),
+      paint: Paint()..color = const Color(0xC70E1A17), // Rich soft forest shadow
     );
     add(_overlayComponent!);
 
@@ -63,45 +67,49 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
     scrollContainer.add(riverComponent);
 
     // 4. Load World Model
-    WorldModel? world;
     try {
-      world = await LevelLoader.instance.loadWorld(worldId);
+      _world = await LevelLoader.instance.loadWorld(worldId);
     } catch (e) {
       debugPrint('[LevelMapScene] Error loading worldId=$worldId: $e');
     }
 
-    // Try fallback normalization if world was not found (e.g. world_01_archive_vaults -> world_01)
-    if (world == null) {
+    // Fallback normalization if world was not found
+    if (_world == null) {
       for (final avail in LevelLoader.instance.availableWorlds) {
         if (worldId.startsWith(avail) || avail.startsWith(worldId)) {
           try {
-            world = await LevelLoader.instance.loadWorld(avail);
+            _world = await LevelLoader.instance.loadWorld(avail);
             break;
           } catch (_) {}
         }
       }
     }
 
-    // If still null, load world_01 as safety net
-    world ??= await LevelLoader.instance.loadWorld('world_01');
+    _world ??= await LevelLoader.instance.loadWorld('world_01');
+    final world = _world!;
 
-    // 5. Query Player Progress (strictly isolated so failure never affects UI rendering)
-    List<String> completedIds = [];
+    // 5. Query Initial Player Progress
+    final completedIds = <String>{};
     final starsMap = <String, int>{};
     int totalEarnedStars = 0;
 
     try {
       final progressDao = ref.read(progressDaoProvider);
-      completedIds = await progressDao.getCompletedLevelIds(world.id);
-      for (final levelId in completedIds) {
-        final comp = await progressDao.getLevelCompletion(levelId);
-        if (comp != null) {
-          starsMap[levelId] = comp.starsEarned;
-          totalEarnedStars += comp.starsEarned;
-        }
+      final allComps = await progressDao.getAllLevelCompletions();
+      for (final comp in allComps) {
+        completedIds.add(comp.levelId);
+        starsMap[comp.levelId] = comp.starsEarned;
       }
+      final byWorld = await progressDao.getCompletedLevelIds(world.id);
+      completedIds.addAll(byWorld);
     } catch (e) {
       debugPrint('[LevelMapScene] Progress lookup skipped: $e');
+    }
+
+    for (final lvl in world.levels) {
+      if (starsMap.containsKey(lvl.id)) {
+        totalEarnedStars += starsMap[lvl.id]!;
+      }
     }
 
     // Determine active/current level
@@ -114,25 +122,32 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
     }
     currentLevelId ??= world.levels.isNotEmpty ? world.levels.last.id : null;
 
-    // 6. Build Responsive Layout for Stage Nodes
+    // 6. Build Responsive Serpentine Layout for Stage Nodes
     final screenWidth = game.size.x > 0 ? game.size.x : 360.0;
-    const margin = 18.0;
-    final nodeWidth = (screenWidth * 0.58).clamp(195.0, 235.0);
-    const nodeHeight = 74.0;
+    const margin = 14.0;
+    final nodeWidth = (screenWidth * 0.54).clamp(185.0, 205.0);
+    const nodeHeight = 72.0;
     final leftX = margin;
     final rightX = (screenWidth - nodeWidth - margin).clamp(margin, screenWidth - nodeWidth - margin);
 
+    const startY = 135.0; // Safe clearance below the 106px fixed top header
+    const stageSpacing = 125.0;
+
     final riverPoints = <Vector2>[];
-    riverPoints.add(Vector2(screenWidth / 2.0, 90.0));
+    riverPoints.add(Vector2(screenWidth / 2.0, startY - 45.0));
+
+    _stageNodes.clear();
 
     for (int i = 0; i < world.levels.length; i++) {
       final level = world.levels[i];
       final isLeft = i % 2 == 0;
       final x = isLeft ? leftX : rightX;
-      final y = 115.0 + (i * 125.0);
+      final y = startY + (i * stageSpacing);
 
       final isCompleted = completedIds.contains(level.id);
-      final isUnlocked = i == 0 || completedIds.contains(world.levels[i - 1].id) || isCompleted;
+      final isUnlocked = i == 0 ||
+          (i > 0 && completedIds.contains(world.levels[i - 1].id)) ||
+          isCompleted;
       final isCurrent = level.id == currentLevelId;
       final stars = starsMap[level.id] ?? 0;
 
@@ -150,30 +165,95 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
         },
       );
 
+      _stageNodes.add(stageNode);
       scrollContainer.add(stageNode);
       riverPoints.add(stageNode.riverAnchorPoint);
     }
 
     if (world.levels.isNotEmpty) {
-      final lastY = 115.0 + ((world.levels.length - 1) * 125.0) + nodeHeight;
-      riverPoints.add(Vector2(screenWidth / 2.0, lastY + 80.0));
+      final lastY = startY + ((world.levels.length - 1) * stageSpacing) + nodeHeight;
+      riverPoints.add(Vector2(screenWidth / 2.0, lastY + 75.0));
     }
 
     riverComponent.setPoints(riverPoints);
 
-    final totalContentHeight = 115.0 + (world.levels.length * 125.0) + 120.0;
+    final totalContentHeight = startY + (world.levels.length * stageSpacing) + 110.0;
     _maxScroll = totalContentHeight > game.size.y ? (totalContentHeight - game.size.y) : 0.0;
 
-    // 7. Fixed Top HUD Header
+    // 7. Fixed Top HUD Header with comfortable safe status bar height (106px)
     headerComponent = LevelMapHeaderComponent(
       worldTitle: world.title,
       worldSubtitle: 'Chapter ${world.number} • ${world.levels.length} Stages',
       earnedStars: totalEarnedStars,
       totalPossibleStars: world.levels.length * 3,
       onBackPressed: () => game.popScene(),
-      size: Vector2(screenWidth, 82),
+      size: Vector2(screenWidth, 106),
     );
     add(headerComponent!);
+  }
+
+  /// Re-evaluates player progress when entering or returning from gameplay.
+  /// Unlocks the next level immediately upon level completion.
+  Future<void> refreshProgress() async {
+    if (_world == null || _stageNodes.isEmpty) return;
+    final world = _world!;
+
+    final completedIds = <String>{};
+    final starsMap = <String, int>{};
+    int totalEarnedStars = 0;
+
+    try {
+      final progressDao = ref.read(progressDaoProvider);
+      final allComps = await progressDao.getAllLevelCompletions();
+      for (final comp in allComps) {
+        completedIds.add(comp.levelId);
+        starsMap[comp.levelId] = comp.starsEarned;
+      }
+      final byWorld = await progressDao.getCompletedLevelIds(world.id);
+      completedIds.addAll(byWorld);
+    } catch (e) {
+      debugPrint('[LevelMapScene] Progress refresh error: $e');
+    }
+
+    for (final lvl in world.levels) {
+      if (starsMap.containsKey(lvl.id)) {
+        totalEarnedStars += starsMap[lvl.id]!;
+      }
+    }
+
+    String? currentLevelId;
+    for (final lvl in world.levels) {
+      if (!completedIds.contains(lvl.id)) {
+        currentLevelId = lvl.id;
+        break;
+      }
+    }
+    currentLevelId ??= world.levels.isNotEmpty ? world.levels.last.id : null;
+
+    for (int i = 0; i < _stageNodes.length; i++) {
+      if (i >= world.levels.length) break;
+      final lvl = world.levels[i];
+      final isCompleted = completedIds.contains(lvl.id);
+      final isUnlocked = i == 0 ||
+          (i > 0 && completedIds.contains(world.levels[i - 1].id)) ||
+          isCompleted;
+      final isCurrent = lvl.id == currentLevelId;
+      final stars = starsMap[lvl.id] ?? 0;
+
+      _stageNodes[i].updateProgress(
+        stars: stars,
+        isUnlocked: isUnlocked,
+        isCurrent: isCurrent,
+      );
+    }
+
+    headerComponent?.updateStars(totalEarnedStars, world.levels.length * 3);
+  }
+
+  @override
+  Future<void> onEnter() async {
+    await super.onEnter();
+    await refreshProgress();
   }
 
   @override
@@ -188,6 +268,6 @@ class LevelMapScene extends QueryScene with RiverpodComponentMixin, DragCallback
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
     _overlayComponent?.size = size;
-    headerComponent?.size = Vector2(size.x, 82);
+    headerComponent?.size = Vector2(size.x, 106);
   }
 }
