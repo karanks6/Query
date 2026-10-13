@@ -11,6 +11,7 @@ import 'firebase_options.dart';
 import 'game/query_game.dart';
 import 'game/scenes/splash_scene.dart';
 import 'features/gameplay/gameplay_screen.dart';
+import 'features/gameplay/widgets/victory_overlay.dart';
 
 final queryGameProvider = Provider<QueryGame>((ref) => QueryGame());
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -90,6 +91,7 @@ class _GameRootState extends ConsumerState<GameRoot> {
             game: game,
             overlayBuilderMap: {
               'flutter_code_editor': (context, game) => const GameplayScreenOverlay(),
+              'victory_overlay': (context, game) => VictoryOverlay(game: game),
             },
             initialActiveOverlays: const [],
           ),
