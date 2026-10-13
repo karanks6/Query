@@ -19,6 +19,7 @@ import '../../features/hints/hints_modal.dart';
 import '../../features/gameplay/widgets/data_browser.dart';
 import '../../features/gameplay/widgets/query_history_sheet.dart';
 import '../../features/gameplay/widgets/concept_lesson_dialog.dart';
+import '../../data/content/level_loader.dart';
 import 'victory_scene.dart';
 
 enum GameplayStatus { initial, success, failed }
@@ -219,13 +220,26 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
             VictoryScene(
               level: level,
               state: state,
-              onNextLevel: () {
-                // Dummy transition for now since we removed Flutter Navigator
-                game.popScene();
+              onNextLevel: () async {
+                try {
+                  final world = await LevelLoader.instance.loadWorld(level.worldId);
+                  final nextIndex = world.levels.indexWhere((l) => l.id == level.id) + 1;
+                  if (nextIndex < world.levels.length) {
+                    final nextLevel = world.levels[nextIndex];
+                    game.popScene(); // Pop VictoryScene
+                    game.replaceScene(GameplayScene(level: nextLevel));
+                    return;
+                  }
+                } catch (e) {
+                  debugPrint('[GameplayScene] Transition to next level error: $e');
+                }
+                // If end of world or error, return to LevelMap
+                game.popScene(); // Pop Victory
+                game.popScene(); // Pop Gameplay to LevelMap
               },
               onReplay: () {
-                game.popScene();
-                ref.read(gameplayProvider.notifier).dismissFeedback();
+                ref.read(gameplayProvider.notifier).loadLevel(level);
+                game.popScene(); // Pop Victory to resume fresh GameplayScene
               },
               onMap: () {
                 game.popScene(); // Pop Victory
