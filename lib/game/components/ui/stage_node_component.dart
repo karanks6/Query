@@ -23,6 +23,9 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
   final bool isLeftAligned;
   final VoidCallback onPressed;
 
+  final double screenWidth;
+  final double margin;
+
   bool _isPressed = false;
   double _animTime = 0.0;
 
@@ -39,9 +42,78 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
     required this.isCurrent,
     required this.isLeftAligned,
     required this.onPressed,
+    this.screenWidth = 390.0,
+    this.margin = 14.0,
     super.position,
     Vector2? size,
-  }) : super(size: size ?? Vector2(195, 72));
+  }) : super(
+          size: size ??
+              Vector2(
+                calculateRequiredWidth(
+                  title: title,
+                  subText: !isUnlocked
+                      ? 'STAGE $stageNumber'
+                      : (isCurrent ? 'STAGE $stageNumber • READY' : 'STAGE $stageNumber'),
+                  statusText: !isUnlocked
+                      ? '🔒 LOCKED'
+                      : (stars == 3
+                          ? '★★★ CLEARED'
+                          : (stars == 2
+                              ? '★★☆ CLEARED'
+                              : (stars == 1 ? '★☆☆ CLEARED' : (isCurrent ? '▶ PLAY NOW' : '☆☆☆ UNLOCKED')))),
+                  screenWidth: screenWidth,
+                  margin: margin,
+                ),
+                72.0,
+              ),
+        );
+
+  static double measureTextWidth(String text, TextStyle style) {
+    if (text.isEmpty) return 0.0;
+    final painter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+    )..layout();
+    return painter.width;
+  }
+
+  static double calculateRequiredWidth({
+    required String title,
+    required String subText,
+    required String statusText,
+    required double screenWidth,
+    double margin = 14.0,
+  }) {
+    final subStyle = GoogleFonts.quicksand(
+      fontSize: 10.0,
+      fontWeight: FontWeight.w900,
+      letterSpacing: 0.7,
+    );
+    final titleStyle = GoogleFonts.nunitoSans(
+      fontSize: 12.0,
+      fontWeight: FontWeight.w800,
+      letterSpacing: 0.2,
+    );
+    final statusStyle = GoogleFonts.quicksand(
+      fontSize: 9.5,
+      fontWeight: FontWeight.w800,
+      letterSpacing: 0.6,
+    );
+
+    final wSub = measureTextWidth(subText, subStyle);
+    final wTitle = measureTextWidth(title, titleStyle);
+    final wStatus = measureTextWidth(statusText, statusStyle);
+
+    final maxTextWidth = [wSub, wTitle, wStatus].reduce(max);
+    // Medallion side (46px diameter + 11px margin + 9px gap = 66px) + text + opposite edge padding (20px) = 86px
+    final needed = maxTextWidth + 88.0;
+
+    final effectiveScreenW = screenWidth > 0 ? screenWidth : 390.0;
+    final maxAllowed = (effectiveScreenW - (margin * 2.0)).clamp(200.0, effectiveScreenW);
+
+    return needed.clamp(215.0, maxAllowed);
+  }
 
   Vector2 get riverAnchorPoint {
     final mx = isLeftAligned ? 36.0 : (size.x - 36.0);
@@ -52,79 +124,19 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    final medallionCenterX = isLeftAligned ? 36.0 : (size.x - 36.0);
-    final double contentLeft = isLeftAligned ? 68.0 : 16.0;
-
-    // 1. Stage Subtitle
-    _stageSubText = TextComponent(
-      text: _computeSubText(),
-      textRenderer: TextPaint(
-        style: GoogleFonts.quicksand(
-          color: _computeSubColor(),
-          fontSize: 10.5,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 1.0,
-        ),
-      ),
-      position: Vector2(contentLeft, 11),
-    );
+    _stageSubText = TextComponent();
     add(_stageSubText);
 
-    // 2. Stage Title
-    final displayTitle = title.length > 13 ? '${title.substring(0, 12)}...' : title;
-    _titleText = TextComponent(
-      text: displayTitle,
-      textRenderer: TextPaint(
-        style: GoogleFonts.nunitoSans(
-          color: isUnlocked ? const Color(0xFFFDFBF7) : const Color(0xFFA0AEC0),
-          fontSize: 12.5,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.2,
-          shadows: [
-            const Shadow(
-              color: Color(0x99000000),
-              offset: Offset(0, 1.5),
-              blurRadius: 2.0,
-            )
-          ],
-        ),
-      ),
-      position: Vector2(contentLeft, 27),
-    );
+    _titleText = TextComponent();
     add(_titleText);
 
-    // 3. Stars / Status row
-    _starRatingText = TextComponent(
-      text: _computeStatusText(),
-      textRenderer: TextPaint(
-        style: GoogleFonts.quicksand(
-          color: _computeStatusColor(),
-          fontSize: 10.0,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.8,
-        ),
-      ),
-      position: Vector2(contentLeft, 47),
-    );
+    _starRatingText = TextComponent();
     add(_starRatingText);
 
-    // 4. Medallion Glyph
-    _medallionText = TextComponent(
-      text: !isUnlocked ? '🔒' : '$stageNumber',
-      textRenderer: TextPaint(
-        style: GoogleFonts.quicksand(
-          color: isCurrent || stars > 0 ? const Color(0xFF2C1E07) : const Color(0xFFF1F5F9),
-          fontSize: !isUnlocked ? 14 : 19,
-          fontWeight: FontWeight.w900,
-          shadows: isCurrent || stars > 0
-              ? [const Shadow(color: Color(0x66FFFFFF), offset: Offset(0, 1), blurRadius: 1)]
-              : null,
-        ),
-      ),
-      anchor: Anchor.center,
-      position: Vector2(medallionCenterX, size.y / 2.0),
-    );
+    _medallionText = TextComponent(anchor: Anchor.center);
     add(_medallionText);
+
+    _applyLayoutAndStyles();
   }
 
   void updateProgress({
@@ -136,45 +148,137 @@ class StageNodeComponent extends PositionComponent with TapCallbacks {
     this.isUnlocked = isUnlocked;
     this.isCurrent = isCurrent;
 
-    _stageSubText.text = _computeSubText();
+    if (isLoaded) {
+      _applyLayoutAndStyles();
+    }
+  }
+
+  void _applyLayoutAndStyles() {
+    final subTextStr = _computeSubText();
+    final statusTextStr = _computeStatusText();
+
+    // 1. Calculate flexible width based on words
+    final requiredWidth = calculateRequiredWidth(
+      title: title,
+      subText: subTextStr,
+      statusText: statusTextStr,
+      screenWidth: screenWidth,
+      margin: margin,
+    );
+    size.x = requiredWidth;
+
+    // 2. If right-aligned, update position.x to keep margin consistent
+    if (!isLeftAligned && screenWidth > 0) {
+      position.x = screenWidth - size.x - margin;
+    }
+
+    final medallionCenterX = isLeftAligned ? 36.0 : (size.x - 36.0);
+    final contentLeft = isLeftAligned ? 66.0 : 18.0;
+    final availableTextWidth = (size.x - 86.0).clamp(100.0, screenWidth > 0 ? screenWidth : 390.0);
+
+    // 3. Stage Subtitle with auto-fitting
+    double subFontSize = 10.0;
+    double subLetterSpacing = 0.7;
+    while (subFontSize > 8.0 &&
+        measureTextWidth(
+              subTextStr,
+              GoogleFonts.quicksand(
+                fontSize: subFontSize,
+                fontWeight: FontWeight.w900,
+                letterSpacing: subLetterSpacing,
+              ),
+            ) >
+            availableTextWidth) {
+      subFontSize -= 0.4;
+      if (subLetterSpacing > 0.2) subLetterSpacing -= 0.2;
+    }
+
+    _stageSubText.text = subTextStr;
     _stageSubText.textRenderer = TextPaint(
       style: GoogleFonts.quicksand(
         color: _computeSubColor(),
-        fontSize: 10.5,
+        fontSize: subFontSize,
         fontWeight: FontWeight.w900,
-        letterSpacing: 1.0,
+        letterSpacing: subLetterSpacing,
       ),
     );
+    _stageSubText.position = Vector2(contentLeft, 11);
 
-    final displayTitle = title.length > 13 ? '${title.substring(0, 12)}...' : title;
-    _titleText.text = displayTitle;
+    // 4. Stage Title (Full untruncated title with auto-fitting)
+    double titleFontSize = 12.0;
+    double titleLetterSpacing = 0.2;
+    while (titleFontSize > 8.5 &&
+        measureTextWidth(
+              title,
+              GoogleFonts.nunitoSans(
+                fontSize: titleFontSize,
+                fontWeight: FontWeight.w800,
+                letterSpacing: titleLetterSpacing,
+              ),
+            ) >
+            availableTextWidth) {
+      titleFontSize -= 0.5;
+      if (titleLetterSpacing > 0.0) titleLetterSpacing -= 0.05;
+    }
+
+    _titleText.text = title;
     _titleText.textRenderer = TextPaint(
       style: GoogleFonts.nunitoSans(
         color: isUnlocked ? const Color(0xFFFDFBF7) : const Color(0xFFA0AEC0),
-        fontSize: 12.5,
+        fontSize: titleFontSize,
         fontWeight: FontWeight.w800,
-        letterSpacing: 0.2,
+        letterSpacing: titleLetterSpacing,
+        shadows: [
+          const Shadow(
+            color: Color(0x99000000),
+            offset: Offset(0, 1.5),
+            blurRadius: 2.0,
+          )
+        ],
       ),
     );
+    _titleText.position = Vector2(contentLeft, 27);
 
-    _starRatingText.text = _computeStatusText();
+    // 5. Stars / Status row with auto-fitting
+    double statusFontSize = 9.5;
+    double statusLetterSpacing = 0.6;
+    while (statusFontSize > 8.0 &&
+        measureTextWidth(
+              statusTextStr,
+              GoogleFonts.quicksand(
+                fontSize: statusFontSize,
+                fontWeight: FontWeight.w800,
+                letterSpacing: statusLetterSpacing,
+              ),
+            ) >
+            availableTextWidth) {
+      statusFontSize -= 0.5;
+    }
+
+    _starRatingText.text = statusTextStr;
     _starRatingText.textRenderer = TextPaint(
       style: GoogleFonts.quicksand(
         color: _computeStatusColor(),
-        fontSize: 10.0,
+        fontSize: statusFontSize,
         fontWeight: FontWeight.w800,
-        letterSpacing: 0.8,
+        letterSpacing: statusLetterSpacing,
       ),
     );
+    _starRatingText.position = Vector2(contentLeft, 47);
 
+    // 6. Medallion Glyph
     _medallionText.text = !isUnlocked ? '🔒' : '$stageNumber';
     _medallionText.textRenderer = TextPaint(
       style: GoogleFonts.quicksand(
         color: isCurrent || stars > 0 ? const Color(0xFF2C1E07) : const Color(0xFFF1F5F9),
         fontSize: !isUnlocked ? 14 : 19,
         fontWeight: FontWeight.w900,
+        shadows: isCurrent || stars > 0
+            ? [const Shadow(color: Color(0x66FFFFFF), offset: Offset(0, 1), blurRadius: 1)]
+            : null,
       ),
     );
+    _medallionText.position = Vector2(medallionCenterX, size.y / 2.0);
   }
 
   String _computeSubText() {
