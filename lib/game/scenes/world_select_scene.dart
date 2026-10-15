@@ -105,10 +105,7 @@ class WorldSelectScene extends QueryScene with RiverpodComponentMixin, DragCallb
     // 6. Build Serpentine Alternating Layout for World Nodes
     final screenWidth = game.size.x > 0 ? game.size.x : 360.0;
     const margin = 14.0;
-    final nodeWidth = (screenWidth * 0.58).clamp(205.0, 245.0);
     const nodeHeight = 76.0;
-    final leftX = margin;
-    final rightX = (screenWidth - nodeWidth - margin).clamp(margin, screenWidth - nodeWidth - margin);
 
     const startY = 135.0; // Safe clearance below the 106px fixed top header
     const worldSpacing = 135.0;
@@ -138,7 +135,6 @@ class WorldSelectScene extends QueryScene with RiverpodComponentMixin, DragCallb
     for (int i = 0; i < availableWorlds.length; i++) {
       final worldId = availableWorlds[i];
       final isLeft = i % 2 == 0;
-      final x = isLeft ? leftX : rightX;
       final y = startY + (i * worldSpacing);
 
       final worldModel = _loadedWorlds[worldId];
@@ -169,6 +165,30 @@ class WorldSelectScene extends QueryScene with RiverpodComponentMixin, DragCallb
       final totalStages = worldModel?.totalLevels ?? (wp?.totalLevels ?? 15);
       final worldTitle = worldModel?.title ?? worldId.replaceAll('_', ' ');
 
+      final subText = !isUnlocked
+          ? 'CHAPTER ${i + 1}'
+          : (totalStages > 0 && completedStagesInWorld >= totalStages
+              ? 'CHAPTER ${i + 1} • EXPEDITION CLEAR'
+              : (isCurrent ? 'CHAPTER ${i + 1} • EXPEDITION ACTIVE' : 'CHAPTER ${i + 1}'));
+
+      final statusText = !isUnlocked
+          ? '🔒 LOCKED'
+          : (totalStages > 0 && completedStagesInWorld >= totalStages
+              ? '★ $worldStars STARS • ALL CLEAR'
+              : (completedStagesInWorld > 0
+                  ? '★ $worldStars STARS • $completedStagesInWorld/$totalStages CLEARED'
+                  : (isCurrent ? '▶ EXPLORE NOW' : '☆☆☆ UNLOCKED • $totalStages STAGES')));
+
+      final nodeWidth = WorldNodeComponent.calculateRequiredWidth(
+        title: worldTitle,
+        subText: subText,
+        statusText: statusText,
+        screenWidth: screenWidth,
+        margin: margin,
+      );
+
+      final x = isLeft ? margin : (screenWidth - nodeWidth - margin);
+
       final worldNode = WorldNodeComponent(
         worldNumber: i + 1,
         worldId: worldId,
@@ -179,6 +199,8 @@ class WorldSelectScene extends QueryScene with RiverpodComponentMixin, DragCallb
         isUnlocked: isUnlocked,
         isCurrent: isCurrent,
         isLeftAligned: isLeft,
+        screenWidth: screenWidth,
+        margin: margin,
         size: Vector2(nodeWidth, nodeHeight),
         position: Vector2(x, y),
         onPressed: () {
