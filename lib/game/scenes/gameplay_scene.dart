@@ -22,6 +22,7 @@ import '../../features/gameplay/widgets/concept_lesson_dialog.dart';
 import '../../data/content/level_loader.dart';
 import 'victory_scene.dart';
 import 'level_map_scene.dart';
+import '../../core/audio/audio_controller.dart';
 
 enum GameplayStatus { initial, success, failed }
 
@@ -166,9 +167,14 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
         }
       });
     }
-    // Wire up tab bar toggle now that ref is available
+    // Wire up tab bar toggle and mode selection now that ref is available
     tabBar.onToggleCallback = () {
+      ref.read(audioControllerProvider).playSfx('ui_click.wav');
       ref.read(gameplayProvider.notifier).toggleQueryMode();
+    };
+    tabBar.onModeSelected = (mode) {
+      ref.read(audioControllerProvider).playSfx('ui_click.wav');
+      ref.read(gameplayProvider.notifier).setQueryMode(mode);
     };
   }
 
@@ -206,6 +212,7 @@ class GameplayScene extends QueryScene with RiverpodComponentMixin {
   void update(double dt) {
     super.update(dt);
     final state = ref.read(gameplayProvider);
+    tabBar.state = state;
 
     final currentStatus = _deriveStatus(state);
     if (currentStatus != _lastStatus) {
