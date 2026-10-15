@@ -21,10 +21,14 @@ class GameplayScreenOverlay extends ConsumerWidget {
     }
 
     final hasResults = state.lastReport?.resultRows != null;
+    final keyboardBottom = MediaQuery.of(context).viewInsets.bottom;
+    final effectiveBottom = keyboardBottom > _kBottomOffset
+        ? keyboardBottom + 8.0
+        : _kBottomOffset;
 
     return Positioned(
       top: _kTopOffset,
-      bottom: _kBottomOffset,
+      bottom: effectiveBottom,
       left: 0,
       right: 0,
       child: Material(
