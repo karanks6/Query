@@ -320,7 +320,7 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
       final success = await playerDao.spendInsightPoints(tier.cost);
       if (!success) {
         state = state.copyWith(
-          hintError: 'Not enough Insight Points. You need ${tier.cost} IP.',
+          hintError: 'Not enough XP to reveal this hint. You need ${tier.cost} XP.',
         );
         return false;
       }
