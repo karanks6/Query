@@ -156,8 +156,12 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
     }
   }
 
+  void setQueryMode(QueryMode mode) {
+    if (state.queryMode == mode) return;
+    state = state.copyWith(queryMode: mode);
+  }
+
   void toggleQueryMode() {
-    if (state.level?.type.isBlockModeOnly ?? false) return; // Tutorial lock
     final newMode = state.queryMode == QueryMode.block ? QueryMode.code : QueryMode.block;
     state = state.copyWith(queryMode: newMode);
   }
