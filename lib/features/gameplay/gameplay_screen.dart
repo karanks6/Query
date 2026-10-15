@@ -17,33 +17,21 @@ class GameplayScreenOverlay extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(gameplayProvider);
     if (state.level == null) {
-      return const Positioned.fill(
-        child: Center(
-          child: Material(
-            color: Colors.red,
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'LOADING LEVEL...',
-                style: TextStyle(color: Colors.white, fontSize: 24),
-              ),
-            ),
-          ),
-        ),
-      );
+      return const SizedBox.shrink();
     }
 
     final hasResults = state.lastReport?.resultRows != null;
 
-    return Positioned.fill(
+    return Positioned(
+      top: _kTopOffset,
+      bottom: _kBottomOffset,
+      left: 0,
+      right: 0,
       child: Material(
         type: MaterialType.transparency,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Transparent top gap — Flame HUD, tab bar and briefing show through
-            const SizedBox(height: _kTopOffset),
-
             // ── Active input workspace ────────────────────────────────────────
             Expanded(
               flex: 5,
@@ -64,9 +52,6 @@ class GameplayScreenOverlay extends ConsumerWidget {
                 flex: 3,
                 child: ResultPane(rows: state.lastReport!.resultRows!),
               ),
-
-            // Transparent bottom gap — Flame action buttons show through
-            const SizedBox(height: _kBottomOffset),
           ],
         ),
       ),
