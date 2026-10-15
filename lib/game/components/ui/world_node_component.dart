@@ -26,6 +26,9 @@ class WorldNodeComponent extends PositionComponent with TapCallbacks {
   final bool isLeftAligned;
   final VoidCallback onPressed;
 
+  final double screenWidth;
+  final double margin;
+
   bool _isPressed = false;
   double _animTime = 0.0;
 
@@ -45,9 +48,80 @@ class WorldNodeComponent extends PositionComponent with TapCallbacks {
     required this.isCurrent,
     required this.isLeftAligned,
     required this.onPressed,
+    this.screenWidth = 390.0,
+    this.margin = 14.0,
     super.position,
     Vector2? size,
-  }) : super(size: size ?? Vector2(215, 76));
+  }) : super(
+          size: size ??
+              Vector2(
+                calculateRequiredWidth(
+                  title: title,
+                  subText: !isUnlocked
+                      ? 'CHAPTER $worldNumber'
+                      : (totalStages > 0 && stagesCompleted >= totalStages
+                          ? 'CHAPTER $worldNumber • EXPEDITION CLEAR'
+                          : (isCurrent ? 'CHAPTER $worldNumber • EXPEDITION ACTIVE' : 'CHAPTER $worldNumber')),
+                  statusText: !isUnlocked
+                      ? '🔒 LOCKED'
+                      : (totalStages > 0 && stagesCompleted >= totalStages
+                          ? '★ $starsEarned STARS • ALL CLEAR'
+                          : (stagesCompleted > 0
+                              ? '★ $starsEarned STARS • $stagesCompleted/$totalStages CLEARED'
+                              : (isCurrent ? '▶ EXPLORE NOW' : '☆☆☆ UNLOCKED • $totalStages STAGES'))),
+                  screenWidth: screenWidth,
+                  margin: margin,
+                ),
+                76.0,
+              ),
+        );
+
+  static double measureTextWidth(String text, TextStyle style) {
+    if (text.isEmpty) return 0.0;
+    final painter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+    )..layout();
+    return painter.width;
+  }
+
+  static double calculateRequiredWidth({
+    required String title,
+    required String subText,
+    required String statusText,
+    required double screenWidth,
+    double margin = 14.0,
+  }) {
+    final subStyle = GoogleFonts.quicksand(
+      fontSize: 10.0,
+      fontWeight: FontWeight.w900,
+      letterSpacing: 0.7,
+    );
+    final titleStyle = GoogleFonts.nunitoSans(
+      fontSize: 12.5,
+      fontWeight: FontWeight.w900,
+      letterSpacing: 0.4,
+    );
+    final statusStyle = GoogleFonts.quicksand(
+      fontSize: 9.5,
+      fontWeight: FontWeight.w800,
+      letterSpacing: 0.5,
+    );
+
+    final wSub = measureTextWidth(subText, subStyle);
+    final wTitle = measureTextWidth(title.toUpperCase(), titleStyle);
+    final wStatus = measureTextWidth(statusText, statusStyle);
+
+    final maxTextWidth = [wSub, wTitle, wStatus].reduce(max);
+    // Medallion (50px) + margins (13px outer, 9px inner = 72px) + text + opposite edge curve padding (22px) = 94px total padding
+    final needed = maxTextWidth + 94.0;
+
+    final effectiveScreenW = screenWidth > 0 ? screenWidth : 390.0;
+    final maxAllowed = (effectiveScreenW - (margin * 2.0)).clamp(220.0, effectiveScreenW);
+
+    return needed.clamp(235.0, maxAllowed);
+  }
 
   Vector2 get riverAnchorPoint {
     final mx = isLeftAligned ? 38.0 : (size.x - 38.0);
@@ -58,79 +132,19 @@ class WorldNodeComponent extends PositionComponent with TapCallbacks {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    final medallionCenterX = isLeftAligned ? 38.0 : (size.x - 38.0);
-    final double contentLeft = isLeftAligned ? 72.0 : 16.0;
-
-    // 1. Chapter Subtitle
-    _subText = TextComponent(
-      text: _computeSubText(),
-      textRenderer: TextPaint(
-        style: GoogleFonts.quicksand(
-          color: _computeSubColor(),
-          fontSize: 10.5,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 1.0,
-        ),
-      ),
-      position: Vector2(contentLeft, 11),
-    );
+    _subText = TextComponent();
     add(_subText);
 
-    // 2. World Title
-    final displayTitle = title.length > 15 ? '${title.substring(0, 14)}...' : title;
-    _titleText = TextComponent(
-      text: displayTitle.toUpperCase(),
-      textRenderer: TextPaint(
-        style: GoogleFonts.nunitoSans(
-          color: isUnlocked ? const Color(0xFFFDFBF7) : const Color(0xFFA0AEC0),
-          fontSize: 13.0,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 0.5,
-          shadows: [
-            const Shadow(
-              color: Color(0x99000000),
-              offset: Offset(0, 1.5),
-              blurRadius: 2.0,
-            )
-          ],
-        ),
-      ),
-      position: Vector2(contentLeft, 27),
-    );
+    _titleText = TextComponent();
     add(_titleText);
 
-    // 3. Status row
-    _statusText = TextComponent(
-      text: _computeStatusText(),
-      textRenderer: TextPaint(
-        style: GoogleFonts.quicksand(
-          color: _computeStatusColor(),
-          fontSize: 10.0,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.6,
-        ),
-      ),
-      position: Vector2(contentLeft, 48),
-    );
+    _statusText = TextComponent();
     add(_statusText);
 
-    // 4. Medallion Glyph
-    _medallionText = TextComponent(
-      text: !isUnlocked ? '🔒' : '$worldNumber',
-      textRenderer: TextPaint(
-        style: GoogleFonts.nunitoSans(
-          color: isCurrent || _isCompleted ? const Color(0xFF2C1E07) : const Color(0xFFF1F5F9),
-          fontSize: !isUnlocked ? 15 : 20,
-          fontWeight: FontWeight.w900,
-          shadows: isCurrent || _isCompleted
-              ? [const Shadow(color: Color(0x66FFFFFF), offset: Offset(0, 1), blurRadius: 1)]
-              : null,
-        ),
-      ),
-      anchor: Anchor.center,
-      position: Vector2(medallionCenterX, size.y / 2.0),
-    );
+    _medallionText = TextComponent(anchor: Anchor.center);
     add(_medallionText);
+
+    _applyLayoutAndStyles();
   }
 
   bool get _isCompleted => totalStages > 0 && stagesCompleted >= totalStages;
@@ -152,45 +166,139 @@ class WorldNodeComponent extends PositionComponent with TapCallbacks {
       title = newTitle;
     }
 
-    _subText.text = _computeSubText();
+    if (isLoaded) {
+      _applyLayoutAndStyles();
+    }
+  }
+
+  void _applyLayoutAndStyles() {
+    final subTextStr = _computeSubText();
+    final statusTextStr = _computeStatusText();
+
+    // 1. Calculate flexible width based on the actual words
+    final requiredWidth = calculateRequiredWidth(
+      title: title,
+      subText: subTextStr,
+      statusText: statusTextStr,
+      screenWidth: screenWidth,
+      margin: margin,
+    );
+    size.x = requiredWidth;
+
+    // 2. If right-aligned, update position.x to keep margin consistent
+    if (!isLeftAligned && screenWidth > 0) {
+      position.x = screenWidth - size.x - margin;
+    }
+
+    final medallionCenterX = isLeftAligned ? 38.0 : (size.x - 38.0);
+    final contentLeft = isLeftAligned ? 72.0 : 20.0;
+    // Available width for text lines before hitting medallion or opposite edge
+    final availableTextWidth = (size.x - 92.0).clamp(100.0, screenWidth > 0 ? screenWidth : 390.0);
+
+    // 3. Subtitle with auto-fitting so it never overflows
+    double subFontSize = 10.0;
+    double subLetterSpacing = 0.7;
+    while (subFontSize > 8.0 &&
+        measureTextWidth(
+              subTextStr,
+              GoogleFonts.quicksand(
+                fontSize: subFontSize,
+                fontWeight: FontWeight.w900,
+                letterSpacing: subLetterSpacing,
+              ),
+            ) >
+            availableTextWidth) {
+      subFontSize -= 0.4;
+      if (subLetterSpacing > 0.2) subLetterSpacing -= 0.2;
+    }
+
+    _subText.text = subTextStr;
     _subText.textRenderer = TextPaint(
       style: GoogleFonts.quicksand(
         color: _computeSubColor(),
-        fontSize: 10.5,
+        fontSize: subFontSize,
         fontWeight: FontWeight.w900,
-        letterSpacing: 1.0,
+        letterSpacing: subLetterSpacing,
       ),
     );
+    _subText.position = Vector2(contentLeft, 11);
 
-    final displayTitle = title.length > 15 ? '${title.substring(0, 14)}...' : title;
-    _titleText.text = displayTitle.toUpperCase();
+    // 4. World Title (Full untruncated title with auto-fitting)
+    final fullTitleUpper = title.toUpperCase();
+    double titleFontSize = 12.5;
+    double titleLetterSpacing = 0.4;
+    while (titleFontSize > 9.0 &&
+        measureTextWidth(
+              fullTitleUpper,
+              GoogleFonts.nunitoSans(
+                fontSize: titleFontSize,
+                fontWeight: FontWeight.w900,
+                letterSpacing: titleLetterSpacing,
+              ),
+            ) >
+            availableTextWidth) {
+      titleFontSize -= 0.5;
+      if (titleLetterSpacing > 0.1) titleLetterSpacing -= 0.1;
+    }
+
+    _titleText.text = fullTitleUpper;
     _titleText.textRenderer = TextPaint(
       style: GoogleFonts.nunitoSans(
         color: isUnlocked ? const Color(0xFFFDFBF7) : const Color(0xFFA0AEC0),
-        fontSize: 13.0,
+        fontSize: titleFontSize,
         fontWeight: FontWeight.w900,
-        letterSpacing: 0.5,
+        letterSpacing: titleLetterSpacing,
+        shadows: [
+          const Shadow(
+            color: Color(0x99000000),
+            offset: Offset(0, 1.5),
+            blurRadius: 2.0,
+          )
+        ],
       ),
     );
+    _titleText.position = Vector2(contentLeft, 27);
 
-    _statusText.text = _computeStatusText();
+    // 5. Status Text with auto-fitting
+    double statusFontSize = 9.5;
+    double statusLetterSpacing = 0.5;
+    while (statusFontSize > 8.0 &&
+        measureTextWidth(
+              statusTextStr,
+              GoogleFonts.quicksand(
+                fontSize: statusFontSize,
+                fontWeight: FontWeight.w800,
+                letterSpacing: statusLetterSpacing,
+              ),
+            ) >
+            availableTextWidth) {
+      statusFontSize -= 0.5;
+    }
+
+    _statusText.text = statusTextStr;
     _statusText.textRenderer = TextPaint(
       style: GoogleFonts.quicksand(
         color: _computeStatusColor(),
-        fontSize: 10.0,
+        fontSize: statusFontSize,
         fontWeight: FontWeight.w800,
-        letterSpacing: 0.6,
+        letterSpacing: statusLetterSpacing,
       ),
     );
+    _statusText.position = Vector2(contentLeft, 47);
 
+    // 6. Medallion glyph
     _medallionText.text = !isUnlocked ? '🔒' : '$worldNumber';
     _medallionText.textRenderer = TextPaint(
       style: GoogleFonts.nunitoSans(
         color: isCurrent || _isCompleted ? const Color(0xFF2C1E07) : const Color(0xFFF1F5F9),
         fontSize: !isUnlocked ? 15 : 20,
         fontWeight: FontWeight.w900,
+        shadows: isCurrent || _isCompleted
+            ? [const Shadow(color: Color(0x66FFFFFF), offset: Offset(0, 1), blurRadius: 1)]
+            : null,
       ),
     );
+    _medallionText.position = Vector2(medallionCenterX, size.y / 2.0);
   }
 
   String _computeSubText() {
