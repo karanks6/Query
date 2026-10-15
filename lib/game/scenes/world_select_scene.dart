@@ -1,116 +1,323 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flame/parallax.dart';
+import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart' hide Image;
-import 'package:google_fonts/google_fonts.dart';
 
 import 'query_scene.dart';
-import 'package:flame/parallax.dart';
 import 'level_map_scene.dart';
-import '../components/ui/wood_button.dart';
-import '../components/ui/dirt_trail_component.dart';
+import '../components/ui/flowing_river_component.dart';
+import '../components/ui/world_node_component.dart';
+import '../components/ui/world_select_header_component.dart';
 import '../../data/content/level_loader.dart';
+import '../../data/content/models/level_model.dart';
+import '../../data/local/daos/progress_dao.dart';
+import '../../data/local/app_database.dart';
+import '../../core/providers.dart';
 
-class WorldSelectScene extends QueryScene with DragCallbacks {
+/// Soft, animated adventure game World Select Scene.
+///
+/// Features:
+/// - Naturally curving meandering river connecting all world expedition nodes
+/// - Soft animated game tablets (Zelda/Ori/Genshin style) matching warm app nature theme
+/// - Fixed top HUD with comfortable 46px+ safe status bar spacing
+/// - Reactive progress tracking for completed stages and star counts
+/// - Responsive serpentine layout ensuring smooth scrolling without overflow
+class WorldSelectScene extends QueryScene with RiverpodComponentMixin, DragCallbacks {
   late PositionComponent scrollContainer;
+  late FlowingRiverComponent riverComponent;
+  WorldSelectHeaderComponent? headerComponent;
+  RectangleComponent? _overlayComponent;
+
+  final List<WorldNodeComponent> _worldNodes = [];
+  final Map<String, WorldModel> _loadedWorlds = {};
+
   double _scrollY = 0;
   double _maxScroll = 0;
+  bool _needsRefresh = false;
 
   @override
   bool containsLocalPoint(Vector2 point) => true;
 
+  ProgressDao? _resolveProgressDao() {
+    try {
+      if (isMounted) return ref.read(progressDaoProvider);
+    } catch (_) {}
+    try {
+      return game.ref.read(progressDaoProvider);
+    } catch (_) {}
+    return null;
+  }
+
   @override
   Future<void> onLoad() async {
-    // Parchment background
-    final bg = await ParallaxComponent.load([ParallaxImageData("jungle_pattern.jpg")], baseVelocity: Vector2(0, -5), repeat: ImageRepeat.repeat); bg.size = game.size; add(bg); final overlay = RectangleComponent(size: game.size, paint: Paint()..color = const Color(0x99000000)); add(overlay);
-    
-    final compass = TextComponent(
-      text: '✧\nN\nS',
-      position: Vector2(40, game.size.y - 120),
-      textRenderer: TextPaint(
-        style: GoogleFonts.cinzel(
-          color: const Color(0xFFD4C4A8),
-          fontSize: 32,
-          fontWeight: FontWeight.w200,
-        ),
-      ),
-      anchor: Anchor.center,
-    );
-    add(compass);
+    // 1. Parallax jungle background with soft forest vignette
+    try {
+      final bg = await ParallaxComponent.load(
+        [ParallaxImageData("jungle_pattern.jpg")],
+        baseVelocity: Vector2(0, -3),
+        repeat: ImageRepeat.repeat,
+      );
+      bg.size = game.size;
+      add(bg);
+    } catch (_) {}
 
+    _overlayComponent = RectangleComponent(
+      size: game.size,
+      paint: Paint()..color = const Color(0xC70E1A17), // Rich soft forest shadow
+    );
+    add(_overlayComponent!);
+
+    // 2. Scroll Container for interactive world content
     scrollContainer = PositionComponent(size: game.size);
     add(scrollContainer);
 
-    final trailPath = DirtTrailComponent();
-    scrollContainer.add(trailPath);
+    // 3. Flowing River Component (renders underneath world cards)
+    riverComponent = FlowingRiverComponent();
+    scrollContainer.add(riverComponent);
 
-    final title = TextComponent(
-      text: 'WILD WOODS TRAIL',
-      position: Vector2(game.size.x / 2, 60),
-      anchor: Anchor.center,
-      textRenderer: TextPaint(
-        style: GoogleFonts.nunitoSans(
-          color: const Color(0xFFEFE6D5),
-          fontSize: 32,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 1.5,
-        ),
-      ),
-    );
-    scrollContainer.add(title);
-
-    final backBtn = WoodButton(
-      text: 'BACK TO CAMP',
-      size: Vector2(180, 50),
-      position: Vector2((game.size.x - 180) / 2, 110),
-      primaryColor: const Color(0xFFD4C4A8),
-      textColor: const Color(0xFFEFE6D5),
-      fontSize: 16,
-      onPressed: () {
-        game.popScene();
-      },
-    );
-    scrollContainer.add(backBtn);
-
+    // 4. Preload available worlds metadata
     final availableWorlds = LevelLoader.instance.availableWorlds;
-    final points = <Vector2>[];
+    for (final worldId in availableWorlds) {
+      try {
+        final world = await LevelLoader.instance.loadWorld(worldId);
+        _loadedWorlds[worldId] = world;
+      } catch (_) {}
+    }
+
+    // 5. Query Player World & Level Progress
+    final worldProgressMap = <String, WorldProgressData>{};
+    final allComps = <LevelCompletion>[];
+    try {
+      final progressDao = _resolveProgressDao();
+      if (progressDao != null) {
+        final wpList = await progressDao.getAllWorldProgress();
+        for (final wp in wpList) {
+          worldProgressMap[wp.worldId] = wp;
+        }
+        final comps = await progressDao.getAllLevelCompletions();
+        allComps.addAll(comps);
+      }
+    } catch (e) {
+      debugPrint('[WorldSelectScene] Progress lookup skipped: $e');
+    }
+
+    // 6. Build Serpentine Alternating Layout for World Nodes
+    final screenWidth = game.size.x > 0 ? game.size.x : 360.0;
+    const margin = 14.0;
+    final nodeWidth = (screenWidth * 0.58).clamp(205.0, 245.0);
+    const nodeHeight = 76.0;
+    final leftX = margin;
+    final rightX = (screenWidth - nodeWidth - margin).clamp(margin, screenWidth - nodeWidth - margin);
+
+    const startY = 135.0; // Safe clearance below the 106px fixed top header
+    const worldSpacing = 135.0;
+
+    final riverPoints = <Vector2>[];
+    riverPoints.add(Vector2(screenWidth / 2.0, startY - 45.0));
+
+    _worldNodes.clear();
+
+    // Determine current active world
+    String? currentActiveWorldId;
+    for (int i = 0; i < availableWorlds.length; i++) {
+      final wid = availableWorlds[i];
+      final wp = worldProgressMap[wid];
+      final isUnlocked = i == 0 || (wp?.unlocked ?? false);
+      final isCompleted = (wp?.levelsCompleted ?? 0) >= (wp?.totalLevels ?? (_loadedWorlds[wid]?.totalLevels ?? 15));
+      if (isUnlocked && !isCompleted) {
+        currentActiveWorldId = wid;
+        break;
+      }
+    }
+    currentActiveWorldId ??= availableWorlds.isNotEmpty ? availableWorlds.first : null;
+
+    int totalEarnedStarsAcrossAll = 0;
+    int totalUnlockedWorldsCount = 0;
 
     for (int i = 0; i < availableWorlds.length; i++) {
       final worldId = availableWorlds[i];
-      
-      // Meandering trail layout
-      final row = i;
       final isLeft = i % 2 == 0;
-      final xOffset = isLeft ? -80.0 : 80.0;
-      
-      final x = (game.size.x / 2) + xOffset - 125.0; // center button 250 wide
-      final y = 200.0 + (row * 140.0);
-      
-      points.add(Vector2(x + 125, y + 35)); // Center of the 250x70 button
+      final x = isLeft ? leftX : rightX;
+      final y = startY + (i * worldSpacing);
 
-      final node = WoodButton(
-        text: worldId.toUpperCase().replaceAll('_', ' '),
-        secondaryText: 'Packing gear...',
+      final worldModel = _loadedWorlds[worldId];
+      final wp = worldProgressMap[worldId];
+
+      // Check unlock status: first world is always unlocked, or unlocked in DB, or previous world completed
+      final prevWorldId = i > 0 ? availableWorlds[i - 1] : null;
+      final prevWorldCompleted = prevWorldId != null &&
+          ((worldProgressMap[prevWorldId]?.levelsCompleted ?? 0) >=
+              (worldProgressMap[prevWorldId]?.totalLevels ?? (_loadedWorlds[prevWorldId]?.totalLevels ?? 15)));
+
+      final isUnlocked = i == 0 || (wp?.unlocked ?? false) || prevWorldCompleted;
+      if (isUnlocked) totalUnlockedWorldsCount++;
+
+      final isCurrent = worldId == currentActiveWorldId;
+
+      // Calculate stars earned in this world
+      int worldStars = 0;
+      int completedStagesInWorld = 0;
+      for (final comp in allComps) {
+        if (comp.levelId.startsWith('${worldId}_')) {
+          worldStars += comp.starsEarned;
+          completedStagesInWorld++;
+        }
+      }
+      totalEarnedStarsAcrossAll += worldStars;
+
+      final totalStages = worldModel?.totalLevels ?? (wp?.totalLevels ?? 15);
+      final worldTitle = worldModel?.title ?? worldId.replaceAll('_', ' ');
+
+      final worldNode = WorldNodeComponent(
+        worldNumber: i + 1,
+        worldId: worldId,
+        title: worldTitle,
+        stagesCompleted: completedStagesInWorld,
+        totalStages: totalStages,
+        starsEarned: worldStars,
+        isUnlocked: isUnlocked,
+        isCurrent: isCurrent,
+        isLeftAligned: isLeft,
+        size: Vector2(nodeWidth, nodeHeight),
         position: Vector2(x, y),
-        size: Vector2(250, 70),
-        primaryColor: i % 2 == 0 ? const Color(0xFF4A7C59) : const Color(0xFFD48B3E),
         onPressed: () {
           game.pushScene(LevelMapScene(worldId: worldId));
         },
       );
-      scrollContainer.add(node);
-      
-      // Async load title
-      LevelLoader.instance.loadWorld(worldId).then((world) {
-        if (isMounted) {
-          node.text = world.title.toUpperCase();
-          node.secondaryText = 'Chapter ${world.number} • ${world.levels.length} Stages';
-        }
-      });
+
+      _worldNodes.add(worldNode);
+      scrollContainer.add(worldNode);
+      riverPoints.add(worldNode.riverAnchorPoint);
     }
 
-    trailPath.setPoints(points);
-    if (points.isNotEmpty) {
-      _maxScroll = (points.last.y + 100) > game.size.y ? (points.last.y + 100) - game.size.y : 0;
+    if (availableWorlds.isNotEmpty) {
+      final lastY = startY + ((availableWorlds.length - 1) * worldSpacing) + nodeHeight;
+      riverPoints.add(Vector2(screenWidth / 2.0, lastY + 75.0));
+    }
+
+    riverComponent.setPoints(riverPoints);
+
+    final totalContentHeight = startY + (availableWorlds.length * worldSpacing) + 110.0;
+    _maxScroll = totalContentHeight > game.size.y ? (totalContentHeight - game.size.y) : 0.0;
+
+    // 7. Fixed Top HUD Header with comfortable safe status bar height (106px)
+    headerComponent = WorldSelectHeaderComponent(
+      title: 'WILD WOODS TRAIL',
+      subtitle: 'CHOOSE EXPEDITION • ${availableWorlds.length} WORLDS',
+      unlockedWorlds: totalUnlockedWorldsCount,
+      totalWorlds: availableWorlds.length,
+      earnedStars: totalEarnedStarsAcrossAll,
+      onBackPressed: () => game.popScene(),
+      size: Vector2(screenWidth, 106),
+    );
+    add(headerComponent!);
+  }
+
+  @override
+  void onMount() {
+    super.onMount();
+    refreshProgress();
+  }
+
+  /// Re-evaluates world and stage progress when returning to world selection.
+  Future<void> refreshProgress() async {
+    if (_worldNodes.isEmpty) return;
+    final availableWorlds = LevelLoader.instance.availableWorlds;
+
+    final worldProgressMap = <String, WorldProgressData>{};
+    final allComps = <LevelCompletion>[];
+
+    try {
+      final progressDao = _resolveProgressDao();
+      if (progressDao != null) {
+        final wpList = await progressDao.getAllWorldProgress();
+        for (final wp in wpList) {
+          worldProgressMap[wp.worldId] = wp;
+        }
+        final comps = await progressDao.getAllLevelCompletions();
+        allComps.addAll(comps);
+      }
+    } catch (e) {
+      debugPrint('[WorldSelectScene] Progress refresh error: $e');
+    }
+
+    // Determine current active world
+    String? currentActiveWorldId;
+    for (int i = 0; i < availableWorlds.length; i++) {
+      final wid = availableWorlds[i];
+      final wp = worldProgressMap[wid];
+      final isUnlocked = i == 0 || (wp?.unlocked ?? false);
+      final isCompleted = (wp?.levelsCompleted ?? 0) >= (wp?.totalLevels ?? (_loadedWorlds[wid]?.totalLevels ?? 15));
+      if (isUnlocked && !isCompleted) {
+        currentActiveWorldId = wid;
+        break;
+      }
+    }
+    currentActiveWorldId ??= availableWorlds.isNotEmpty ? availableWorlds.first : null;
+
+    int totalEarnedStarsAcrossAll = 0;
+    int totalUnlockedWorldsCount = 0;
+
+    for (int i = 0; i < _worldNodes.length; i++) {
+      if (i >= availableWorlds.length) break;
+      final worldId = availableWorlds[i];
+      final worldModel = _loadedWorlds[worldId];
+      final wp = worldProgressMap[worldId];
+
+      final prevWorldId = i > 0 ? availableWorlds[i - 1] : null;
+      final prevWorldCompleted = prevWorldId != null &&
+          ((worldProgressMap[prevWorldId]?.levelsCompleted ?? 0) >=
+              (worldProgressMap[prevWorldId]?.totalLevels ?? (_loadedWorlds[prevWorldId]?.totalLevels ?? 15)));
+
+      final isUnlocked = i == 0 || (wp?.unlocked ?? false) || prevWorldCompleted;
+      if (isUnlocked) totalUnlockedWorldsCount++;
+
+      final isCurrent = worldId == currentActiveWorldId;
+
+      int worldStars = 0;
+      int completedStagesInWorld = 0;
+      for (final comp in allComps) {
+        if (comp.levelId.startsWith('${worldId}_')) {
+          worldStars += comp.starsEarned;
+          completedStagesInWorld++;
+        }
+      }
+      totalEarnedStarsAcrossAll += worldStars;
+
+      final totalStages = worldModel?.totalLevels ?? (wp?.totalLevels ?? 15);
+      final worldTitle = worldModel?.title ?? worldId.replaceAll('_', ' ');
+
+      _worldNodes[i].updateProgress(
+        stagesCompleted: completedStagesInWorld,
+        totalStages: totalStages,
+        starsEarned: worldStars,
+        isUnlocked: isUnlocked,
+        isCurrent: isCurrent,
+        newTitle: worldTitle,
+      );
+    }
+
+    headerComponent?.updateStats(
+      unlocked: totalUnlockedWorldsCount,
+      total: availableWorlds.length,
+      stars: totalEarnedStarsAcrossAll,
+    );
+  }
+
+  @override
+  Future<void> onEnter() async {
+    await super.onEnter();
+    _needsRefresh = true;
+    await refreshProgress();
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (_needsRefresh) {
+      _needsRefresh = false;
+      refreshProgress();
     }
   }
 
@@ -125,14 +332,7 @@ class WorldSelectScene extends QueryScene with DragCallbacks {
   @override
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
-    for (final child in children) {
-      if (child is RectangleComponent && child.paint.color == const Color(0xFFEFE6D5)) {
-        child.size = size;
-        break;
-      }
-    }
+    _overlayComponent?.size = size;
+    headerComponent?.size = Vector2(size.x, 106);
   }
 }
-
-
-
