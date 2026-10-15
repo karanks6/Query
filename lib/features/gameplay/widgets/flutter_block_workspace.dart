@@ -44,6 +44,34 @@ class _FlutterBlockWorkspaceState
   static const _palette = _ClauseType.values;
   final List<_ClausePair> _placed = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _initFromCurrentQuery();
+  }
+
+  void _initFromCurrentQuery() {
+    final query = ref.read(gameplayProvider).currentQuery.trim();
+    if (query.isEmpty) return;
+
+    final pattern = RegExp(
+      r'(SELECT|FROM|WHERE|JOIN|GROUP\s+BY|ORDER\s+BY|LIMIT)\s*([^;]*?)(?=(?:\s+(?:SELECT|FROM|WHERE|JOIN|GROUP\s+BY|ORDER\s+BY|LIMIT))|$)',
+      caseSensitive: false,
+      dotAll: true,
+    );
+
+    final matches = pattern.allMatches(query);
+    for (final m in matches) {
+      final rawKw = m.group(1)!.toUpperCase().replaceAll(RegExp(r'\s+'), ' ');
+      final val = m.group(2)!.trim();
+      final type = _ClauseType.values.firstWhere(
+        (t) => t.keyword == rawKw,
+        orElse: () => _ClauseType.select,
+      );
+      _placed.add(_ClausePair(type: type, value: val));
+    }
+  }
+
   // ── Clause management ──────────────────────────────────────────────────────
 
   Future<void> _tapChip(_ClauseType type) async {
