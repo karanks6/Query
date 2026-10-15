@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../gameplay_provider.dart';
@@ -113,6 +114,12 @@ class _FlutterBlockWorkspaceState
       context: ctx,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      sheetAnimationStyle: AnimationStyle(
+        duration: const Duration(milliseconds: 250),
+        reverseDuration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      ),
       builder: (_) => _InputSheet(type: type, initial: initial),
     );
   }
@@ -305,7 +312,7 @@ class _Palette extends StatelessWidget {
                         BoxShadow(
                             color: Colors.black.withValues(alpha: 0.3),
                             blurRadius: 4,
-                            offset: const Offset(0, 2))
+                            offset: const Offset(0, 2)),
                       ],
                     ),
                     child: Text(
@@ -338,153 +345,212 @@ class _InputSheet extends StatefulWidget {
 class _InputSheetState extends State<_InputSheet> {
   late TextEditingController _ctrl;
   late FocusNode _focus;
+  bool _isClosing = false;
+  double _closingBottomInset = 0.0;
+
+  static final TextStyle _keywordStyle = GoogleFonts.nunitoSans(
+    color: Colors.white,
+    fontSize: 13,
+    fontWeight: FontWeight.w900,
+  );
+
+  static final TextStyle _titleStyle = GoogleFonts.cinzel(
+    color: const Color(0xFF3D2817),
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+  );
+
+  static final TextStyle _hintStyle = GoogleFonts.quicksand(
+    color: const Color(0xFF8B7055),
+    fontSize: 13,
+  );
+
+  static final TextStyle _inputStyle = GoogleFonts.sourceCodePro(
+    color: const Color(0xFF2A180E),
+    fontSize: 17,
+    fontWeight: FontWeight.w600,
+  );
+
+  static final TextStyle _inputHintStyle = GoogleFonts.sourceCodePro(
+    color: const Color(0xFF9E8B75),
+    fontSize: 14,
+  );
+
+  static final TextStyle _cancelStyle = GoogleFonts.nunitoSans(
+    fontWeight: FontWeight.bold,
+    fontSize: 14,
+  );
+
+  static final TextStyle _confirmStyle = GoogleFonts.nunitoSans(
+    fontWeight: FontWeight.bold,
+    fontSize: 15,
+  );
 
   @override
   void initState() {
     super.initState();
     _ctrl = TextEditingController(text: widget.initial);
     _focus = FocusNode();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => _focus.requestFocus());
   }
 
   @override
   void dispose() {
+    _focus.unfocus();
     _ctrl.dispose();
     _focus.dispose();
     super.dispose();
   }
 
-  void _confirm() => Navigator.pop(context, _ctrl.text.trim());
-  void _cancel() => Navigator.pop(context, null);
+  void _dismiss([String? result]) {
+    if (_isClosing) return;
+    _isClosing = true;
+    _focus.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+    Navigator.of(context).pop(result);
+  }
+
+  void _confirm() => _dismiss(_ctrl.text.trim());
+  void _cancel() => _dismiss(null);
 
   @override
   Widget build(BuildContext context) {
-    final bottom = MediaQuery.of(context).viewInsets.bottom;
+    final route = ModalRoute.of(context);
+    final isReversing = (route?.animation?.status == AnimationStatus.reverse) || _isClosing;
+
+    if (isReversing && !_isClosing) {
+      _isClosing = true;
+      _focus.unfocus();
+      FocusManager.instance.primaryFocus?.unfocus();
+      SystemChannels.textInput.invokeMethod('TextInput.hide');
+    }
+
+    final rawBottom = MediaQuery.of(context).viewInsets.bottom;
+    if (!isReversing && rawBottom > 0) {
+      _closingBottomInset = rawBottom;
+    }
+    final bottom = isReversing ? _closingBottomInset : rawBottom;
     final c = widget.type.color;
 
-    return Padding(
-      padding: EdgeInsets.only(bottom: bottom),
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFFEFE6D5),
-          borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(20)),
-          border: Border.all(color: c, width: 3),
-        ),
-        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // drag handle
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                    color: const Color(0xFFD4C4A8),
-                    borderRadius: BorderRadius.circular(2)),
+    return RepaintBoundary(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: bottom),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFEFE6D5),
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(20)),
+            border: Border.all(color: c, width: 3),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 16,
+                offset: const Offset(0, -4),
               ),
-            ),
-            // Title row
-            Row(children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                    color: c, borderRadius: BorderRadius.circular(6)),
-                child: Text(widget.type.keyword,
-                    style: GoogleFonts.nunitoSans(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w900)),
-              ),
-              const SizedBox(width: 12),
-              Text('Set value',
-                  style: GoogleFonts.cinzel(
-                      color: const Color(0xFF3D2817),
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold)),
-            ]),
-            const SizedBox(height: 8),
-            Text(
-              widget.type.hint,
-              style: GoogleFonts.quicksand(
-                  color: const Color(0xFF8B7055), fontSize: 13),
-            ),
-            const SizedBox(height: 14),
-            // Input field
-            TextField(
-              controller: _ctrl,
-              focusNode: _focus,
-              autofocus: true,
-              style: GoogleFonts.sourceCodePro(
-                  color: const Color(0xFF2A180E),
-                  fontSize: 17,
-                  fontWeight: FontWeight.w600),
-              decoration: InputDecoration(
-                hintText: widget.type.hint,
-                hintStyle: GoogleFonts.sourceCodePro(
-                    color: const Color(0xFF9E8B75), fontSize: 14),
-                filled: true,
-                fillColor: const Color(0xFFFAF7F0),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide:
-                        const BorderSide(color: Color(0xFFD4C4A8), width: 2)),
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide:
-                        const BorderSide(color: Color(0xFFD4C4A8), width: 2)),
-                focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: c, width: 2)),
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 14),
-              ),
-              onSubmitted: (_) => _confirm(),
-            ),
-            const SizedBox(height: 20),
-            Row(children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: _cancel,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF8B5A2B),
-                    side: const BorderSide(color: Color(0xFF8B5A2B)),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
-                  child: Text('CANCEL',
-                      style: GoogleFonts.nunitoSans(
-                          fontWeight: FontWeight.bold)),
+            ],
+          ),
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // drag handle
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                      color: const Color(0xFFD4C4A8),
+                      borderRadius: BorderRadius.circular(2)),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                flex: 2,
-                child: ElevatedButton(
-                  onPressed: _confirm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: c,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    elevation: 3,
-                  ),
-                  child: Text('CONFIRM',
-                      style: GoogleFonts.nunitoSans(
-                          fontWeight: FontWeight.bold, fontSize: 15)),
+              // Title row
+              Row(children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                      color: c, borderRadius: BorderRadius.circular(6)),
+                  child: Text(widget.type.keyword,
+                      style: _keywordStyle),
                 ),
+                const SizedBox(width: 12),
+                Text('Set value',
+                    style: _titleStyle),
+              ]),
+              const SizedBox(height: 8),
+              Text(
+                widget.type.hint,
+                style: _hintStyle,
               ),
-            ]),
-          ],
+              const SizedBox(height: 14),
+              // Input field
+              TextField(
+                controller: _ctrl,
+                focusNode: _focus,
+                autofocus: true,
+                style: _inputStyle,
+                decoration: InputDecoration(
+                  hintText: widget.type.hint,
+                  hintStyle: _inputHintStyle,
+                  filled: true,
+                  fillColor: const Color(0xFFFAF7F0),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          const BorderSide(color: Color(0xFFD4C4A8), width: 2)),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          const BorderSide(color: Color(0xFFD4C4A8), width: 2)),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: c, width: 2)),
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 14),
+                ),
+                onSubmitted: (_) => _confirm(),
+              ),
+              const SizedBox(height: 20),
+              Row(children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _cancel,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF8B5A2B),
+                      side: const BorderSide(color: Color(0xFF8B5A2B)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
+                    child: Text('CANCEL',
+                        style: _cancelStyle),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 2,
+                  child: ElevatedButton(
+                    onPressed: _confirm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: c,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      elevation: 3,
+                    ),
+                    child: Text('CONFIRM',
+                        style: _confirmStyle),
+                  ),
+                ),
+              ]),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
