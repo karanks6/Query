@@ -11,6 +11,9 @@ class ActionButton extends StatefulWidget {
   final Widget child;
   final bool isPrimary; 
   final EdgeInsetsGeometry padding;
+  final Color? colorOverride;
+  final Color? borderColorOverride;
+  final Color? textColorOverride;
 
   const ActionButton({
     super.key,
@@ -18,6 +21,9 @@ class ActionButton extends StatefulWidget {
     required this.child,
     this.isPrimary = false,
     this.padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+    this.colorOverride,
+    this.borderColorOverride,
+    this.textColorOverride,
   });
 
   @override
@@ -56,6 +62,11 @@ class _ActionButtonState extends State<ActionButton> {
     if (isDisabled) {
       baseColor = GameTokens.surfaceVariant;
       textColor = GameTokens.disabledText;
+    } else if (widget.colorOverride != null) {
+      baseColor = _isHovered
+          ? widget.colorOverride!.withValues(alpha: 0.85)
+          : widget.colorOverride!;
+      textColor = widget.textColorOverride ?? Colors.white;
     } else if (widget.isPrimary) {
       baseColor = _isHovered ? GameTokens.accentDim : GameTokens.accent;
       textColor = GameTokens.background;
@@ -83,7 +94,8 @@ class _ActionButtonState extends State<ActionButton> {
             child: CustomPaint(
               painter: SlantedBorderPainter(
                 clipSize: 12.0,
-                borderColor: widget.isPrimary ? GameTokens.accent : GameTokens.surfaceHighlight,
+                borderColor: widget.borderColorOverride ??
+                    (widget.isPrimary ? GameTokens.accent : GameTokens.surfaceHighlight),
                 strokeWidth: 1.5,
               ),
               child: ClipPath(
