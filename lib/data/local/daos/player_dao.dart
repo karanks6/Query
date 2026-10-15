@@ -68,14 +68,22 @@ class PlayerDao extends DatabaseAccessor<AppDatabase> with _$PlayerDaoMixin {
     } catch (_) {}
   }
 
-  /// Spends Insight Points for hints.
+  /// Spends Insight Points / XP for hints.
   Future<bool> spendInsightPoints(int amount) async {
     final profile = await getProfile();
-    if (profile == null || profile.insightPoints < amount) return false;
+    if (profile == null) return false;
+
+    final hasEnoughIp = profile.insightPoints >= amount;
+    final hasEnoughXp = profile.totalXp >= amount;
+    if (!hasEnoughIp && !hasEnoughXp) return false;
+
+    final newIp = hasEnoughIp ? profile.insightPoints - amount : 0;
+    final newXp = hasEnoughXp ? profile.totalXp - amount : 0;
 
     await (update(playerProfiles)..where((p) => p.id.equals(profile.id)))
         .write(PlayerProfilesCompanion(
-      insightPoints: Value(profile.insightPoints - amount),
+      insightPoints: Value(newIp),
+      totalXp: Value(newXp),
     ));
     return true;
   }
