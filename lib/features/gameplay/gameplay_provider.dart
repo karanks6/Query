@@ -277,7 +277,7 @@ class GameplayNotifier extends StateNotifier<GameplayState> {
     // in the in-game HUD and in the dashboard when the user returns.
     try {
       final prefs = _ref.read(sharedPreferencesProvider);
-      await playerDao.checkDailyStreak(prefs, achievementsDao: achievementsDao);
+      await playerDao.checkDailyStreak(prefs, achievementsDao: achievementsDao, increment: true);
     } catch (_) {}
 
     // Check world unlock
