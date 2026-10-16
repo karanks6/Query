@@ -34,7 +34,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final prefs = ref.read(sharedPreferencesProvider);
       final achievementsDao = ref.read(achievementsDaoProvider);
-      await ref.read(playerDaoProvider).checkDailyStreak(prefs, achievementsDao: achievementsDao);
+      await ref.read(playerDaoProvider).checkDailyStreak(prefs, achievementsDao: achievementsDao, increment: false);
       
       ref.read(queryGameProvider).pushScene(DashboardScene());
     });
