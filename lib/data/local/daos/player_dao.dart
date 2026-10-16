@@ -107,12 +107,18 @@ class PlayerDao extends DatabaseAccessor<AppDatabase> with _$PlayerDaoMixin {
   }
 
   /// Checks and updates the daily streak using SharedPreferences.
-  Future<void> checkDailyStreak(SharedPreferences prefs, {AchievementsDao? achievementsDao, bool increment = true}) async {
+  Future<void> checkDailyStreak(
+    SharedPreferences prefs, {
+    AchievementsDao? achievementsDao,
+    bool increment = false,
+  }) async {
     final profile = await getProfile();
     if (profile == null) return;
 
-    final todayStr = DateTime.now().toIso8601String().substring(0, 10);
-    final yesterday = DateTime.now().subtract(const Duration(days: 1));
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final todayStr = today.toIso8601String().substring(0, 10);
+    final yesterday = DateTime(now.year, now.month, now.day - 1);
     final yesterdayStr = yesterday.toIso8601String().substring(0, 10);
 
     final lastUpdate = prefs.getString('last_streak_update');
@@ -128,43 +134,40 @@ class PlayerDao extends DatabaseAccessor<AppDatabase> with _$PlayerDaoMixin {
         longestStreak = currentStreak;
         await prefs.setInt('longest_streak', longestStreak);
       }
-      
+
       if (achievementsDao != null) {
         if (currentStreak >= 3) await achievementsDao.awardAchievement('daily_streak_3');
         if (currentStreak >= 7) await achievementsDao.awardAchievement('daily_streak_7');
+        if (currentStreak >= 30) await achievementsDao.awardAchievement('daily_streak_30');
       }
     }
 
-    if (lastUpdate != null && lastUpdate != todayStr && lastUpdate != yesterdayStr) {
-      // Streak broken (played before yesterday)
+    final isBroken = lastUpdate == null || (lastUpdate != todayStr && lastUpdate != yesterdayStr);
+
+    if (isBroken) {
       if (increment) {
-        // Reset streak and increment to 1 for today
+        // Reset streak and start at 1 for today
         await (update(playerProfiles)..where((p) => p.id.equals(profile.id)))
             .write(const PlayerProfilesCompanion(streakCount: Value(1)));
         await prefs.setString('last_streak_update', todayStr);
         await updateHistoryAndLongest(1);
       } else {
-        // Just reset streak to 0, they haven't played today yet
-        await (update(playerProfiles)..where((p) => p.id.equals(profile.id)))
-            .write(const PlayerProfilesCompanion(streakCount: Value(0)));
+        // Streak is broken and user hasn't played today. Reset streak to 0.
+        if (profile.streakCount != 0) {
+          await (update(playerProfiles)..where((p) => p.id.equals(profile.id)))
+              .write(const PlayerProfilesCompanion(streakCount: Value(0)));
+        }
       }
     } else if (increment) {
-      if (lastUpdate == null) {
-        // First time playing / starting new streak
-        final newStreak = profile.streakCount + 1;
-        await (update(playerProfiles)..where((p) => p.id.equals(profile.id)))
-            .write(PlayerProfilesCompanion(streakCount: Value(newStreak)));
-        await prefs.setString('last_streak_update', todayStr);
-        await updateHistoryAndLongest(newStreak);
-      } else if (lastUpdate == yesterdayStr) {
-        // Kept streak alive
+      if (lastUpdate == yesterdayStr) {
+        // Kept streak alive from yesterday
         final newStreak = profile.streakCount + 1;
         await (update(playerProfiles)..where((p) => p.id.equals(profile.id)))
             .write(PlayerProfilesCompanion(streakCount: Value(newStreak)));
         await prefs.setString('last_streak_update', todayStr);
         await updateHistoryAndLongest(newStreak);
       } else if (lastUpdate == todayStr) {
-        // Played multiple times today. Just ensure history has today.
+        // Already played today. Maintain current streak count.
         await updateHistoryAndLongest(profile.streakCount);
       }
     }
