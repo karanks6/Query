@@ -59,14 +59,6 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
   }
 
   Future<void> pushScene(QueryScene next) async {
-    if (isLoaded && transitionCurtain.isMounted) {
-      transitionCurtain.startTransition(() => _performPushScene(next));
-    } else {
-      await _performPushScene(next);
-    }
-  }
-
-  Future<void> _performPushScene(QueryScene next) async {
     if (sceneStack.isNotEmpty) {
       await sceneStack.last.onExit();
       remove(sceneStack.last);
@@ -77,17 +69,12 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
     await next.onEnter();
     
     _updateOverlays();
-  }
-
-  Future<void> replaceScene(QueryScene next) async {
     if (isLoaded && transitionCurtain.isMounted) {
-      transitionCurtain.startTransition(() => _performReplaceScene(next));
-    } else {
-      await _performReplaceScene(next);
+      transitionCurtain.fadeFromDark();
     }
   }
 
-  Future<void> _performReplaceScene(QueryScene next) async {
+  Future<void> replaceScene(QueryScene next) async {
     if (sceneStack.isNotEmpty) {
       final old = sceneStack.removeLast();
       await old.onExit();
@@ -99,17 +86,12 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
     await next.onEnter();
     
     _updateOverlays();
-  }
-
-  Future<void> popScene() async {
     if (isLoaded && transitionCurtain.isMounted) {
-      transitionCurtain.startTransition(() => _performPopScene());
-    } else {
-      await _performPopScene();
+      transitionCurtain.fadeFromDark();
     }
   }
 
-  Future<void> _performPopScene() async {
+  Future<void> popScene() async {
     if (sceneStack.length > 1) {
       final old = sceneStack.removeLast();
       await old.onExit();
@@ -123,6 +105,9 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
       }
       await current.onEnter();
       _updateOverlays();
+      if (isLoaded && transitionCurtain.isMounted) {
+        transitionCurtain.fadeFromDark();
+      }
     }
   }
 
@@ -141,6 +126,9 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
       }
       await current.onEnter();
       _updateOverlays();
+      if (isLoaded && transitionCurtain.isMounted) {
+        transitionCurtain.fadeFromDark();
+      }
     }
   }
 
@@ -157,33 +145,18 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
 /// A high-performance cinematic transition curtain that smoothly fades between scenes.
 class SceneTransitionComponent extends PositionComponent {
   double _opacity = 0.0;
-  bool _isTransitioning = false;
-  Future<void> Function()? _midpointCallback;
 
-  void startTransition(Future<void> Function() onMidpoint) {
-    _isTransitioning = true;
-    _midpointCallback = onMidpoint;
-    _opacity = 0.0;
+  void fadeFromDark() {
+    _opacity = 0.85;
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    if (!_isTransitioning) return;
-
-    if (_midpointCallback != null) {
-      _opacity += dt * 6.5; // ~150ms fade in
-      if (_opacity >= 1.0) {
-        _opacity = 1.0;
-        final cb = _midpointCallback;
-        _midpointCallback = null;
-        cb?.call();
-      }
-    } else {
-      _opacity -= dt * 5.0; // ~200ms fade out
-      if (_opacity <= 0.0) {
+    if (_opacity > 0.0) {
+      _opacity -= dt * 4.5; // ~200ms smooth organic fade out
+      if (_opacity < 0.0) {
         _opacity = 0.0;
-        _isTransitioning = false;
       }
     }
   }
@@ -196,7 +169,7 @@ class SceneTransitionComponent extends PositionComponent {
       ..color = const Color(0xFF140803).withValues(alpha: _opacity.clamp(0.0, 1.0));
     canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), paint);
 
-    if (_opacity > 0.25) {
+    if (_opacity > 0.20) {
       final glintPaint = Paint()
         ..shader = ui.Gradient.radial(
           Offset(size.x * 0.5, size.y * 0.5),
