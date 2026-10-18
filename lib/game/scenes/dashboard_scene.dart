@@ -113,20 +113,20 @@ class DashboardScene extends QueryScene {
       final contentWidth = availableWidth > 440 ? 400.0 : availableWidth - 32;
       final centerX = availableWidth / 2;
       
-      // Dynamic vertical scaling to ensure comfortable proportions on any mobile device
+      // Dynamic vertical scaling to ensure comfortable proportions and eliminate bottom empty space
       final isCompact = availableHeight < 680;
       var yPos = isCompact ? 4.0 : 8.0;
 
       // ─── 1. WANDERWOOD Plaque with Hover & Shimmer ─────────────────────────
       final plaqueWidth = contentWidth * 0.85;
-      final plaqueHeight = isCompact ? 52.0 : 58.0;
+      final plaqueHeight = isCompact ? 50.0 : 56.0;
       
       final plaque = _AnimatedWanderwoodPlaque(
         size: Vector2(plaqueWidth, plaqueHeight),
         position: Vector2(centerX - plaqueWidth / 2, yPos),
       );
       layoutContainer.add(plaque);
-      yPos += plaqueHeight + (isCompact ? 10 : 12);
+      yPos += plaqueHeight + (isCompact ? 8 : 12);
 
       // ─── 2. Tactical Stats Row (Streak, Badges, XP) ────────────────────────
       final statsHeight = isCompact ? 48.0 : 52.0;
@@ -137,18 +137,27 @@ class DashboardScene extends QueryScene {
         position: Vector2(centerX - contentWidth / 2, yPos),
       );
       layoutContainer.add(_statsRow!);
-      yPos += statsHeight + (isCompact ? 10 : 12);
+      yPos += statsHeight + (isCompact ? 8 : 12);
 
       // ─── 3. Expedition Codex Folio (Living Artwork & Journey Track) ────────
       final illusWidth = contentWidth - 28;
-      final illusHeight = isCompact 
-          ? (illusWidth * 0.52).clamp(135.0, 160.0) 
-          : (illusWidth * 0.62).clamp(160.0, 205.0);
+      final headerH = 40.0;
+      final trackerH = 52.0;
+      final specimenH = isCompact ? 36.0 : 42.0;
+      final folioPadding = 10.0 + 10.0 + 14.0; // gaps between parts + bottom margin
+
+      // Dynamic calculation: compute remaining vertical space to enlarge artwork and fill empty bottom
+      final btnHeight = isCompact ? 56.0 : 64.0;
+      final btnTotal = (btnHeight * 2) + (isCompact ? 8.0 : 12.0);
+      final topTotal = yPos; // plaque + stats + gaps
+      final fixedElementsTotal = topTotal + headerH + trackerH + specimenH + folioPadding + 14.0 + btnTotal + 24.0;
       
-      final headerH = 38.0;
-      final trackerH = 26.0;
-      final specimenH = isCompact ? 32.0 : 36.0;
-      final folioHeight = headerH + illusHeight + 8 + trackerH + 8 + specimenH + 12;
+      final remainingForIllus = availableHeight - fixedElementsTotal;
+      final illusHeight = isCompact 
+          ? remainingForIllus.clamp(175.0, 210.0) 
+          : remainingForIllus.clamp(215.0, 270.0);
+      
+      final folioHeight = headerH + illusHeight + 10.0 + trackerH + 10.0 + specimenH + 14.0;
       
       final folio = _ExpeditionCodexFolio(
         size: Vector2(contentWidth, folioHeight),
@@ -163,8 +172,6 @@ class DashboardScene extends QueryScene {
       yPos += folioHeight + (isCompact ? 10 : 14);
 
       // ─── 4. High-End Animated Action Buttons ──────────────────────────────
-      final btnHeight = isCompact ? 56.0 : 64.0;
-      
       final continueBtn = WoodButton(
         text: 'CONTINUE',
         secondaryText: 'Stage 3-4 · The Whispering Brook',
@@ -793,17 +800,17 @@ class _ExpeditionCodexFolio extends PositionComponent {
     });
 
     // ─── Expedition Journey Track ────────────────────────────────────────────
-    final trackY = 44 + illusHeight + 8;
+    final trackY = 44 + illusHeight + 10;
     add(_ExpeditionJourneyTrack(
       position: Vector2(14, trackY),
-      size: Vector2(illusWidth, 26),
+      size: Vector2(illusWidth, 52),
     ));
 
     // ─── Botanical Specimen Strip (Replaces plain white box) ──────────────────
-    final specY = trackY + 26 + 8;
+    final specY = trackY + 52 + 10;
     add(_BotanicalSpecimenBox(
       position: Vector2(14, specY),
-      size: Vector2(illusWidth, 34),
+      size: Vector2(illusWidth, 42),
     ));
   }
 }
@@ -889,7 +896,7 @@ class _IllustrationAtmosphereComponent extends PositionComponent {
     }
 
     // 4. Floating Chapter Location Banner Ribbon
-    final bannerHeight = 28.0;
+    final bannerHeight = 32.0;
     final bannerY = size.y - bannerHeight;
 
     final bannerPaint = Paint()
@@ -900,6 +907,7 @@ class _IllustrationAtmosphereComponent extends PositionComponent {
           const Color(0xD9221108),
           const Color(0xF2120703),
         ],
+        const [0.0, 1.0],
       );
     canvas.drawRRect(
       RRect.fromRectAndCorners(
@@ -912,11 +920,11 @@ class _IllustrationAtmosphereComponent extends PositionComponent {
 
     // Pulsing Amber Waypoint Pin
     final pinPulse = (sin(_time * 3.5) * 1.5);
-    final pinX = 14.0;
+    final pinX = 16.0;
     final pinY = bannerY + bannerHeight * 0.5;
     final pinPaint = Paint()..color = const Color(0xFFFFD54F);
-    canvas.drawCircle(Offset(pinX, pinY), 3.5 + pinPulse * 0.4, pinPaint);
-    canvas.drawCircle(Offset(pinX, pinY), 6.5, Paint()..color = const Color(0xFFFFD54F).withValues(alpha: 0.25));
+    canvas.drawCircle(Offset(pinX, pinY), 3.8 + pinPulse * 0.4, pinPaint);
+    canvas.drawCircle(Offset(pinX, pinY), 7.0, Paint()..color = const Color(0xFFFFD54F).withValues(alpha: 0.25));
   }
 
   @override
@@ -924,16 +932,16 @@ class _IllustrationAtmosphereComponent extends PositionComponent {
     await super.onLoad();
 
     // Chapter Location Text
-    final bannerHeight = 28.0;
+    final bannerHeight = 32.0;
     final bannerY = size.y - bannerHeight;
 
     final locationText = TextComponent(
       text: 'Chapter $currentWorldNumber: $currentWorldTitle',
-      position: Vector2(26, bannerY + 5),
+      position: Vector2(28, bannerY + 6.5),
       textRenderer: TextPaint(
         style: GoogleFonts.nunitoSans(
           color: const Color(0xFFFFF7EA),
-          fontSize: 13,
+          fontSize: 13.5,
           fontWeight: FontWeight.w800,
           letterSpacing: 0.6,
           shadows: [
@@ -985,54 +993,80 @@ class _ExpeditionJourneyTrack extends PositionComponent {
       const Radius.circular(8),
     );
 
-    // Dark parchment track fill
-    canvas.drawRRect(rrect, Paint()..color = const Color(0xFFE5DBC7));
+    // 1. Warm parchment tablet container
+    final bgPaint = Paint()
+      ..shader = ui.Gradient.linear(
+        const Offset(0, 0),
+        Offset(0, size.y),
+        [
+          const Color(0xFFF9F5EA),
+          const Color(0xFFEDE4CE),
+        ],
+        const [0.0, 1.0],
+      );
+    canvas.drawRRect(rrect, bgPaint);
 
-    // Rail border
+    // Subtle carved border
     canvas.drawRRect(
       rrect,
       Paint()
-        ..color = const Color(0xFFC4B59D)
+        ..color = const Color(0xFFC9BCA8)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.0,
     );
 
-    // Progress bar fill (3 of 5 nodes = 60%)
-    final progressW = size.x * 0.55;
-    final progRRect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(0, 0, progressW, size.y),
-      const Radius.circular(8),
-    );
-    final progPaint = Paint()
-      ..shader = ui.Gradient.linear(
-        const Offset(0, 0),
-        Offset(progressW, 0),
-        [
-          const Color(0xFF4A7C59), // Emerald start
-          const Color(0xFFE59B28), // Amber gold lead
-        ],
-      );
-    canvas.drawRRect(progRRect, progPaint);
+    // 2. Dedicated lower progress groove channel (y = 30)
+    final trackX = 14.0;
+    final trackY = 30.0;
+    final trackW = size.x - 28.0;
+    final trackH = 8.0;
 
-    // 5 Waypoint Nodes along the track
+    final grooveRRect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(trackX, trackY, trackW, trackH),
+      const Radius.circular(4),
+    );
+    canvas.drawRRect(grooveRRect, Paint()..color = const Color(0xFFD8CCB8));
+
+    // Filled progress bar (Stage 3 of 5 = 55% progress)
+    final progressW = trackW * 0.55;
+    final fillRRect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(trackX, trackY, progressW, trackH),
+      const Radius.circular(4),
+    );
+    final fillPaint = Paint()
+      ..shader = ui.Gradient.linear(
+        Offset(trackX, 0),
+        Offset(trackX + progressW, 0),
+        [
+          const Color(0xFF2E6F4B), // Emerald forest start
+          const Color(0xFFE59B28), // Amber gold leading edge
+        ],
+        const [0.0, 1.0],
+      );
+    canvas.drawRRect(fillRRect, fillPaint);
+
+    // 3. 5 Waypoint Nodes along the groove (centered at nodeY = 34, completely separated from text)
+    final nodeY = trackY + trackH * 0.5; // 34.0
     final nodeCount = 5;
     for (int i = 0; i < nodeCount; i++) {
-      final nodeX = 16.0 + i * ((size.x - 32.0) / (nodeCount - 1));
-      final nodeY = size.y * 0.5;
+      final nodeX = trackX + i * (trackW / (nodeCount - 1));
       final isCleared = i < 2;
       final isCurrent = i == 2;
 
       if (isCurrent) {
-        // Pulsing active node
+        // Glowing active compass node
         final pulse = sin(_time * 4.0) * 1.5;
-        canvas.drawCircle(Offset(nodeX, nodeY), 5.5 + pulse * 0.4, Paint()..color = const Color(0xFFFFD54F));
-        canvas.drawCircle(Offset(nodeX, nodeY), 8.5, Paint()..color = const Color(0xFFFFD54F).withValues(alpha: 0.3));
-        canvas.drawCircle(Offset(nodeX, nodeY), 2.5, Paint()..color = const Color(0xFF1F1209));
+        canvas.drawCircle(Offset(nodeX, nodeY), 6.5 + pulse * 0.3, Paint()..color = const Color(0xFFFFD54F));
+        canvas.drawCircle(Offset(nodeX, nodeY), 9.5, Paint()..color = const Color(0xFFFFD54F).withValues(alpha: 0.3));
+        canvas.drawCircle(Offset(nodeX, nodeY), 2.8, Paint()..color = const Color(0xFF1F1209));
       } else if (isCleared) {
-        canvas.drawCircle(Offset(nodeX, nodeY), 4.5, Paint()..color = const Color(0xFFFFF7EA));
-        canvas.drawCircle(Offset(nodeX, nodeY), 2.0, Paint()..color = const Color(0xFF2E6F4B));
+        // Cleared emerald pearl node
+        canvas.drawCircle(Offset(nodeX, nodeY), 4.5, Paint()..color = const Color(0xFF2E6F4B));
+        canvas.drawCircle(Offset(nodeX, nodeY), 2.2, Paint()..color = const Color(0xFFFFF7EA));
       } else {
-        canvas.drawCircle(Offset(nodeX, nodeY), 3.5, Paint()..color = const Color(0xFF8C7A6B));
+        // Future waypoint bronze ring
+        canvas.drawCircle(Offset(nodeX, nodeY), 4.0, Paint()..color = const Color(0xFFC4B59D));
+        canvas.drawCircle(Offset(nodeX, nodeY), 2.0, Paint()..color = const Color(0xFFF9F5EA));
       }
     }
   }
@@ -1041,22 +1075,36 @@ class _ExpeditionJourneyTrack extends PositionComponent {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    final label = TextComponent(
+    // Top Row: Stage Header Text (Left) - Crystal clear dark mahogany on parchment!
+    final stageLabel = TextComponent(
       text: 'STAGE 3 OF 15 COMPLETED',
       textRenderer: TextPaint(
         style: GoogleFonts.nunitoSans(
-          color: const Color(0xFFFFF7EA),
-          fontSize: 9.5,
+          color: const Color(0xFF2E170A),
+          fontSize: 10.5,
           fontWeight: FontWeight.w900,
-          letterSpacing: 0.6,
-          shadows: [
-            const Shadow(color: Colors.black54, offset: Offset(0, 1), blurRadius: 2),
-          ],
+          letterSpacing: 0.8,
         ),
       ),
-      position: Vector2(16, 6),
+      position: Vector2(14, 8),
     );
-    add(label);
+    add(stageLabel);
+
+    // Top Row: Progress indicator (Right) - Forest green badge
+    final percentLabel = TextComponent(
+      text: 'CAMP 3/5',
+      anchor: Anchor.topRight,
+      textRenderer: TextPaint(
+        style: GoogleFonts.quicksand(
+          color: const Color(0xFF2E6F4B),
+          fontSize: 10.0,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.6,
+        ),
+      ),
+      position: Vector2(size.x - 14, 8),
+    );
+    add(percentLabel);
   }
 }
 
@@ -1103,9 +1151,9 @@ class _BotanicalSpecimenBox extends PositionComponent {
     canvas.drawRRect(rrect, borderPaint);
 
     // Specimen rarity pill on the right
-    final pillW = 82.0;
-    final pillH = 20.0;
-    final pillX = size.x - pillW - 8.0;
+    final pillW = 88.0;
+    final pillH = 22.0;
+    final pillX = size.x - pillW - 10.0;
     final pillY = (size.y - pillH) / 2;
 
     final pillRRect = RRect.fromRectAndRadius(
@@ -1142,33 +1190,37 @@ class _BotanicalSpecimenBox extends PositionComponent {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    // Specimen Name
+    // Specimen Name (Vertical Centered)
     final specimenText = TextComponent(
       text: '🌿 FLORA: Golden Morel',
+      anchor: Anchor.centerLeft,
       textRenderer: TextPaint(
         style: GoogleFonts.nunitoSans(
           color: const Color(0xFF381F12),
-          fontSize: 11.5,
+          fontSize: 12.0,
           fontWeight: FontWeight.w800,
           letterSpacing: 0.5,
         ),
       ),
-      position: Vector2(10, 8),
+      position: Vector2(12, size.y / 2),
     );
     add(specimenText);
 
-    // Rarity Text inside Pill
+    // Rarity Text inside Pill (Center Aligned)
+    final pillW = 88.0;
+    final pillX = size.x - pillW - 10.0;
     final rarityText = TextComponent(
       text: '⭐ RARE FIND',
+      anchor: Anchor.center,
       textRenderer: TextPaint(
         style: GoogleFonts.quicksand(
           color: const Color(0xFFE6FFFA),
-          fontSize: 9,
+          fontSize: 9.5,
           fontWeight: FontWeight.w900,
           letterSpacing: 0.6,
         ),
       ),
-      position: Vector2(size.x - 76, 9.5),
+      position: Vector2(pillX + pillW / 2, size.y / 2),
     );
     add(rarityText);
   }
@@ -1181,11 +1233,11 @@ class _RealmBadgeComponent extends PositionComponent {
   @override
   void render(Canvas canvas) {
     final rrect = RRect.fromRectAndRadius(
-      const Rect.fromLTWH(-120, 0, 120, 20),
-      const Radius.circular(10),
+      const Rect.fromLTWH(-134, 0, 134, 22),
+      const Radius.circular(11),
     );
     canvas.drawRRect(rrect, Paint()..color = const Color(0xFF26593B));
-    canvas.drawRRect(rrect, Paint()..color = const Color(0xFFE59B28)..style = PaintingStyle.stroke..strokeWidth = 0.8);
+    canvas.drawRRect(rrect, Paint()..color = const Color(0xFFE59B28)..style = PaintingStyle.stroke..strokeWidth = 0.9);
   }
 
   @override
@@ -1193,15 +1245,16 @@ class _RealmBadgeComponent extends PositionComponent {
     await super.onLoad();
     final text = TextComponent(
       text: 'ACT I · MISTY VALE',
+      anchor: Anchor.center,
       textRenderer: TextPaint(
         style: GoogleFonts.nunitoSans(
           color: const Color(0xFFFFF7EA),
-          fontSize: 9,
+          fontSize: 9.5,
           fontWeight: FontWeight.w900,
           letterSpacing: 0.8,
         ),
       ),
-      position: Vector2(-108, 3.5),
+      position: Vector2(-67, 11),
     );
     add(text);
   }
