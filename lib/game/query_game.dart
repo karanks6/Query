@@ -178,6 +178,7 @@ class SceneTransitionComponent extends PositionComponent {
             const Color(0xFFE59B28).withValues(alpha: (_opacity * 0.20).clamp(0.0, 1.0)),
             Colors.transparent,
           ],
+          const [0.0, 1.0],
         );
       canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), glintPaint);
     }
