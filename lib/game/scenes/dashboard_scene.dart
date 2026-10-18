@@ -416,6 +416,7 @@ class _AnimatedWanderwoodPlaque extends PositionComponent {
             const Color(0xFFFFD54F).withValues(alpha: 0.22),
             Colors.transparent,
           ],
+          const [0.0, 0.5, 1.0],
         );
       canvas.save();
       canvas.clipRRect(innerRRect);
@@ -1128,6 +1129,7 @@ class _BotanicalSpecimenBox extends PositionComponent {
             const Color(0xFFFFD54F).withValues(alpha: 0.20),
             Colors.transparent,
           ],
+          const [0.0, 0.5, 1.0],
         );
       canvas.save();
       canvas.clipRRect(rrect);
