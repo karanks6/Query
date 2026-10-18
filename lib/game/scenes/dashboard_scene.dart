@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flame/components.dart';
-import 'package:flame_riverpod/flame_riverpod.dart';
+import '../query_game.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,9 +19,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/providers.dart';
 import '../../data/content/level_loader.dart';
 
-class LayoutContainer extends PositionComponent with RiverpodComponentMixin {}
+class LayoutContainer extends PositionComponent {}
 
-class DashboardScene extends QueryScene with RiverpodComponentMixin {
+class DashboardScene extends QueryScene {
   late PersistentHudComponent hud;
   late LayoutContainer layoutContainer;
   late _AnimatedDashboardBackground _bg;
@@ -51,16 +51,16 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      final playerDao = ref.read(playerDaoProvider);
+      final playerDao = game.ref.read(playerDaoProvider);
       await playerDao.checkDailyStreak(prefs, increment: false);
 
-      final profile = await ref.read(playerProfileProvider.future);
+      final profile = await game.ref.read(playerProfileProvider.future);
       _currentPlayerProfile = profile;
       
-      final achList = await ref.read(allAchievementsProvider.future);
+      final achList = await game.ref.read(allAchievementsProvider.future);
       _achievementsCount = achList.length;
       
-      final progressList = await ref.read(allWorldProgressProvider.future);
+      final progressList = await game.ref.read(allWorldProgressProvider.future);
       String highestUnlocked = 'world_01';
       for (final p in progressList) {
         if (p.unlocked && p.worldId.compareTo(highestUnlocked) > 0) {
@@ -85,15 +85,19 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
   @override
   void onMount() {
     super.onMount();
-    _profileSub = ref.listenManual(
-      playerProfileProvider,
-      (previous, next) {
-        if (next.hasValue && next.value != null) {
-          _currentPlayerProfile = next.value;
-        }
-      },
-      fireImmediately: true,
-    );
+    try {
+      _profileSub = game.ref.listenManual(
+        playerProfileProvider,
+        (previous, next) {
+          if (next.hasValue && next.value != null) {
+            _currentPlayerProfile = next.value;
+          }
+        },
+        fireImmediately: false,
+      );
+    } catch (e) {
+      debugPrint('Error listening to playerProfileProvider: $e');
+    }
   }
 
   @override
@@ -467,7 +471,7 @@ class _AnimatedWanderwoodPlaque extends PositionComponent {
 // ════════════════════════════════════════════════════════════════════════════
 // 3. STATS ROW COMPONENT WITH INTERACTIVE BADGES
 // ════════════════════════════════════════════════════════════════════════════
-class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
+class _StatsRowComponent extends PositionComponent with HasGameReference<QueryGame> {
   late GameStatBadge _streakBadge;
   late GameStatBadge _achBadge;
   late GameStatBadge _xpBadge;
@@ -572,7 +576,7 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
     super.onMount();
 
     try {
-      _profileSub = ref.listenManual(
+      _profileSub = game.ref.listenManual(
         playerProfileProvider,
         (_, next) {
           if (next.hasValue && next.value != null) {
@@ -583,17 +587,17 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
             );
           }
         },
-        fireImmediately: true,
+        fireImmediately: false,
       );
 
-      _achSub = ref.listenManual(
+      _achSub = game.ref.listenManual(
         allAchievementsProvider,
         (_, next) {
           if (next.hasValue && next.value != null) {
             _refreshStats(achievements: next.value!.length);
           }
         },
-        fireImmediately: true,
+        fireImmediately: false,
       );
     } catch (e) {
       debugPrint('Error in _StatsRowComponent.onMount: $e');
