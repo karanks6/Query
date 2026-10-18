@@ -3,10 +3,11 @@ import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flame/events.dart';
 import '../../main.dart';
 import '../../features/dashboard/widgets/streak_calendar_modal.dart';
 import '../../features/achievements/achievements_screen.dart';
+import '../../features/profile/profile_screen.dart';
+import '../components/ui/game_stat_badge.dart';
 import 'query_scene.dart';
 import 'world_select_scene.dart';
 import 'daily_challenge_scene.dart';
@@ -154,7 +155,7 @@ class DashboardScene extends QueryScene with RiverpodComponentMixin {
       yPos += plaqueHeight + 16;
 
     // 1.5 Stats Row
-    final statsHeight = 40.0;
+    final statsHeight = 54.0;
     _statsRow = _StatsRowComponent(
       profile: _currentPlayerProfile,
       initialAchievements: _achievementsCount,
@@ -341,11 +342,11 @@ class _RoundedPlaqueComponent extends PositionComponent {
 }
 
 class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
-  late TextComponent _streakText;
-  late TextComponent _achText;
-  late TextComponent _xpText;
+  late GameStatBadge _streakBadge;
+  late GameStatBadge _achBadge;
+  late GameStatBadge _xpBadge;
 
-  final dynamic profile;
+  dynamic profile;
   final int? initialAchievements;
 
   _StatsRowComponent({
@@ -356,28 +357,28 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
   });
 
   void _refreshStats({int? streak, int? xp, int? achievements}) {
-    if (streak != null) _streakText.text = '🔥 $streak';
-    if (xp != null) _xpText.text = '✨ $xp XP';
-    if (achievements != null) _achText.text = '🏆 $achievements';
+    if (streak != null) _streakBadge.value = streak;
+    if (xp != null) _xpBadge.value = xp;
+    if (achievements != null) _achBadge.value = achievements;
   }
 
   @override
-  Future<void> onLoad() async { 
-    final bg = _RoundedPlaqueComponent(size: size);
-    add(bg);
+  Future<void> onLoad() async {
+    const badgeGap = 8.0;
+    final badgeWidth = (size.x - (badgeGap * 2)) / 3;
+    final badgeSize = Vector2(badgeWidth, size.y);
 
-    final colWidth = size.x / 3;
-    final textStyle = GoogleFonts.nunitoSans(
-      color: const Color(0xFFF9F5EA),
-      fontSize: 14,
-      fontWeight: FontWeight.bold,
-    );
+    final initialStreak = profile != null ? (profile.streakCount as int? ?? 0) : 0;
+    final initialXp = profile != null ? (profile.totalXp as int? ?? 0) : 0;
+    final initialAch = initialAchievements ?? 0;
 
-    // Streak
-    final streakBtn = _StatButton(
-      size: Vector2(colWidth, size.y),
+    // 1. Streak Badge (Interactive + Animated Flame & Rising Embers)
+    _streakBadge = GameStatBadge(
+      type: GameStatBadgeType.streak,
+      initialValue: initialStreak,
+      size: badgeSize,
       position: Vector2(0, 0),
-      onTap: () {
+      onPressed: () {
         if (navigatorKey.currentContext != null) {
           showModalBottomSheet(
             context: navigatorKey.currentContext!,
@@ -391,7 +392,10 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
                   initialChildSize: 0.85,
                   maxChildSize: 0.95,
                   minChildSize: 0.5,
-                  builder: (_, controller) => StreakCalendarModal(scrollController: controller, profile: profile),
+                  builder: (_, controller) => StreakCalendarModal(
+                    scrollController: controller,
+                    profile: profile,
+                  ),
                 ),
               ),
             ),
@@ -399,27 +403,15 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
         }
       },
     );
-    _streakText = TextComponent(
-      text: '🔥 0',
-      textRenderer: TextPaint(style: textStyle),
-      position: Vector2(colWidth * 0.5, size.y / 2),
-      anchor: Anchor.center,
-    );
-    streakBtn.add(_streakText);
-    add(streakBtn);
+    add(_streakBadge);
 
-    // Divider 1
-    add(RectangleComponent(
-      size: Vector2(1, size.y - 16),
-      position: Vector2(colWidth, 8),
-      paint: Paint()..color = const Color(0xFF8B5A2B),
-    ));
-
-    // Achievements
-    final achBtn = _StatButton(
-      size: Vector2(colWidth, size.y),
-      position: Vector2(colWidth, 0),
-      onTap: () {
+    // 2. Achievements Badge (Interactive + Floating Trophy, Shimmer Glint & Stars)
+    _achBadge = GameStatBadge(
+      type: GameStatBadgeType.achievements,
+      initialValue: initialAch,
+      size: badgeSize,
+      position: Vector2(badgeWidth + badgeGap, 0),
+      onPressed: () {
         if (navigatorKey.currentContext != null) {
           Navigator.of(navigatorKey.currentContext!).push(
             MaterialPageRoute(builder: (_) => const AchievementsScreen()),
@@ -427,30 +419,23 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
         }
       },
     );
-    _achText = TextComponent(
-      text: '🏆 0',
-      textRenderer: TextPaint(style: textStyle),
-      position: Vector2(colWidth * 0.5, size.y / 2),
-      anchor: Anchor.center,
-    );
-    achBtn.add(_achText);
-    add(achBtn);
+    add(_achBadge);
 
-    // Divider 2
-    add(RectangleComponent(
-      size: Vector2(1, size.y - 16),
-      position: Vector2(colWidth * 2, 8),
-      paint: Paint()..color = const Color(0xFF8B5A2B),
-    ));
-
-    // XP
-    _xpText = TextComponent(
-      text: '✨ 0 XP',
-      textRenderer: TextPaint(style: textStyle),
-      position: Vector2(colWidth * 2.5, size.y / 2),
-      anchor: Anchor.center,
+    // 3. XP Badge (Interactive + Pulsing Arcane Gem & Orbiting Stardust)
+    _xpBadge = GameStatBadge(
+      type: GameStatBadgeType.xp,
+      initialValue: initialXp,
+      size: badgeSize,
+      position: Vector2((badgeWidth + badgeGap) * 2, 0),
+      onPressed: () {
+        if (navigatorKey.currentContext != null) {
+          Navigator.of(navigatorKey.currentContext!).push(
+            MaterialPageRoute(builder: (_) => const ProfileScreen()),
+          );
+        }
+      },
     );
-    add(_xpText);
+    add(_xpBadge);
   }
 
   ProviderSubscription? _profileSub;
@@ -459,12 +444,13 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
   @override
   void onMount() {
     super.onMount();
-    
+
     try {
       _profileSub = ref.listenManual(
         playerProfileProvider,
         (_, next) {
           if (next.hasValue && next.value != null) {
+            profile = next.value;
             _refreshStats(
               streak: next.value!.streakCount,
               xp: next.value!.totalXp,
@@ -495,19 +481,3 @@ class _StatsRowComponent extends PositionComponent with RiverpodComponentMixin {
     super.onRemove();
   }
 }
-
-class _StatButton extends PositionComponent with TapCallbacks {
-  final VoidCallback? onTap;
-
-  _StatButton({required super.size, required super.position, this.onTap});
-
-  @override
-  void onTapDown(TapDownEvent event) {
-    onTap?.call();
-    super.onTapDown(event);
-  }
-}
-
-
-
-
