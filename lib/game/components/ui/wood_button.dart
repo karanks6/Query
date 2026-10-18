@@ -128,6 +128,7 @@ class WoodButton extends PositionComponent with TapCallbacks {
               (isPrimary ? const Color(0xFFFFD54F) : Colors.white).withValues(alpha: 0.25),
               Colors.transparent,
             ],
+            const [0.0, 0.5, 1.0],
           );
         canvas.save();
         canvas.clipRRect(rrect);
