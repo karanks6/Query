@@ -1,4 +1,5 @@
 import 'dart:io' show Platform;
+import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
@@ -16,6 +17,7 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
 
   late final ScanLineComponent scanLines;
   late final ParallaxWorldComponent parallax;
+  late final SceneTransitionComponent transitionCurtain;
 
   @override
   Color backgroundColor() => const Color(0xFF15171E);
@@ -27,12 +29,14 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
     
     parallax = ParallaxWorldComponent();
     scanLines = ScanLineComponent();
+    transitionCurtain = SceneTransitionComponent()..priority = 1000;
     
     // Scanlines should be drawn on top of most things, 
     // but below the Flutter UI (since Flutter is an overlay).
     // The parallax is in the deep background.
     add(parallax);
     add(scanLines);
+    add(transitionCurtain);
 
     final isTesting = !kIsWeb && Platform.environment.containsKey('FLUTTER_TEST');
     if (!isTesting) {
@@ -55,6 +59,14 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
   }
 
   Future<void> pushScene(QueryScene next) async {
+    if (isLoaded && transitionCurtain.isMounted) {
+      transitionCurtain.startTransition(() => _performPushScene(next));
+    } else {
+      await _performPushScene(next);
+    }
+  }
+
+  Future<void> _performPushScene(QueryScene next) async {
     if (sceneStack.isNotEmpty) {
       await sceneStack.last.onExit();
       remove(sceneStack.last);
@@ -68,6 +80,14 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
   }
 
   Future<void> replaceScene(QueryScene next) async {
+    if (isLoaded && transitionCurtain.isMounted) {
+      transitionCurtain.startTransition(() => _performReplaceScene(next));
+    } else {
+      await _performReplaceScene(next);
+    }
+  }
+
+  Future<void> _performReplaceScene(QueryScene next) async {
     if (sceneStack.isNotEmpty) {
       final old = sceneStack.removeLast();
       await old.onExit();
@@ -82,6 +102,14 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
   }
 
   Future<void> popScene() async {
+    if (isLoaded && transitionCurtain.isMounted) {
+      transitionCurtain.startTransition(() => _performPopScene());
+    } else {
+      await _performPopScene();
+    }
+  }
+
+  Future<void> _performPopScene() async {
     if (sceneStack.length > 1) {
       final old = sceneStack.removeLast();
       await old.onExit();
@@ -123,5 +151,68 @@ class QueryGame extends FlameGame with RiverpodGameMixin {
         overlays.add(overlay);
       }
     }
+  }
+}
+
+/// A high-performance cinematic transition curtain that smoothly fades between scenes.
+class SceneTransitionComponent extends PositionComponent {
+  double _opacity = 0.0;
+  bool _isTransitioning = false;
+  Future<void> Function()? _midpointCallback;
+
+  void startTransition(Future<void> Function() onMidpoint) {
+    _isTransitioning = true;
+    _midpointCallback = onMidpoint;
+    _opacity = 0.0;
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (!_isTransitioning) return;
+
+    if (_midpointCallback != null) {
+      _opacity += dt * 6.5; // ~150ms fade in
+      if (_opacity >= 1.0) {
+        _opacity = 1.0;
+        final cb = _midpointCallback;
+        _midpointCallback = null;
+        cb?.call();
+      }
+    } else {
+      _opacity -= dt * 5.0; // ~200ms fade out
+      if (_opacity <= 0.0) {
+        _opacity = 0.0;
+        _isTransitioning = false;
+      }
+    }
+  }
+
+  @override
+  void render(Canvas canvas) {
+    if (_opacity <= 0.0) return;
+
+    final paint = Paint()
+      ..color = const Color(0xFF140803).withValues(alpha: _opacity.clamp(0.0, 1.0));
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), paint);
+
+    if (_opacity > 0.25) {
+      final glintPaint = Paint()
+        ..shader = ui.Gradient.radial(
+          Offset(size.x * 0.5, size.y * 0.5),
+          size.y * 0.45,
+          [
+            const Color(0xFFE59B28).withValues(alpha: (_opacity * 0.20).clamp(0.0, 1.0)),
+            Colors.transparent,
+          ],
+        );
+      canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), glintPaint);
+    }
+  }
+
+  @override
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
+    this.size = size;
   }
 }
