@@ -267,11 +267,14 @@ class _CodeModeWorkspaceState extends State<CodeModeWorkspace> {
                 ),
               ),
               const Spacer(),
-              Text(
-                '${_controller.text.split('\n').length} lines',
-                style: GameTokens.bodySmall.copyWith(
-                  color: GameTokens.secondaryText,
-                  fontSize: 10,
+              ListenableBuilder(
+                listenable: _controller,
+                builder: (context, _) => Text(
+                  '${_controller.text.split('\n').length} lines',
+                  style: GameTokens.bodySmall.copyWith(
+                    color: GameTokens.secondaryText,
+                    fontSize: 10,
+                  ),
                 ),
               ),
             ],
@@ -302,9 +305,12 @@ class _CodeModeWorkspaceState extends State<CodeModeWorkspace> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Line numbers
-                    _LineNumbers(
-                      text: _controller.text,
-                      scrollController: _lineNumbersScrollController,
+                    ListenableBuilder(
+                      listenable: _controller,
+                      builder: (context, _) => _LineNumbers(
+                        text: _controller.text,
+                        scrollController: _lineNumbersScrollController,
+                      ),
                     ),
 
                     // Text field
@@ -402,13 +408,18 @@ class _LineNumbers extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: List.generate(
             lineCount,
-            (i) => Text(
-              '${i + 1}',
-              style: GoogleFonts.firaCode(
-                color: const Color(0xFF8C7A6B),
-                fontSize: 12,
-                height: 1.6,
-                fontWeight: FontWeight.w500,
+            (i) => SizedBox(
+              height: 24.0,
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  '${i + 1}',
+                  style: GoogleFonts.firaCode(
+                    color: const Color(0xFF8C7A6B),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
             ),
           ),
