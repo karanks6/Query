@@ -8,9 +8,28 @@ class StatementWhitelist {
 
   const StatementWhitelist(this._allowed);
 
+  /// Strips leading whitespace and SQL comments (-- and /* ... */) to find the first executable statement.
+  static String cleanSql(String sql) {
+    var cleaned = sql.trim();
+    while (cleaned.isNotEmpty) {
+      if (cleaned.startsWith('--')) {
+        final newline = cleaned.indexOf('\n');
+        if (newline == -1) return '';
+        cleaned = cleaned.substring(newline + 1).trim();
+      } else if (cleaned.startsWith('/*')) {
+        final close = cleaned.indexOf('*/');
+        if (close == -1) return '';
+        cleaned = cleaned.substring(close + 2).trim();
+      } else {
+        break;
+      }
+    }
+    return cleaned;
+  }
+
   /// Returns true if [sql] starts with an allowed statement keyword.
   bool allows(String sql) {
-    final upper = sql.trim().toUpperCase();
+    final upper = cleanSql(sql).toUpperCase();
     for (final type in _allowed) {
       if (upper.startsWith(type.keyword)) return true;
     }
@@ -19,7 +38,7 @@ class StatementWhitelist {
 
   /// Checks for globally forbidden patterns (always blocked regardless of world).
   String? checkForbidden(String sql) {
-    final upper = sql.trim().toUpperCase();
+    final upper = cleanSql(sql).toUpperCase();
     if (upper.startsWith('PRAGMA')) {
       return 'PRAGMA statements are disabled in the sandbox.';
     }
@@ -34,7 +53,7 @@ class StatementWhitelist {
 
   /// Generates a plain-English message for blocked statement types.
   String blockedMessage(String sql) {
-    final upper = sql.trim().toUpperCase();
+    final upper = cleanSql(sql).toUpperCase();
     if (upper.startsWith('INSERT') || upper.startsWith('UPDATE') || upper.startsWith('DELETE')) {
       return 'Data modification (INSERT/UPDATE/DELETE) isn\'t available in this world yet. '
           'You\'ll unlock it in World 6: Data Forge.';
@@ -48,20 +67,25 @@ class StatementWhitelist {
 
   // --- Pre-built whitelists per world range ---
 
-  /// Worlds 1–5: SELECT only
-  static const selectOnly = StatementWhitelist({AllowedStatementType.select});
+  /// Worlds 1–5: SELECT and CTEs (WITH)
+  static const selectOnly = StatementWhitelist({
+    AllowedStatementType.select,
+    AllowedStatementType.with_,
+  });
 
-  /// World 6: SELECT + DML
+  /// World 6: SELECT + CTEs + DML
   static const selectAndDml = StatementWhitelist({
     AllowedStatementType.select,
+    AllowedStatementType.with_,
     AllowedStatementType.insert,
     AllowedStatementType.update,
     AllowedStatementType.delete,
   });
 
-  /// World 7+: SELECT + DML + DDL
+  /// World 7+: SELECT + CTEs + DML + DDL
   static const full = StatementWhitelist({
     AllowedStatementType.select,
+    AllowedStatementType.with_,
     AllowedStatementType.insert,
     AllowedStatementType.update,
     AllowedStatementType.delete,
